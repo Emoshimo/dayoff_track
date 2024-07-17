@@ -12,6 +12,11 @@ module.exports = {
         hoverApprove: "#05a3b5",
         rejected: "#D9512C",
         hoverReject: "#ff0800",
+        border: "#4F51FE",
+      },
+      boxShadow: {
+        "custom-black":
+          "4px 4px 16px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.2)",
       },
     },
   },
