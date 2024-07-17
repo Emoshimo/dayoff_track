@@ -82,18 +82,18 @@ const Login = () => {
                 <input
                   id="email"
                   name="EmailAddress"
-                  className="text-slate-200 mt-2 p-2 bg-primary border-2 border-border rounded-full w-full text-lg focus:outline-none "
+                  className="text-slate-200 mt-2 p-2 bg-primary border-2 border-border rounded-full w-full text-lg focus:outline-none"
                   type="email"
                   placeholder="Enter Your Email"
                   value={loginDto.EmailAddress}
                   onChange={handleChange}
                 />
               </div>
-              <div className="w-full flex flex-col mb-4 text-primary">
+              <div className="w-full flex flex-col text-primary">
+                <label className="text-slate-200" htmlFor="email">
+                  Password
+                </label>
                 <div className="relative">
-                  <label className="text-slate-200" htmlFor="email">
-                    Password
-                  </label>
                   <input
                     id="password"
                     name="Password"
@@ -105,7 +105,7 @@ const Login = () => {
                   />
                   <button
                     type="button"
-                    className="absolute mt-8 inset-y-0 right-0 px-4 text-slate-200"
+                    className="absolute mt-2 inset-y-0 right-0 px-4 text-slate-200"
                     onClick={togglePassword}
                   >
                     {showPassword ? "Hide" : "Show"}
