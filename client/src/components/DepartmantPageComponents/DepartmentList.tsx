@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { fetchDepartments } from "../api";
-import { IDepartment } from "../interfaces/interfaces";
+import { fetchDepartments } from "../../api";
+import { IDepartment } from "../../interfaces/interfaces";
 
 const DepartmentList = () => {
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
@@ -39,13 +39,13 @@ const DepartmentList = () => {
   return (
     <div>
       <div className="overflow-x-auto">
-        <table className="table-auto min-w-full bg-white border-collapse border border-gray-200">
+        <table className="table-auto min-w-full bg-white border-collapse border">
           <thead>
             <tr className="bg-primary text-slate-200">
-              <th className="px-4 py-2">Id</th>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">ManagerId</th>
-              <th className="px-4 py-2">Actions</th>
+              <th className="border-x border-border px-4 py-2">Id</th>
+              <th className="border-x border-border px-4 py-2">Name</th>
+              <th className="border-x border-border px-4 py-2">ManagerId</th>
+              <th className="border-x border-border px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>

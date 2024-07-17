@@ -1,25 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { ClientEmployee, DayOffRequest } from "../../interfaces/interfaces";
+import { DayOffRequest } from "../../interfaces/interfaces";
 import { getTitleBackgroundColor } from "../../utils/colorUtils";
-import DayOffModal from "./DayOffModal";
 import { cancelDayOff } from "../../api";
 
 interface DayOffListProps {
   dayOffs: DayOffRequest[];
-  title: string;
-  employee: ClientEmployee;
 }
 type SelectedRows = number[];
 
-const DayOffList: React.FC<DayOffListProps> = ({
-  dayOffs,
-  title,
-  employee,
-}) => {
+const DayOffList: React.FC<DayOffListProps> = ({ dayOffs }) => {
   const [, setPopupMessage] = useState<string | null>(null);
   const [dayOffList, setDayOffList] = useState<DayOffRequest[]>(dayOffs);
   const [selectedRows, setSelectedRows] = useState<SelectedRows>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const token = localStorage.getItem("token");
   const showError = (message: string) => {
     setPopupMessage(message);
@@ -48,48 +40,20 @@ const DayOffList: React.FC<DayOffListProps> = ({
     console.log(dayOffs);
   }, [dayOffs]);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <div>
-      <header className="flex flex-row justify-between items-start mr-16">
-        <h3 className="text-primary text-xl font-semibold mb-4">{title}</h3>
-        <button className="text-4xl" onClick={openModal}>
-          <svg
-            className="w-8 h-8"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 4v16m8-8H4"
-            ></path>
-          </svg>
-        </button>
-        <DayOffModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          employee={employee}
-        />
-      </header>
       <div className="overflow-x-auto">
-        <table className="table-auto min-w-full bg-white border-collapse border border-gray-200">
+        <table className="table-auto min-w-full bg-white border-collapse border">
           <thead>
             <tr className="bg-primary text-slate-200">
-              <th className="px-4 py-2"></th>
-              <th className="px-4 py-2">Id</th>
-              <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Pending Manager</th>
-              <th className="px-4 py-2">Start Date</th>
-              <th className="px-4 py-2">End Date</th>
+              <th className="border-x border-border px-4 py-2"></th>
+              <th className="border-x border-border px-4 py-2">Id</th>
+              <th className="border-x border-border px-4 py-2">Status</th>
+              <th className="border-x border-border px-4 py-2">
+                Pending Manager
+              </th>
+              <th className="border-x border-border px-4 py-2 ">Start Date</th>
+              <th className="border-x border-border px-4 py-2">End Date</th>
             </tr>
           </thead>
           <tbody>

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { evaluateDayOff, fetchDayOffsForManager } from "../../api";
-import {
-  DayOffRequest,
-  DayOffRequestForManager,
-} from "../../interfaces/interfaces";
+import { DayOffRequestForManager } from "../../interfaces/interfaces";
 import EmployeeDayOffItem from "./EmployeeDayOffItem";
 
 const EmployeeDayOffList = () => {
@@ -47,8 +44,7 @@ const EmployeeDayOffList = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
-      <h2 className="text-2xl font-bold my-4">Employee Day Off Requests</h2>
+    <div className="overflow-x-auto">
       {dayOffRequests.length === 0 ? (
         <p>No day off requests found.</p>
       ) : (

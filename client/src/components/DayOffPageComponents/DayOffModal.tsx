@@ -1,5 +1,5 @@
 import React from "react";
-import EmployeeDayOff from "../EmployeePageComponents/EmployeeDayOff";
+import EmployeeDayOff from "./EmployeeDayOff";
 import { ClientEmployee } from "../../interfaces/interfaces";
 
 interface DayOffModalProps {

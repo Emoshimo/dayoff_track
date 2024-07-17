@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { MdAdminPanelSettings, MdLogout } from "react-icons/md";
 import { FaCalendarDay, FaArrowLeft, FaArrowRight } from "react-icons/fa";
@@ -10,7 +10,6 @@ import useEmployeeStore from "../stores/employeeStore";
 const NavBar = () => {
   const { reset } = useEmployeeStore();
   const navigate = useNavigate();
-  const location = useLocation();
   const token = localStorage.getItem("token");
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -69,58 +68,40 @@ const NavBar = () => {
               {isExpanded && "DayOff Requests"}
             </NavLink>
 
-            {userRole === "Admin" && (
-              <>
-                <NavLink
-                  to="/dashboard/admin"
-                  className={`flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                    location.pathname.startsWith("/dashboard/admin")
-                      ? "bg-second"
-                      : ""
-                  }`}
-                >
-                  <MdAdminPanelSettings
-                    style={{ width: "32px", height: "32px" }}
-                  />
-                  {isExpanded && "Admin"}
-                </NavLink>
-                <ul className="">
-                  <li>
-                    <NavLink
-                      to="/dashboard/admin/create-department"
-                      className={`flex flex-row items-center px-4 py-1 text-lg rounded hover:bg-hover ${
-                        location.pathname ===
-                        "/dashboard/admin/create-department"
-                          ? "bg-second"
-                          : ""
-                      }`}
-                    >
-                      <HiOfficeBuilding
-                        style={{ width: "32px", height: "32px" }}
-                      />
-                      {isExpanded && "Create Department"}
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to="/dashboard/admin/register-employee"
-                      className={`flex flex-row items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                        location.pathname ===
-                        "/dashboard/admin/register-employee"
-                          ? "bg-second"
-                          : ""
-                      }`}
-                    >
-                      <MdAdminPanelSettings
-                        style={{ width: "32px", height: "32px" }}
-                      />
-                      {isExpanded && "Register Employee"}
-                    </NavLink>
-                  </li>
-                  <li></li>
-                </ul>
-              </>
-            )}
+            <NavLink
+              to="/dashboard/admin"
+              className={({ isActive }) =>
+                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
+                  isActive ? "bg-second" : ""
+                }`
+              }
+            >
+              <MdAdminPanelSettings style={{ width: "32px", height: "32px" }} />
+              {isExpanded && "Admin"}
+            </NavLink>
+            <NavLink
+              to="/dashboard/create-department"
+              className={({ isActive }) =>
+                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
+                  isActive ? "bg-second" : ""
+                }`
+              }
+            >
+              <HiOfficeBuilding style={{ width: "32px", height: "32px" }} />
+              {isExpanded && "Create Department"}
+            </NavLink>
+            <NavLink
+              to="/dashboard/register-employee"
+              className={({ isActive }) =>
+                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
+                  isActive ? "bg-second" : ""
+                }`
+              }
+            >
+              <MdAdminPanelSettings style={{ width: "32px", height: "32px" }} />
+              {isExpanded && "Register Employee"}
+            </NavLink>
+
             {userRole === "Manager" && (
               <NavLink
                 to="/dashboard/manager"

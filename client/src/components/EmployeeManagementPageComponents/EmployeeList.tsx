@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { editEmployee, fetchEmployees, fetchPossibleManagers } from "../../api";
 import PopUp from "../PopUp";
 import { ClientEmployee } from "../../interfaces/interfaces";
@@ -15,7 +15,6 @@ const EmployeeList = () => {
   const showError = (message: string) => {
     setPopupMessage(message);
   };
-
   const handleClosePopup = () => {
     setPopupMessage(null);
   };
@@ -24,6 +23,7 @@ const EmployeeList = () => {
       const newEmployees = await fetchEmployees(token!, showError);
 
       if (newEmployees) {
+        console.log(newEmployees);
         setEmployees(newEmployees);
         const possibleManagersPromises = newEmployees.map(
           async (employee: any) => {
@@ -96,74 +96,79 @@ const EmployeeList = () => {
   useEffect(() => {
     fetchMoreEmployee();
   }, []);
+
   return (
     <div>
       <div className="overflow-x-auto">
-        <table className="table-auto min-w-full bg-white border-collapse border border-gray-200">
+        <table className="table-auto min-w-full bg-white border-collapse border">
           <thead>
             <tr className="bg-primary text-slate-200">
-              <th className="px-4 py-2">Id</th>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Surname</th>
-              <th className="px-4 py-2">Remaining Day Offs</th>
-              <th className="px-4 py-2">Manager</th>
-              <th className="px-4 py-2">Actions</th>
+              <th className="border border-gray-300 px-4 py-2">Id</th>
+              <th className="border border-gray-300 px-4 py-2">Name</th>
+              <th className="border border-gray-300 px-4 py-2">Surname</th>
+              <th className="border border-gray-300 px-4 py-2">
+                Remaining Day Offs
+              </th>
+              <th className="border border-gray-300 px-4 py-2">Manager</th>
+              <th className="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {employees &&
-              employees?.map((item: ClientEmployee, index: number) => (
+              employees.map((item: ClientEmployee, index: number) => (
                 <tr
                   key={item.id}
                   className={`text-center ${
                     index % 2 === 0 ? "" : "bg-slate-100"
                   }`}
                 >
-                  <td className="border px-4 py-2">{item.id}</td>
-                  <td className="border px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2">
+                    {item.id}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
                     {editingEmployeeId === item.id ? (
                       <input
                         type="text"
-                        value={editedEmployee?.name}
+                        value={editedEmployee?.name || ""}
                         onChange={(e) => handleChange(e, "name")}
-                        className="border text-center"
+                        className="border p-1 text-center w-full"
                       />
                     ) : (
                       item.name
                     )}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2">
                     {editingEmployeeId === item.id ? (
                       <input
                         type="text"
-                        value={editedEmployee?.surname}
+                        value={editedEmployee?.surname || ""}
                         onChange={(e) => handleChange(e, "surname")}
-                        className="border p-1 text-center"
+                        className="border p-1 text-center w-full"
                       />
                     ) : (
                       item.surname
                     )}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2">
                     {editingEmployeeId === item.id ? (
                       <input
                         type="number"
-                        value={editedEmployee?.remainingDayOffs}
+                        value={editedEmployee?.remainingDayOffs || ""}
                         onChange={(e) => handleChange(e, "remainingDayOffs")}
-                        className="border p-1 text-center"
+                        className="border p-1 text-center w-full"
                       />
                     ) : (
                       item.remainingDayOffs
                     )}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2">
                     {editingEmployeeId === item.id ? (
                       <select
                         value={editedEmployee?.managerId || ""}
-                        onChange={(e: any) => handleChange(e, "managerId")}
-                        className="border p-1 text-center"
+                        onChange={(e) => handleChange(e, "managerId")}
+                        className="border p-1 text-center w-full"
                       >
-                        <option value="null">null</option>
+                        <option value="">Select Manager</option>
                         {possibleManagers[item.id!]?.map((manager) => (
                           <option key={manager.id} value={manager.id}>
                             {manager.name} {manager.surname}
@@ -174,18 +179,18 @@ const EmployeeList = () => {
                       item.managerId || "None"
                     )}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2">
                     {editingEmployeeId === item.id ? (
                       <button
                         onClick={handleSaveClick}
-                        className="bg-approved text-white w-16 px-4 py-2 rounded hover:bg-green-600"
+                        className="bg-green-500 text-white w-16 px-4 py-2 rounded hover:bg-green-600"
                       >
                         Save
                       </button>
                     ) : (
                       <button
                         onClick={() => handleEditClick(item)}
-                        className="bg-primary text-white w-16 px-4 py-2 rounded hover:bg-hover"
+                        className="bg-primary text-white w-16 px-4 py-2 rounded hover:bg-gray-600"
                       >
                         Edit
                       </button>
