@@ -68,39 +68,47 @@ const NavBar = () => {
               {isExpanded && "DayOff Requests"}
             </NavLink>
 
-            <NavLink
-              to="/dashboard/admin"
-              className={({ isActive }) =>
-                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                  isActive ? "bg-second" : ""
-                }`
-              }
-            >
-              <MdAdminPanelSettings style={{ width: "32px", height: "32px" }} />
-              {isExpanded && "Admin"}
-            </NavLink>
-            <NavLink
-              to="/dashboard/create-department"
-              className={({ isActive }) =>
-                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                  isActive ? "bg-second" : ""
-                }`
-              }
-            >
-              <HiOfficeBuilding style={{ width: "32px", height: "32px" }} />
-              {isExpanded && "Create Department"}
-            </NavLink>
-            <NavLink
-              to="/dashboard/register-employee"
-              className={({ isActive }) =>
-                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                  isActive ? "bg-second" : ""
-                }`
-              }
-            >
-              <MdAdminPanelSettings style={{ width: "32px", height: "32px" }} />
-              {isExpanded && "Register Employee"}
-            </NavLink>
+            {userRole === "Admin" && (
+              <>
+                <NavLink
+                  to="/dashboard/admin"
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
+                      isActive ? "bg-second" : ""
+                    }`
+                  }
+                >
+                  <MdAdminPanelSettings
+                    style={{ width: "32px", height: "32px" }}
+                  />
+                  {isExpanded && "Admin"}
+                </NavLink>{" "}
+                <NavLink
+                  to="/dashboard/create-department"
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
+                      isActive ? "bg-second" : ""
+                    }`
+                  }
+                >
+                  <HiOfficeBuilding style={{ width: "32px", height: "32px" }} />
+                  {isExpanded && "Create Department"}
+                </NavLink>
+                <NavLink
+                  to="/dashboard/register-employee"
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
+                      isActive ? "bg-second" : ""
+                    }`
+                  }
+                >
+                  <MdAdminPanelSettings
+                    style={{ width: "32px", height: "32px" }}
+                  />
+                  {isExpanded && "Register Employee"}
+                </NavLink>
+              </>
+            )}
 
             {userRole === "Manager" && (
               <NavLink

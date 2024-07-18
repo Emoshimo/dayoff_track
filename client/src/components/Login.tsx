@@ -60,9 +60,9 @@ const Login = () => {
   return (
     <div className="max-w-3xl">
       <div className="flex flex-col items-center bg-primary shadow-custom-black">
-        <div className="flex flex-row items-center">
+        <div className="grid grid-cols-2 lg:grid-cols-2 items-center">
           <div className="px-6">
-            <img src={vector} alt="login" />
+            <img src={vector} alt="login" className="max-w-full h-auto" />
           </div>
           <div className="flex flex-col px-6 text-slate-200 py-16">
             <form
@@ -105,7 +105,7 @@ const Login = () => {
                   />
                   <button
                     type="button"
-                    className="absolute mt-2 inset-y-0 right-0 px-4 text-slate-200"
+                    className="hidden lg:absolute lg:block mt-2 inset-y-0 right-0 px-4 text-slate-200"
                     onClick={togglePassword}
                   >
                     {showPassword ? "Hide" : "Show"}

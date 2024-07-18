@@ -1,5 +1,9 @@
 name: hello-world
-on: push
+on:
+  push:
+    branches:
+      - deployment
+
 jobs:
   sample-job:
     runs-on: ubuntu-latest
