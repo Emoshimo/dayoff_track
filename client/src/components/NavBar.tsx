@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { MdAdminPanelSettings, MdLogout } from "react-icons/md";
 import { FaCalendarDay, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { HiOfficeBuilding } from "react-icons/hi";
+import { FaCodePullRequest } from "react-icons/fa6";
 
 import useEmployeeStore from "../stores/employeeStore";
 
@@ -114,11 +115,12 @@ const NavBar = () => {
               <NavLink
                 to="/dashboard/manager"
                 className={({ isActive }) =>
-                  `block px-4 py-2 text-lg rounded hover:bg-hover ${
+                  `flex flex-row items-center px-4 py-2 text-lg rounded hover:bg-hover ${
                     isActive ? "bg-second" : ""
                   }`
                 }
               >
+                <FaCodePullRequest style={{ width: "32px", height: "32px" }} />{" "}
                 {isExpanded && "Manager"}
               </NavLink>
             )}

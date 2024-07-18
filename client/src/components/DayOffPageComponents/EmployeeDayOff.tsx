@@ -18,6 +18,9 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const [newRemainingDays, setNewRemainingDays] = useState<number | null>(
+    (employee.remainingDayOffs! - 1) | 0
+  );
 
   const showError = (message: string) => {
     setPopupMessage(message);
@@ -25,12 +28,50 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
   const handleClosePopup = () => {
     setPopupMessage(null);
   };
+
+  const onDateChange = (date: Date | null) => {
+    if (!date) return;
+    setEndDate(date);
+
+    const startOfDay = new Date(startDate);
+    const endOfDay = new Date(date);
+
+    // Helper function to count the number of weekends between two dates
+    const countWeekends = (start: Date, end: Date) => {
+      let count = 0;
+      let currentDate = new Date(start);
+      currentDate.setHours(0, 0, 0, 0);
+
+      while (currentDate <= end) {
+        const day = currentDate.getDay();
+        if (day === 0 || day === 6) {
+          count++;
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      return count;
+    };
+
+    const differenceInMilliseconds = endOfDay.getTime() - startOfDay.getTime();
+    const totalDays = differenceInMilliseconds / (1000 * 3600 * 24) + 1;
+    const weekends = countWeekends(startOfDay, endOfDay);
+    const differenceInDays = totalDays - weekends;
+
+    // Use Math.floor to round down to the nearest integer
+    const roundedDifferenceInDays = differenceInDays;
+
+    console.log(roundedDifferenceInDays);
+    setNewRemainingDays(
+      Math.floor(employee.remainingDayOffs! - roundedDifferenceInDays)
+    );
+  };
+
   const handleTakeDayOff = async () => {
     if (endDate < startDate) {
       showError("Invalid dates.");
       return;
     }
-
     const startOfDay = new Date(startDate);
     const endOfDay = new Date(endDate);
 
@@ -78,7 +119,7 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
           <div className="relative">
             <DatePicker
               selected={endDate}
-              onChange={(date) => setEndDate(date!)}
+              onChange={(date) => onDateChange(date)}
               dateFormat="dd-MM-yyyy"
               placeholderText="Select date"
               className="w-full px-4 py-2 text-lg border border-gray-300 rounded-lg focus:outline-none text-center"
@@ -87,6 +128,7 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
         </div>
       </div>
       <h4>Remaining Day Off: {employee.remainingDayOffs}</h4>
+      <h4>New Remaining Day Off: {newRemainingDays}</h4>
 
       <hr className="my-6 border-gray-300" />
       <button
