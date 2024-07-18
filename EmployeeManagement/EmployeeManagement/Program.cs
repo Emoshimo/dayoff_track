@@ -70,8 +70,7 @@ if (app.Environment.IsDevelopment())
     {
         policy.WithOrigins("http://localhost:3000", "https://localhost:7237")
        .AllowAnyMethod()
-       .AllowAnyHeader()
-       .WithHeaders(HeaderNames.ContentType);
+       .AllowAnyHeader();
     });
 }
 
