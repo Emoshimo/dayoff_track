@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { MdAdminPanelSettings, MdLogout } from "react-icons/md";
@@ -31,6 +31,26 @@ const NavBar = () => {
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 845) {
+        // 768px is the breakpoint for 'sm' in Tailwind CSS
+        setIsExpanded(false);
+      } else {
+        setIsExpanded(true);
+      }
+    };
+
+    // Set the initial value based on the current window width
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <div
       className={`flex h-screen transition-all duration-1000 ${
