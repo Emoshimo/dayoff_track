@@ -105,7 +105,7 @@ const DepartmentList = () => {
                       <input
                         type="number"
                         value={editedDepartment?.managerId}
-                        onChange={(e) => handleChange(e, "surname")}
+                        onChange={(e) => handleChange(e, "managerId")}
                         className="border p-1 text-center w-full"
                       />
                     ) : (
