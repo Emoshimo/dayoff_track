@@ -101,7 +101,7 @@ namespace EmployeeManagement.Controllers
             var endDateOnly = new DateOnly(parsedEndDate.Year, parsedEndDate.Month, parsedEndDate.Day);
             try
             {
-                var response = await _employeeRepository.RequestDayOff(id, startDateOnly, endDateOnly);
+                var response = await _employeeRepository.RequestDayOff(id, model.DayOffType, startDateOnly, endDateOnly);
                 if (response == null)
                 {
                     return NotFound();
@@ -113,7 +113,6 @@ namespace EmployeeManagement.Controllers
                 return StatusCode(500, $"An error occured while processing the request: {ex.InnerException}");
             }
         }
-
 
         [HttpPatch("dayoff/cancel")]
         [Authorize(Roles ="User")]

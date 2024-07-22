@@ -17,6 +17,7 @@ namespace EmployeeManagement.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<EmployeeRole > EmployeeRoles { get; set; }
         public DbSet<DayOffRequest> DayOffRequests { get; set; }
+        public DbSet<DayOffType> DayOffTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -8,6 +8,7 @@ using EmployeeManagement.Repositories;
 using Swashbuckle.AspNetCore.Filters;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Services;
+using Npgsql;
 
 
 
@@ -53,6 +54,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
+builder.Services.AddScoped<IDayOffTypesRepository, DayOffTypesRepository>();
 
 
 

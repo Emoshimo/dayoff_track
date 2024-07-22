@@ -44,7 +44,7 @@ namespace EmployeeManagement.Repositories
             }
             return await _context.Employees.FindAsync(employee.ManagerId);
         }
-        public async Task<DayOffRequest> RequestDayOff(int employeeId, DateOnly startDate, DateOnly endDate)
+        public async Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
             if (employee == null)
@@ -67,6 +67,7 @@ namespace EmployeeManagement.Repositories
                 EndDate = endDate,
                 PendingManagerId = manager?.Id,
                 Status = "Pending",
+                DayOffTypeId = dayOffType
             };
             if (manager == null)
             {

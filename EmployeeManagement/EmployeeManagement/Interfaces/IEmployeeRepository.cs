@@ -8,7 +8,7 @@ namespace EmployeeManagement.Interfaces
     {
         Task<IEnumerable<ClientEmployee>> GetEmployees();
         Task<Employee> GetManagerAsync(int employeeId);
-        Task<DayOffRequest> RequestDayOff(int employeeId, DateOnly startDate, DateOnly endDate);
+        Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate);
         Task<bool> CancelDayOffRequest(IEnumerable<int> requestIds);
         Task<ClientEmployee> GetEmployeeById(int id);
         Task<IEnumerable<DayOffRequest>> GetPendingDayOffs(int employeeId);
