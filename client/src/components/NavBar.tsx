@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { MdAdminPanelSettings, MdLogout } from "react-icons/md";
 import { FaCalendarDay, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { HiOfficeBuilding } from "react-icons/hi";
-import { FaCodePullRequest } from "react-icons/fa6";
+import { FaCodePullRequest, FaUser } from "react-icons/fa6";
 
 import useEmployeeStore from "../stores/employeeStore";
 
@@ -74,8 +74,8 @@ const NavBar = () => {
                 }`
               }
             >
-              <MdAdminPanelSettings style={{ width: "32px", height: "32px" }} />
-              {isExpanded && "Employee"}
+              <FaUser style={{ width: "32px", height: "32px" }} />
+              {isExpanded && "Profile"}
             </NavLink>
             <NavLink
               to="/dashboard/dayoff"
@@ -113,7 +113,7 @@ const NavBar = () => {
                   }
                 >
                   <HiOfficeBuilding style={{ width: "32px", height: "32px" }} />
-                  {isExpanded && "Create Department"}
+                  {isExpanded && "Departments"}
                 </NavLink>
                 <NavLink
                   to="/dashboard/register-employee"
@@ -126,7 +126,7 @@ const NavBar = () => {
                   <MdAdminPanelSettings
                     style={{ width: "32px", height: "32px" }}
                   />
-                  {isExpanded && "Register Employee"}
+                  {isExpanded && "Employees"}
                 </NavLink>
               </>
             )}
