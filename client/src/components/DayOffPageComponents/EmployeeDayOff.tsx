@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PopUp from "../PopUp";
-import { requestDayOff } from "../../api";
-import { ClientEmployee } from "../../interfaces/interfaces";
+import { fetchDayOffTypes, requestDayOff } from "../../api";
+import { ClientEmployee, DayOffType } from "../../interfaces/interfaces";
 
 interface EmployeeDayOffProps {
   employee: ClientEmployee;
@@ -17,6 +17,9 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
   const token = localStorage.getItem("token");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [dayOffTypes, setDayOffTypes] = useState<DayOffType[]>([]);
+  const [selectedDayOffTypeId, setSelectedDayOffTypeId] = useState<number | null>(null);
+
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [newRemainingDays, setNewRemainingDays] = useState<number | null>(
     (employee.remainingDayOffs! - 1) | 0
@@ -72,6 +75,10 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
       showError("Invalid dates.");
       return;
     }
+    if (!selectedDayOffTypeId) {
+      showError("You have to choose a day off type.");
+      return;
+    } 
     const startOfDay = new Date(startDate);
     const endOfDay = new Date(endDate);
 
@@ -88,6 +95,7 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
       token!,
       startFullDate,
       endFullDate,
+      selectedDayOffTypeId,
       showError
     );
     if (response?.success) {
@@ -95,6 +103,20 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
     }
     console.log(response);
   };
+
+  const fetchTypes = async () => {
+    const result = await fetchDayOffTypes(showError);
+    if (result.success) {
+      console.log(result.data);
+      setDayOffTypes(result.data!);
+    } 
+  };
+
+  useEffect(() => {
+    fetchTypes();
+  }, [])
+  
+
   return (
     <div className="max-w-md p-6 bg-white rounded-lg shadow-lg text-center">
       <div className="flex flex-row gap-4">
@@ -126,6 +148,23 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
             />
           </div>
         </div>
+      </div>
+      <div className="block mb-4">
+        <label className="block mb-2 text-lg font-bold text-gray-800">
+          Day Off Type:
+        </label>
+        <select
+          value={selectedDayOffTypeId || ""}
+          onChange={(e) => setSelectedDayOffTypeId(Number(e.target.value))}
+          className="w-full px-4 py-2 text-lg border border-gray-300 rounded-lg focus:outline-none"
+        >
+          <option value="" disabled>Select Day Off Type</option>
+          {dayOffTypes.map((type) => (
+            <option key={type.id} value={type.id}>
+              {type.name}
+            </option>
+          ))}
+        </select>
       </div>
       <h4>Remaining Day Off: {employee.remainingDayOffs}</h4>
       <h4>New Remaining Day Off: {newRemainingDays}</h4>

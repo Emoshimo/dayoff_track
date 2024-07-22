@@ -4,6 +4,7 @@ import {
   ClientEmployee,
   DayOffRequest,
   DayOffRequestForManager,
+  DayOffType,
   IDepartment,
   IEmployee,
   ILoginDTO,
@@ -275,6 +276,7 @@ export const requestDayOff = async (
   token: string,
   startDate: string,
   endDate: string,
+  dayOffTypeId: number,
   showError: (message: string) => void
 ): Promise<ApiResponse<DayOffRequest> | null> => {
   try {
@@ -454,3 +456,14 @@ export const editEmployee = async (
     return handleApiError(error, showError);
   }
 };
+
+export const fetchDayOffTypes = async (
+  showError: (message: string) => void
+): Promise<ApiResponse<DayOffType[]>> => {
+  try {
+    const response = await axiosInstance.get("/DayOffTypes");
+    return {success: true, data: response.data}
+  } catch (error) {
+    return handleApiError(error, showError);
+  }
+}

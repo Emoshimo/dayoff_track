@@ -49,6 +49,11 @@ export interface DayOffRequestForManager {
   endDate: Date;
 }
 
+export interface DayOffType {
+  id: number,
+  name: string
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
