@@ -1,72 +1,31 @@
-import React, { useState } from "react";
-import PopUp from "../PopUp";
+import React from "react";
+import RegisterDepartment from "./RegisterDepartment";
 
-const CreateDepartmentModal = () => {
-  const [popupMessage, setPopupMessage] = useState<string | null>(null);
+interface CreateDepartmentProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  const showError = (message: string) => {
-    setPopupMessage(message);
-  };
-
-  const handleClosePopup = () => {
-    setPopupMessage(null);
-  };
-  const fetchPossibleManagers = () => {};
-  const [departmentData, setDepartmentData] = useState({
-    Name: "",
-    ManagerId: 0,
-  });
-
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setDepartmentData({ ...departmentData, [name]: value });
+const CreateDepartmentModal: React.FC<CreateDepartmentProps> = ({
+  isOpen,
+  onClose,
+}) => {
+  if (!isOpen) {
+    return null;
+  }
+  const handleBackgroundCLick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
   };
 
   return (
-    <div className="w-1/2 mx-auto p-8 bg-primary rounded-xl text-slate-200 shadow-md">
-      <div className="flex flex-col items-center gap-1">
-        <h2 className="font-bold text-2xl">Create Department</h2>
-
-        <div className="w-full text-primary">
-          <label className="text-slate-200" htmlFor="name">
-            Department Name:
-          </label>
-          <input
-            id="name"
-            name="Name"
-            className="p-2 border rounded-lg w-full text-lg"
-            type="text"
-            placeholder="Enter Your Name"
-            value={departmentData.Name}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="w-full text-primary">
-          <label className="text-slate-200" htmlFor="managerId">
-            ManagerId:
-          </label>
-          <input
-            id="managerId"
-            name="ManagerId"
-            className="p-2 border rounded-lg w-full text-lg"
-            type="number"
-            placeholder="Enter Your Surname"
-            value={departmentData.ManagerId}
-            onChange={handleChange}
-          />
-        </div>
-
-        <button
-          className={`bg-second text-white rounded hover:bg-blue-600 
-            lg:px-32 lg:py-3 lg:text-xl
-            sm:px-6 sm:py-1 sm:text-lg sm:rounded-xl `}
-        >
-          Register
-        </button>
-        {popupMessage && (
-          <PopUp message={popupMessage} onClose={handleClosePopup} />
-        )}
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40"
+      onClick={handleBackgroundCLick}
+    >
+      <div className="flex justify-center rounded-lg w-full max-w-xl">
+        <RegisterDepartment />
       </div>
     </div>
   );
