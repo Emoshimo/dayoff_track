@@ -58,7 +58,11 @@ namespace EmployeeManagement.Repositories
                 throw new InvalidOperationException("Insufficient remaining day offs.");
 
             }
-            employee.RemainingDayOffs = employee.RemainingDayOffs - totalDayOff;
+            if (dayOffType == 2)
+            {
+                employee.RemainingDayOffs = employee.RemainingDayOffs - totalDayOff;
+
+            }
             var manager = await GetManagerAsync(employeeId);
             var dayOffRequest = new DayOffRequest
             {
