@@ -76,6 +76,7 @@ export const register = async (
       return { success: false, message: response.data.message };
     }
   } catch (error) {
+    console.log(error);
     return handleApiError(error, showError);
   }
 };
@@ -282,7 +283,7 @@ export const requestDayOff = async (
   try {
     const response = await axiosInstance.post(
       `/Employee/dayoff/${id}`,
-      { startDate, endDate },
+      { startDate, endDate, dayOffTypeId },
       {
         headers: {
           Authorization: `Bearer ${token}`,

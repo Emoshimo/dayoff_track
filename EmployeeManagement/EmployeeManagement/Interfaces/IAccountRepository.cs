@@ -5,7 +5,7 @@ namespace EmployeeManagement.Interfaces
 {
     public interface IAccountRepository
     {
-        Task<GeneralResponse> CreateEmployeeAsync(EmployeeDTO employeeDTO);
+        Task<GeneralResponse> CreateEmployeeAsync(EmployeeDTO employeeDTO, DateOnly startDate);
         Task<LoginResponse> Login(LoginDTO loginDTO);
         Task<ClientEmployee> EditEmployee(ClientEmployee employee);
     }

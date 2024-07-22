@@ -5,6 +5,7 @@ export interface IEmployee {
   EmailAddress: string;
   Password: string;
   ConfirmPassword: string;
+  StartDate: string | null
 }
 export interface ClientEmployee {
   id?: number;

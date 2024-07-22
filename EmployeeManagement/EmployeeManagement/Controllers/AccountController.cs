@@ -5,6 +5,7 @@ using EmployeeManagement.Interfaces;
 using EmployeeManagement.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace EmployeeManagement.Controllers
 {
@@ -21,9 +22,15 @@ namespace EmployeeManagement.Controllers
 
         [HttpPost("register")]
         [Authorize(Roles="Admin")]
-        public async Task<IActionResult> Register(EmployeeDTO employeeDTO) 
+        public async Task<IActionResult> Register([FromBody]EmployeeDTO employeeDTO) 
         {
-            var response = await _accountRepository.CreateEmployeeAsync(employeeDTO);
+            if (!DateTime.TryParseExact(employeeDTO.StartDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedStartDate))
+            {
+                return BadRequest("Invalid date format. Expected format: yyyy-MM-dd.");
+            }
+            var startDateOnly = new DateOnly(parsedStartDate.Year, parsedStartDate.Month, parsedStartDate.Day);
+
+            var response = await _accountRepository.CreateEmployeeAsync(employeeDTO, startDateOnly);
             if (!response.flag) 
             {
                 return BadRequest(response.Message);

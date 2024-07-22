@@ -21,13 +21,14 @@ namespace EmployeeManagement.Repositories
             _configuration = configuration;
         }
 
-        public async Task<GeneralResponse> CreateEmployeeAsync(EmployeeDTO employeeDTO)
+        public async Task<GeneralResponse> CreateEmployeeAsync(EmployeeDTO employeeDTO, DateOnly startDate)
         {
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(employeeDTO.Password);
             if (!DoPasswordsMatch(employeeDTO.Password, employeeDTO.ConfirmPassword)) 
             {
                 return new GeneralResponse(false, "Passwords do not match.");
             }
+
             Employee newEmployee = new Employee()
             {
                 EmailAddress = employeeDTO.EmailAddress,
@@ -35,6 +36,7 @@ namespace EmployeeManagement.Repositories
                 Name = employeeDTO.Name,
                 Surname = employeeDTO.Surname,
                 RemainingDayOffs = employeeDTO.DayOffNumber,
+                StartDate = startDate
             };
 
             await _context.Employees.AddAsync(newEmployee);

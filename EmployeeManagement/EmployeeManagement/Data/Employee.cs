@@ -9,5 +9,6 @@
         public string Surname { get; set; }
         public string EmailAddress { get; set; }
         public string PasswordHashed { get; set; }
+        public DateOnly? StartDate { get; set; }
     }
 }

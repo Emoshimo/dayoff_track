@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { IEmployee } from "../interfaces/interfaces";
 import PopUp from "./PopUp";
 import { register } from "../api";
+import DatePicker from "react-datepicker";
 
 const Register = () => {
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState<Date>(new Date());
   const token = localStorage.getItem("token");
   const showError = (message: string) => {
     setPopupMessage(message);
@@ -20,6 +22,7 @@ const Register = () => {
     EmailAddress: "",
     Password: "",
     ConfirmPassword: "",
+    StartDate: null
   });
 
   const [showPassword, setShowPassword] = useState(false); // State to toggle showing/hiding password
@@ -42,6 +45,7 @@ const Register = () => {
       EmailAddress,
       Password,
       ConfirmPassword,
+      StartDate
     } = employee;
 
     // Check if any of the fields are empty
@@ -51,7 +55,8 @@ const Register = () => {
       DayOffNumber <= 0 || // Assuming DayOffNumber should be greater than 0
       !EmailAddress.trim() ||
       !Password.trim() ||
-      !ConfirmPassword.trim()
+      !ConfirmPassword.trim() ||
+      !StartDate
     ) {
       return false;
     }
@@ -63,10 +68,25 @@ const Register = () => {
 
     return true;
   };
+  const onDateChange = (date: Date | null) => {
+    setStartDate(date!);
+    const startOfDay = new Date(date!);
+  
+      const startYear = startOfDay.getFullYear();
+      const startMonth = String(startOfDay.getMonth() + 1).padStart(2, "0");
+      const startDay = String(startOfDay.getDate()).padStart(2, "0");
+      const startFullDate = `${startYear}-${startMonth}-${startDay}`;
+      console.log(startFullDate);
 
+    setEmployee((emp) => ({
+      ...emp,
+      StartDate: startFullDate 
+    }));
+  }
   const handleSubmit = async () => {
     if (isFormValid()) {
-      const registerResponse = await register(employee, token!, showError);
+
+      const registerResponse = await register(employee,  token!, showError);
       setPopupMessage(registerResponse.message || null);
     } else {
       setPopupMessage("Form is Invalid!");
@@ -186,6 +206,13 @@ const Register = () => {
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
+          <DatePicker
+            selected={startDate}
+            dateFormat="dd-MM-yyyy"               
+            placeholderText="Select Start Date"
+            className="w-full px-4 py-2 text-lg border border-gray-300 rounded-lg focus:outline-none text-center"
+            onChange={onDateChange}
+          />
         </div>
 
         <button
