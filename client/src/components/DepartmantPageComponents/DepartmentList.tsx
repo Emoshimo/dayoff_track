@@ -58,6 +58,10 @@ const DepartmentList = () => {
     setEditingDepartmentId(0);
     setEditedDepartment({});
   };
+  const handleCancelClick = () => {
+    setEditedDepartment({});
+    setEditingDepartmentId(0);
+  };
   useEffect(() => {
     getDepartments();
   }, []);
@@ -83,48 +87,58 @@ const DepartmentList = () => {
                     index % 2 === 0 ? "" : "bg-gray-100"
                   }`}
                 >
-                  <td className="border px-4 py-2">{department.id}</td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-4 py-2 w-24">{department.id}</td>
+                  <td className="border px-4 py-2 w-32">
                     {editingDepartmentId === department.id ? (
                       <input
                         type="text"
                         value={editedDepartment?.name}
                         onChange={(e) => handleChange(e, "name")}
-                        className="border p-1 text-center"
+                        className="border p-1 text-center w-full"
                       />
                     ) : (
                       department.name
                     )}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-4 py-2 w-32">
                     {editingDepartmentId === department.id ? (
                       <input
                         type="number"
                         value={editedDepartment?.managerId}
                         onChange={(e) => handleChange(e, "surname")}
-                        className="border p-1 text-center"
+                        className="border p-1 text-center w-full"
                       />
                     ) : (
                       department.managerId
                     )}
                   </td>
 
-                  <td className="border px-4 py-2">
-                    {editingDepartmentId === department.id ? (
-                      <button
-                        onClick={handleSaveClick}
-                        className="bg-green-500 text-white w-16 px-4 py-2 rounded hover:bg-green-600"
-                      >
-                        Save
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEditClick(department)}
-                        className="bg-primary text-white w-16 px-4 py-2 rounded hover:bg-hover"
-                      >
-                        Edit
-                      </button>
-                    )}
+                  <td className="border border-gray-300 py-2 w-32">
+                    <div className="w-full overflow-hidden">
+                      {editingDepartmentId === department.id ? (
+                        <div className="">
+                          <button
+                            onClick={handleSaveClick}
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={handleCancelClick}
+                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleEditClick(department)}
+                          className="bg-primary text-white px-4 py-2 rounded hover:bg-gray-600"
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
