@@ -126,46 +126,52 @@ const EmployeeList = () => {
                     index % 2 === 0 ? "" : "bg-slate-100"
                   }`}
                 >
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2 w-24">
                     {item.id}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2 w-32">
                     {editingEmployeeId === item.id ? (
                       <input
                         type="text"
                         value={editedEmployee?.name || ""}
                         onChange={(e) => handleChange(e, "name")}
                         className="border p-1 text-center w-full"
+                        style={{ maxWidth: "100%" }}
                       />
                     ) : (
                       item.name
                     )}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2 w-32">
                     {editingEmployeeId === item.id ? (
                       <input
                         type="text"
                         value={editedEmployee?.surname || ""}
                         onChange={(e) => handleChange(e, "surname")}
                         className="border p-1 text-center w-full"
+                        style={{ maxWidth: "100%" }}
                       />
                     ) : (
                       item.surname
                     )}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2 w-32">
                     {editingEmployeeId === item.id ? (
                       <input
                         type="number"
                         value={editedEmployee?.remainingDayOffs || ""}
                         onChange={(e) => handleChange(e, "remainingDayOffs")}
                         className="border p-1 text-center w-full"
+                        style={{
+                          MozAppearance: "textfield",
+                          WebkitAppearance: "none",
+                        }}
                       />
                     ) : (
                       item.remainingDayOffs
                     )}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2 w-24">
                     {editingEmployeeId === item.id ? (
                       <select
                         value={editedEmployee?.managerId || ""}
@@ -183,30 +189,32 @@ const EmployeeList = () => {
                       item.managerId || "None"
                     )}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {editingEmployeeId === item.id ? (
-                      <div className="flex gap-2 justify-center">
+                  <td className="border border-gray-300 py-2 w-32">
+                    <div className="w-full overflow-hidden">
+                      {editingEmployeeId === item.id ? (
+                        <div className="">
+                          <button
+                            onClick={handleSaveClick}
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={handleCancelClick}
+                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
                         <button
-                          onClick={handleSaveClick}
-                          className="bg-green-500 text-white w-16 px-4 py-2 rounded hover:bg-green-600"
+                          onClick={() => handleEditClick(item)}
+                          className="bg-primary text-white px-4 py-2 rounded hover:bg-gray-600"
                         >
-                          Save
+                          Edit
                         </button>
-                        <button
-                          onClick={handleCancelClick}
-                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => handleEditClick(item)}
-                        className="bg-primary text-white w-16 px-4 py-2 rounded hover:bg-gray-600"
-                      >
-                        Edit
-                      </button>
-                    )}
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
