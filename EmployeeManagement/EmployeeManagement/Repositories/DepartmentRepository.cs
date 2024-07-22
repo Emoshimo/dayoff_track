@@ -45,6 +45,25 @@ namespace EmployeeManagement.Repositories
                 return department;
         }
 
+        public async Task<DepartmentDTO> EditDepartment(DepartmentDTO department)
+        {
+            var target = await _context.Departments.FindAsync(department.Id);
+            if (target == null)
+            {
+                throw new InvalidOperationException("Target Department Not Found in Database");
+            }
+            target.Name = department.Name;
+            target.ManagerId = department.ManagerId;
+            await _context.SaveChangesAsync();
+            var returnDepartment = new DepartmentDTO
+            {
+                Id = department.Id,
+                ManagerId = department.ManagerId,
+                Name = department.Name,
+            };
+            return returnDepartment;
+        }
+
         public async Task<IEnumerable<DepartmentDTO>> GetAll()
         {
             var departments = await _context.Departments

@@ -14,6 +14,7 @@ namespace EmployeeManagement.Interfaces
         Task<bool> DeleteDepartment(int id);
         Task<GeneralResponse> SetManagerForDepartment(int departmentId, int managerId);
         Task<IEnumerable<DepartmentDTO>> GetDepartmentsWithoutManager();
+        Task<DepartmentDTO> EditDepartment(DepartmentDTO department);
 
     }
 }

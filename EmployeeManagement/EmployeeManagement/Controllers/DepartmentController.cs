@@ -18,7 +18,7 @@ namespace EmployeeManagement.Controllers
             _departmentRepository = departmentRepository;
         }
 
-        [HttpPost("department")]
+        [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateDepartment(DepartmentDTO departmentDTO) 
         {
@@ -45,6 +45,29 @@ namespace EmployeeManagement.Controllers
         {
             var response = await _departmentRepository.GetDepartmentsWithoutManager();
             return Ok(response);
+        }
+        [HttpPut("{id}")]
+        [Authorize(Roles ="Admin")]
+        public async Task<ActionResult<DepartmentDTO>> EditDepartment(DepartmentDTO department)
+        {
+            try
+            {
+                var response = await _departmentRepository.EditDepartment(department);
+                return Ok(response);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("You are not authorized.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch(Exception)
+            {
+                return StatusCode(500, "An unexpected error occurred. Please try again later.");
+
+            }
         }
 
     }
