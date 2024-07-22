@@ -77,6 +77,10 @@ const EmployeeList = () => {
     setEditingEmployeeId(0);
     setEditedEmployee({});
   };
+  const handleCancelClick = () => {
+    setEditedEmployee({});
+    setEditingEmployeeId(0);
+  };
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     field: string
@@ -181,12 +185,20 @@ const EmployeeList = () => {
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {editingEmployeeId === item.id ? (
-                      <button
-                        onClick={handleSaveClick}
-                        className="bg-green-500 text-white w-16 px-4 py-2 rounded hover:bg-green-600"
-                      >
-                        Save
-                      </button>
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          onClick={handleSaveClick}
+                          className="bg-green-500 text-white w-16 px-4 py-2 rounded hover:bg-green-600"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={handleCancelClick}
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     ) : (
                       <button
                         onClick={() => handleEditClick(item)}
