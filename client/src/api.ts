@@ -354,20 +354,19 @@ export const evaluateDayOff = async (
 
 export const createDepartment = async (
   iDepartment: IDepartment,
-  token: string
+  token: string,
+  showError: (message: string) => void
 ) => {
   try {
-    const response = await axiosInstance.post(
-      `/Admin/department`,
-      iDepartment,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axiosInstance.post(`/Department`, iDepartment, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response;
-  } catch (error) {}
+  } catch (error) {
+    return handleApiError(error, showError);
+  }
 };
 
 export const fetchDepartments = async (
@@ -393,6 +392,38 @@ export const fetchDepartments = async (
     return handleApiError(error, showError);
   }
 };
+export const editDepartment = async (
+  id: number,
+  editedDepartment: IDepartment,
+  token: string,
+  showError: (message: string) => void
+): Promise<ApiResponse<IDepartment>> => {
+  try {
+    const response = await axiosInstance.put(
+      `/Department/${id}`,
+      editedDepartment,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.status === 200) {
+      return {
+        success: true,
+        data: response.data,
+        message: "Department successfulyl edited.",
+      };
+    }
+    return {
+      success: false,
+      message: `Error Ocurred while editing Department, HTTP: ${response.status}`,
+    };
+  } catch (error) {
+    console.log(error);
+    return handleApiError(error, showError);
+  }
+};
 
 export const editEmployee = async (
   id: number,
@@ -400,7 +431,6 @@ export const editEmployee = async (
   token: string,
   showError: (message: string) => void
 ): Promise<ApiResponse<ClientEmployee>> => {
-  console.log(token);
   try {
     const response = await axiosInstance.patch(
       `/Account/edit/${id}`,

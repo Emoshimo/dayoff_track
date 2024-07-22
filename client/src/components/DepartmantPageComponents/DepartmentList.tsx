@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchDepartments } from "../../api";
+import { editDepartment, fetchDepartments } from "../../api";
 import { IDepartment } from "../../interfaces/interfaces";
 
 const DepartmentList = () => {
@@ -31,7 +31,33 @@ const DepartmentList = () => {
     setEditingDepartmentId(employee.id);
     setEditedDepartment(employee);
   };
-  const handleSaveClick = () => {};
+
+  const handleSaveClick = async () => {
+    try {
+      const response = await editDepartment(
+        editingDepartmentId!,
+        editedDepartment!,
+        token!,
+        showError
+      );
+      if (response.success) {
+        const index = departments.findIndex(
+          (emp: any) => emp.id === editingDepartmentId
+        );
+        if (index !== -1) {
+          // Create a new array with the updated employee
+          const updatedEmployees = [...departments];
+          updatedEmployees[index] = { ...editedDepartment };
+
+          // Update the state
+          setDepartments(updatedEmployees);
+        }
+      }
+      console.log(response);
+    } catch (error) {}
+    setEditingDepartmentId(0);
+    setEditedDepartment({});
+  };
   useEffect(() => {
     getDepartments();
   }, []);
