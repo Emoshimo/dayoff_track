@@ -330,7 +330,7 @@ export const evaluateDayOff = async (
   token: string,
   approved: boolean,
   showError: (message: string) => void
-): Promise<ApiResponse<DayOffRequestForManager[]>> => {
+): Promise<ApiResponse<DayOffRequestForManager>> => {
   try {
     const response = await axiosInstance.post(
       `/Manager/dayoff/${id}`,
@@ -339,11 +339,12 @@ export const evaluateDayOff = async (
         headers: { Authorization: `Bearer ${token}` },
       }
     );
+    console.log(response);
     if (response.status === 201) {
       return {
         success: true,
         data: response.data,
-        message: "Evaluation is done.",
+        message: `${approved} Evaluation is done.`,
       };
     }
     return { success: false, message: "Failed to evaluate request." };

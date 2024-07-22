@@ -5,7 +5,7 @@ import PopUp from "../PopUp";
 
 interface EmployeeDayOffItemProps {
   dayOffRequest: DayOffRequestForManager;
-  onStatusChange: (requestId: number, approved: boolean) => void;
+  onStatusChange: (requestId: number) => void;
 }
 
 const EmployeeDayOffItem: React.FC<EmployeeDayOffItemProps> = ({
@@ -23,17 +23,18 @@ const EmployeeDayOffItem: React.FC<EmployeeDayOffItemProps> = ({
   const { id, employeeName, employeeSurname, startDate, endDate } =
     dayOffRequest;
   const token = localStorage.getItem("token");
+
   const onClickApprove = async () => {
     const res = await evaluateDayOff(id, token!, true, showError);
     if (res?.success) {
-      onStatusChange(id, true);
-      console.log(res);
+      onStatusChange(id);
     }
   };
+
   const onClickReject = async () => {
     const res = await evaluateDayOff(id, token!, false, showError);
     if (res.success) {
-      onStatusChange(id, false);
+      onStatusChange(id);
     }
     console.log(res);
   };

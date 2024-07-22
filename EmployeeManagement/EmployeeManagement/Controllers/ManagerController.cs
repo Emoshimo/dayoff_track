@@ -19,7 +19,7 @@ namespace EmployeeManagement.Controllers
         // POST: api/Manager/dayoff/{id}
         [HttpPost("dayoff/{id}")]
         [Authorize(Roles = "Manager")]
-        public async Task<ActionResult<DayOffRequest>> EvaluateDayOff(int id, bool approved)
+        public async Task<ActionResult<DayOffRequest>> EvaluateDayOff(int id,[FromBody] bool approved)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace EmployeeManagement.Controllers
                 {
                     return NotFound();
                 }
-                return StatusCode(201, "Request Evaluated.");
+                return StatusCode(201, response);
             }
             catch (UnauthorizedAccessException)
             {

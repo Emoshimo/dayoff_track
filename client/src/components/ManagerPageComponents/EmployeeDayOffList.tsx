@@ -29,18 +29,10 @@ const EmployeeDayOffList = () => {
     fetchDayOffs();
   }, []);
 
-  const handleStatusChange = async (requestId: number, approved: boolean) => {
-    const response = await evaluateDayOff(
-      requestId,
-      token!,
-      approved,
-      showError
+  const handleStatusChange = async (requestId: number) => {
+    setDayOffRequests((prevRequests) =>
+      prevRequests.filter((request) => request.id !== requestId)
     );
-    if (response.success) {
-      setDayOffRequests((prevRequests) =>
-        prevRequests.filter((request) => request.id !== requestId)
-      );
-    }
   };
 
   return (

@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.Repositories
@@ -45,14 +46,14 @@ namespace EmployeeManagement.Repositories
                 throw new InvalidOperationException($"Day off request with ID {dayOffRequestId} cannot be evaluated as it is not pending.");
             }
             var evaluatingManager = await _context.Employees.FindAsync(dayOffRequest.PendingManagerId);
-            if (evaluatingManager.ManagerId != null)
+            if (evaluatingManager?.ManagerId != null)
             {
                 dayOffRequest.PendingManagerId = evaluatingManager.ManagerId;
             }
             else
             {
                 // If the evaluating manager has no manager, approve or reject the request
-                if (approved)
+                if (approved == true)
                 {
                     dayOffRequest.Status = "Approved";
                 }
