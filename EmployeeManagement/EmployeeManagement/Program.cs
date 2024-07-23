@@ -7,8 +7,8 @@ using Microsoft.OpenApi.Models;
 using EmployeeManagement.Repositories;
 using Swashbuckle.AspNetCore.Filters;
 using EmployeeManagement.Interfaces;
-using EmployeeManagement.Services;
-using Npgsql;
+using Quartz;
+using EmployeeManagement.Jobs;
 
 
 
@@ -55,6 +55,11 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
 builder.Services.AddScoped<IDayOffTypesRepository, DayOffTypesRepository>();
+builder.Services.AddScoped<IJobScheduleRepository, JobScheduleRepository>();
+
+// Quartz Configuration:
+
+
 
 
 

@@ -91,14 +91,17 @@ const DayOffList: React.FC<DayOffListProps> = ({ dayOffs }) => {
             ))}
           </tbody>
         </table>
-        <div className="flex flex-row justify-end mx-8">
-          <button
-            onClick={cancelPendingRequests}
-            className="bg-rejected hover:bg-hoverReject px-4 py-2 mt-2 text-3xl"
-          >
-            Cancel
-          </button>
-        </div>
+        {
+          dayOffList.length > 0 && (<div className="flex flex-row justify-end mx-8">
+            <button
+              onClick={cancelPendingRequests}
+              className="bg-rejected hover:bg-hoverReject px-4 py-2 mt-2 text-3xl"
+            >
+              Cancel
+            </button>
+          </div>)
+        }
+
       </div>
     </div>
   );
