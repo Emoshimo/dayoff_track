@@ -7,8 +7,6 @@ using Microsoft.OpenApi.Models;
 using EmployeeManagement.Repositories;
 using Swashbuckle.AspNetCore.Filters;
 using EmployeeManagement.Interfaces;
-using Quartz;
-using EmployeeManagement.Jobs;
 using EmployeeManagement.Services;
 
 
@@ -95,7 +93,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-/* Schedule jobs from the database
+/* Schedule jobs from the database for Quartz
 using (var scope = app.Services.CreateScope())
 {
     var serviceProvider = scope.ServiceProvider;
