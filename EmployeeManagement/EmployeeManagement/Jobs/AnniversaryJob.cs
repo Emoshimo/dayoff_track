@@ -16,7 +16,7 @@ namespace EmployeeManagement.Jobs
             using var scope = _serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var today = DateOnly.FromDateTime(DateTime.Today);
-            //Console.WriteLine("Hello", DateTime.Now);
+            Console.WriteLine("Hello", DateTime.Now);
             var employees = await dbContext.Employees
                 .Where(e => e.StartDate.HasValue && e.StartDate.Value.Day == today.Day && e.StartDate.Value.Month == today.Month)
                 .ToListAsync();

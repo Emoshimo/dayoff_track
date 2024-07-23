@@ -9,6 +9,7 @@ using Swashbuckle.AspNetCore.Filters;
 using EmployeeManagement.Interfaces;
 using Quartz;
 using EmployeeManagement.Jobs;
+using EmployeeManagement.Services;
 
 
 
@@ -57,7 +58,12 @@ builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
 builder.Services.AddScoped<IDayOffTypesRepository, DayOffTypesRepository>();
 builder.Services.AddScoped<IJobScheduleRepository, JobScheduleRepository>();
 
+//Register Hosted Service
+builder.Services.AddHostedService<AnniversaryHostedService>();
+
+
 // Quartz Configuration:
+//builder.Services.QuartzConfigurationServices();
 
 
 
@@ -88,4 +94,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+
+/* Schedule jobs from the database
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    await QuartzConfiguration.ScheduleFromDataBase(serviceProvider);
+}
+*/
 app.Run();

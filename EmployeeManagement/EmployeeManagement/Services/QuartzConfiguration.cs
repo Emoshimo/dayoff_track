@@ -14,8 +14,12 @@ namespace EmployeeManagement.Services
         {
             services.AddQuartz(q =>
             {
+                q.UseMicrosoftDependencyInjectionJobFactory(); // Use DI job factory
+
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+            services.AddTransient<AnniversaryJob>();
+
         }
 
         public static async Task ScheduleFromDataBase(IServiceProvider serviceProvider)
@@ -26,6 +30,7 @@ namespace EmployeeManagement.Services
             var jobSchedules = await jobScheduleRepository.GetJobSchedulesAsync();
             foreach (var jobSchedule in jobSchedules) 
             {
+                Console.WriteLine(jobSchedule.JobKey);
                 IJobDetail jobDetail = jobSchedule.JobKey switch
                 {
                     "AnniversaryJob" => JobBuilder.Create<AnniversaryJob>()
@@ -33,7 +38,7 @@ namespace EmployeeManagement.Services
                     .Build(),
 
                     _ => throw new ArgumentException($"Unknown Job Key: {jobSchedule.JobKey}")
-                };
+                }; 
 
                 ITrigger trigger = TriggerBuilder.Create()
                     .WithIdentity($"{jobSchedule.JobKey}.trigger")
@@ -42,9 +47,10 @@ namespace EmployeeManagement.Services
                     .Build();
 
                 await scheduler.ScheduleJob(jobDetail, trigger);
-                Console.WriteLine("Hello", DateTime.Now, jobSchedule.JobKey);
 
             }
+            Console.WriteLine("Hello Initialization is finished!");
+            Console.WriteLine(jobSchedules.Count());
 
         }
     }
