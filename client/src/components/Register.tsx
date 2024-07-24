@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IEmployee } from "../interfaces/interfaces";
 import PopUp from "./PopUp";
-import { register } from "../api";
+import { register } from "../apicalls/api";
 import DatePicker from "react-datepicker";
 
 const Register = () => {

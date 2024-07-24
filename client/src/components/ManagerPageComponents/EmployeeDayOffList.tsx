@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { evaluateDayOff, fetchDayOffsForManager } from "../../api";
+import { evaluateDayOff, fetchDayOffsForManager } from "../../apicalls/api";
 import { DayOffRequestForManager } from "../../interfaces/interfaces";
 import EmployeeDayOffItem from "./EmployeeDayOffItem";
 

@@ -9,7 +9,7 @@ import {
   IEmployee,
   ILoginDTO,
   LoginResponse,
-} from "./interfaces/interfaces";
+} from "../interfaces/interfaces";
 
 const baseURL = "https://localhost:7237/api";
 

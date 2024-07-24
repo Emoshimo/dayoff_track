@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { DayOffRequestForManager } from "../../interfaces/interfaces";
-import { evaluateDayOff } from "../../api";
+import { evaluateDayOff } from "../../apicalls/api";
 import PopUp from "../PopUp";
 
 interface EmployeeDayOffItemProps {

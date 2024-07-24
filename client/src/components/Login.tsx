@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ILoginDTO } from "../interfaces/interfaces";
-import { login } from "../api";
+import { login } from "../apicalls/api";
 import { useNavigate } from "react-router-dom";
 import PopUp from "./PopUp";
 import vector from "../utils/images/vector.jpg";

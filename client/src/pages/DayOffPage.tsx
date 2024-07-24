@@ -5,7 +5,7 @@ import {
   fetchApprovedEmployeeDayOffs,
   fetchPendingEmployeeDayOffs,
   fetchRejectedEmployeeDayOffs,
-} from "../api";
+} from "../apicalls/api";
 import DayOffList from "../components/DayOffPageComponents/DayOffList";
 import { DayOffRequest } from "../interfaces/interfaces";
 import DayOffModal from "../components/DayOffPageComponents/DayOffModal";

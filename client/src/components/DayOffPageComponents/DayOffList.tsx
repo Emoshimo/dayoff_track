@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DayOffRequest } from "../../interfaces/interfaces";
 import { getTitleBackgroundColor } from "../../utils/colorUtils";
-import { cancelDayOff } from "../../api";
+import { cancelDayOff } from "../../apicalls/api";
 
 interface DayOffListProps {
   dayOffs: DayOffRequest[];

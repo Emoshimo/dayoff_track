@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { editDepartment, fetchDepartments } from "../../api";
+import { editDepartment, fetchDepartments } from "../../apicalls/api";
 import { IDepartment } from "../../interfaces/interfaces";
 
 const DepartmentList = () => {
