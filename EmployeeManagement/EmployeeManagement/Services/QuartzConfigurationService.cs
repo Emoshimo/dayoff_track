@@ -10,7 +10,6 @@ namespace EmployeeManagement.Services
         {
             services.AddQuartz(q =>
             {
-                q.UseMicrosoftDependencyInjectionJobFactory();
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             services.AddTransient<EmailNotificationJob>();
@@ -19,7 +18,7 @@ namespace EmployeeManagement.Services
         public static async Task ScheduleFromDataBase(IServiceProvider serviceProvider)
         {
             var schedulerFactory = serviceProvider.GetService<ISchedulerFactory>();
-            var scheduler = await schedulerFactory.GetScheduler();
+            var scheduler = await schedulerFactory!.GetScheduler();
             var jobScheduleRepository = serviceProvider.GetRequiredService<IJobScheduleRepository>();
 
             var jobSchedules = await jobScheduleRepository.GetJobSchedulesAsync();
