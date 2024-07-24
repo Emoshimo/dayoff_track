@@ -56,6 +56,14 @@ export interface DayOffType {
   name: string
 }
 
+export interface JobSchedule {
+  id: number,
+  jobKey: string,
+  cronExpression: string,
+  isActive: boolean,
+  group: string
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;

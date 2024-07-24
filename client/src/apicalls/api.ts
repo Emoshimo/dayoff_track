@@ -29,7 +29,7 @@ export const handleApiError = <T>(
       message =
         "Network error: Unable to reach the server. Please try again later.";
     } else {
-      message = `HTTP error: ${error.response.status}. ${error.response.data.message}.`;
+      message = `HTTP error: ${error.response.status}. ${error.response.data}.`;
     }
   } else {
     message = "An unexpected error occurred. Please try again.";
