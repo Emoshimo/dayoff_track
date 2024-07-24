@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PopUp from "../PopUp";
-import { createDepartment } from "../../apicalls/api";
+import { createDepartment } from "../../apicalls/departmentApi";
 import { IDepartment } from "../../interfaces/interfaces";
 
 const RegisterDepartment = () => {
