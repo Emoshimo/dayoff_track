@@ -74,7 +74,7 @@ namespace EmployeeManagement.Controllers
         {
             try
             {
-                var updatedSchedule = _jobScheduleRepository.UpdateJobSchedule(jobSchedule);
+                var updatedSchedule = await _jobScheduleRepository.UpdateJobSchedule(jobSchedule);
                 return Ok(updatedSchedule);
             }
             catch (InvalidCastException ex) 
