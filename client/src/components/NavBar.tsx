@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { MdAdminPanelSettings, MdLogout } from "react-icons/md";
+import { MdAdminPanelSettings, MdLogout, MdSchedule  } from "react-icons/md";
 import { FaCalendarDay, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { HiOfficeBuilding } from "react-icons/hi";
 import { FaCodePullRequest, FaUser } from "react-icons/fa6";
@@ -127,6 +127,19 @@ const NavBar = () => {
                     style={{ width: "32px", height: "32px" }}
                   />
                   {isExpanded && "Employees"}
+                </NavLink>
+                <NavLink 
+                to="/dashboard/jobschedules"
+                className={({isActive}) => 
+                  `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
+                    isActive ? "bg-second" : ""
+                      }`
+                  }
+                >
+                  <MdSchedule
+                    style={{width: "32px", height: "32px"}}
+                  />
+                  {isExpanded && "Job Schedules"}
                 </NavLink>
               </>
             )}

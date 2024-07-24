@@ -9,6 +9,7 @@ import ManagerPage from "./pages/ManagerPage";
 import RegisterEmployeePage from "./pages/EmployeeManagementPage";
 import CreateDepartmentPage from "./pages/DepartmentPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import JobSchedulePage from "./pages/JobSchedulePage";
 
 function App() {
   return (
@@ -27,6 +28,10 @@ function App() {
               <Route
                 path="register-employee"
                 element={<RegisterEmployeePage />}
+              ></Route>
+              <Route
+                path="jobschedules"
+                element={<JobSchedulePage />}
               ></Route>
             </Route>
             <Route element={<ProtectedRoute requiredRole="Manager" />}>
