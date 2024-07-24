@@ -6,7 +6,7 @@ namespace EmployeeManagement.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DayOffTypesController : Controller
+    public class DayOffTypesController : ControllerBase
     {
         private readonly IDayOffTypesRepository _dayOffTypesRepository;
 

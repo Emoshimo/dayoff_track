@@ -2,7 +2,6 @@ using EmployeeManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using EmployeeManagement.Repositories;
 using Swashbuckle.AspNetCore.Filters;
@@ -55,16 +54,14 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
 builder.Services.AddScoped<IDayOffTypesRepository, DayOffTypesRepository>();
 builder.Services.AddScoped<IJobScheduleRepository, JobScheduleRepository>();
+builder.Services.AddScoped<IEmailRepository, EmailRepository>();
 
 //Register Hosted Service
 builder.Services.AddHostedService<AnniversaryHostedService>();
 
 
 // Quartz Configuration:
-//builder.Services.QuartzConfigurationServices();
-
-
-
+builder.Services.ConfigureQuartz();
 
 
 // Ending Custom Configurations
@@ -93,11 +90,11 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-/* Schedule jobs from the database for Quartz
+//Schedule jobs from the database for Quartz
 using (var scope = app.Services.CreateScope())
 {
     var serviceProvider = scope.ServiceProvider;
-    await QuartzConfiguration.ScheduleFromDataBase(serviceProvider);
+    await QuartzConfigurationService.ScheduleFromDataBase(serviceProvider);
 }
-*/
+
 app.Run();

@@ -21,7 +21,7 @@ namespace EmployeeManagement.Services
         {
             _logger.LogInformation("Anniversary Hosted Service starting.");
             // Schedule the task to run once a day at a specific time
-            var firstRunTime = DateTime.Today.AddHours(13).AddMinutes(45); // For example, run at 13:45 AM
+            var firstRunTime = DateTime.Today.AddHours(13).AddMinutes(45); // For example, run at 13:45
             var currentTime = DateTime.Now;
             var initialDelay = firstRunTime > currentTime
                 ? firstRunTime - currentTime

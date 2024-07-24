@@ -1,10 +1,7 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using static EmployeeManagement.DTO.ServiceResponses;
 
 namespace EmployeeManagement.Repositories
 {
@@ -44,6 +41,21 @@ namespace EmployeeManagement.Repositories
             }
             return await _context.Employees.FindAsync(employee.ManagerId);
         }
+
+        public async Task<IEnumerable<Employee>> GetManagers()
+        {
+            var managerIds= await _context.Employees
+                .Where(e => e.ManagerId.HasValue)
+                .Select(e => e.ManagerId)
+                .Distinct()
+                .ToListAsync();
+            var managers = await _context.Employees
+                .Where(e => managerIds.Contains(e.Id))
+                .ToListAsync();
+            Console.WriteLine(managers);
+            return managers;
+
+        }
         public async Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
@@ -78,9 +90,11 @@ namespace EmployeeManagement.Repositories
                 dayOffRequest.Status = "Approved";
             }
             _context.DayOffRequests.Add(dayOffRequest);
+
             await _context.SaveChangesAsync();
             return dayOffRequest;
         }
+
         private static int GetWorkingDays(DateOnly startDate, DateOnly endDate)
         {
             int workingDays = 0;
@@ -213,6 +227,7 @@ namespace EmployeeManagement.Repositories
             });
 
         }
+        
         private async Task<List<Employee>> RecursiveSearch (int employeeId, List<Employee> list)
         {
             var directSubordinates = await _context.Employees
@@ -232,8 +247,6 @@ namespace EmployeeManagement.Repositories
 
             return list;
         }
-
- 
 
         /*
         public async Task<bool> DeleteEmployee(string id)

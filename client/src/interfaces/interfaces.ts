@@ -37,6 +37,7 @@ export interface DayOffRequest {
   id: number;
   employeeId: number;
   pendingManagerId: number;
+  dayOffTypeId: number | null,
   status: string;
   startDate: Date;
   endDate: Date;

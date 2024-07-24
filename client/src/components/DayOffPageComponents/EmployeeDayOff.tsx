@@ -78,7 +78,8 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
     if (!selectedDayOffTypeId) {
       showError("You have to choose a day off type.");
       return;
-    } 
+    }
+
     const startOfDay = new Date(startDate);
     const endOfDay = new Date(endDate);
 
@@ -95,7 +96,7 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
       token!,
       startFullDate,
       endFullDate,
-      selectedDayOffTypeId,
+      selectedDayOffTypeId!,
       showError
     );
     if (response?.success) {
@@ -110,6 +111,11 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
       console.log(result.data);
       setDayOffTypes(result.data!);
     } 
+  };
+
+  const handleDayOffTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedDayOffTypeId(value ? Number(value) : null);
   };
 
   useEffect(() => {
@@ -155,7 +161,7 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
         </label>
         <select
           value={selectedDayOffTypeId || ""}
-          onChange={(e) => setSelectedDayOffTypeId(Number(e.target.value))}
+          onChange={handleDayOffTypeChange}
           className="w-full px-4 py-2 text-lg border border-gray-300 rounded-lg focus:outline-none"
         >
           <option value="" disabled>Select Day Off Type</option>
