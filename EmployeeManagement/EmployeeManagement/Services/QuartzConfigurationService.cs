@@ -25,7 +25,6 @@ namespace EmployeeManagement.Services
             var jobSchedules = await jobScheduleRepository.GetJobSchedulesAsync();
             foreach (var jobSchedule in jobSchedules)
             {
-                Console.WriteLine(jobSchedule.JobKey);
                 IJobDetail jobDetail = jobSchedule.JobKey switch
                 {
                     "EmailNotificationJob" => JobBuilder.Create<EmailNotificationJob>()
@@ -44,8 +43,6 @@ namespace EmployeeManagement.Services
                 await scheduler.ScheduleJob(jobDetail, trigger);
 
             }
-            Console.WriteLine("Hello Initialization is finished!");
-            Console.WriteLine(jobSchedules.Count());
 
         }
     }

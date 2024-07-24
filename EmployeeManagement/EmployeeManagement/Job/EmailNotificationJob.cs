@@ -15,7 +15,6 @@ namespace EmployeeManagement.Job
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            Console.WriteLine("Executing Email Notification Job");
             using var scope = _serviceProvider.CreateScope();
             JobDataMap dataMap = context.MergedJobDataMap;
             var employeeRepository = scope.ServiceProvider.GetRequiredService<IEmployeeRepository>();
@@ -25,7 +24,6 @@ namespace EmployeeManagement.Job
             var managers = await employeeRepository.GetManagers();
             foreach(var manager in managers ) 
             {
-                Console.WriteLine(manager.Id);
                 var dayOffRequests = await managerRepository.GetDayOffRequests(manager.Id);
                 foreach (var request in dayOffRequests)
                 {
