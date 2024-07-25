@@ -8,6 +8,6 @@
 /EmployeeManagement/.vs
 /EmployeeManagement/EmployeeManagement/bin
 /EmployeeManagement/EmployeeManagement/obj
-
+/EmployeeManagement/.editorconfig
 #General
 .vscode/
