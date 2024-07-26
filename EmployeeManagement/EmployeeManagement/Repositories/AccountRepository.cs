@@ -28,7 +28,7 @@ namespace EmployeeManagement.Repositories
             {
                 return new GeneralResponse(false, "Passwords do not match.");
             }
-
+            int nextUpdate = calculateNextDayOffUpdate(startDate);
             Employee newEmployee = new Employee()
             {
                 EmailAddress = employeeDTO.EmailAddress,
@@ -36,7 +36,9 @@ namespace EmployeeManagement.Repositories
                 Name = employeeDTO.Name,
                 Surname = employeeDTO.Surname,
                 RemainingDayOffs = employeeDTO.DayOffNumber,
-                StartDate = startDate
+                StartDate = startDate,
+                LastUpdatedDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                NextDayOffUpdateAmount = nextUpdate
             };
 
             await _context.Employees.AddAsync(newEmployee);
@@ -66,6 +68,23 @@ namespace EmployeeManagement.Repositories
             return p1 == p2;
         }
 
+        private int calculateNextDayOffUpdate(DateOnly StartDate)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            int yearsWorked = today.Year - StartDate.Year;
+            if (yearsWorked > 0 && yearsWorked < 6) 
+            {
+                return 14;
+            }
+            else if (yearsWorked < 15)
+            {
+                return 20;
+            }
+            else
+            {
+                return 26;
+            }
+        }
         public async Task<LoginResponse> Login(LoginDTO loginDTO)
         {
             var employee = await _context.Employees

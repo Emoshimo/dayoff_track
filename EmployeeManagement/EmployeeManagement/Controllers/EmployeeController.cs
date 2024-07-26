@@ -102,12 +102,10 @@ namespace EmployeeManagement.Controllers
             try
             {
                 var employee = await _employeeRepository.GetEmployeeById(id);
-
                 if (employee == null)
                 {
                     return NotFound("Employee not found.");
                 }
-
 
                 var response = await _employeeRepository.RequestDayOff(id ,model.DayOffTypeId, startDateOnly, endDateOnly);
     

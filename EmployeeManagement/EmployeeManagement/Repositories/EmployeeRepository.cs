@@ -59,6 +59,7 @@ namespace EmployeeManagement.Repositories
         public async Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
+
             int totalDayOff = GetWorkingDays(startDate, endDate);
 
             if (employee.RemainingDayOffs < totalDayOff)
@@ -66,10 +67,22 @@ namespace EmployeeManagement.Repositories
                 throw new InvalidOperationException("Insufficient remaining day offs.");
 
             }
+            var anniversaryDate = new DateOnly(startDate.Year, employee.StartDate.Value.Month, employee.StartDate.Value.Day);
+            bool crossesAnniversary = startDate < anniversaryDate && endDate >= anniversaryDate;
             if (dayOffType == 2)
             {
-                employee.RemainingDayOffs = employee.RemainingDayOffs - totalDayOff;
-                //_context.Entry(employee).State = EntityState.Modified;
+                if (crossesAnniversary)
+                {
+                    var daysBeforeAnniversary = (anniversaryDate.DayNumber - startDate.DayNumber) + 1;
+                    employee.RemainingDayOffs -= daysBeforeAnniversary;
+
+                    var daysAfterAnniversary = (endDate.DayNumber - anniversaryDate.DayNumber) + 1;
+                    employee.NextDayOffUpdateAmount -= daysAfterAnniversary;
+                }
+                else
+                {
+                    employee.RemainingDayOffs -= totalDayOff;
+                }
             }
             var manager = await GetManagerAsync(employeeId);
             var dayOffRequest = new DayOffRequest
@@ -276,25 +289,32 @@ namespace EmployeeManagement.Repositories
 
         public async Task UpdateRemainingDayOffsOnAnniversary(Employee employee)
         {
-            var yearsWorked = DateOnly.FromDateTime(DateTime.UtcNow).Year - employee.StartDate!.Value.Year;
-            if (yearsWorked > 0)
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            if (employee.StartDate.Value.Month == today.Month && employee.StartDate.Value.Day == today.Day) 
             {
-                if (yearsWorked <= 5)
+                var yearsWorked = today.Year - employee.StartDate.Value.Year;
+                employee.RemainingDayOffs += employee.NextDayOffUpdateAmount;
+
+                if (yearsWorked > 0)
                 {
-                    employee.RemainingDayOffs += 14;
+                    if (yearsWorked <= 5)
+                    {
+                        employee.NextDayOffUpdateAmount = 14;
+                    }
+                    else if (yearsWorked <= 15)
+                    {
+                        employee.NextDayOffUpdateAmount = 20;
+                    }
+                    else
+                    {
+                        employee.NextDayOffUpdateAmount = 26;
+                    }
                 }
-                else if (yearsWorked <= 15)
-                {
-                    employee.RemainingDayOffs += 20;
-                }
-                else
-                {
-                    employee.RemainingDayOffs += 26;
-                }
+                employee.LastUpdatedDate = today;
+                _context.Entry(employee).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
             }
-            var emp = await  _context.Employees.FindAsync(employee.Id);
-            emp.RemainingDayOffs += employee.RemainingDayOffs;
-            await _context.SaveChangesAsync();
+
         }
 
 
