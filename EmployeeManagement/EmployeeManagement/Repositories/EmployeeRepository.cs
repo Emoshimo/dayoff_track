@@ -59,31 +59,34 @@ namespace EmployeeManagement.Repositories
         public async Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
-
-            int totalDayOff = GetWorkingDays(startDate, endDate);
-
-            if (employee.RemainingDayOffs < totalDayOff)
-            {
-                throw new InvalidOperationException("Insufficient remaining day offs.");
-
-            }
+            var remainingDayOffs = await CalculateRemainingDayOffs(employeeId);
             var anniversaryDate = new DateOnly(startDate.Year, employee.StartDate.Value.Month, employee.StartDate.Value.Day);
             bool crossesAnniversary = startDate < anniversaryDate && endDate >= anniversaryDate;
-            if (dayOffType == 2)
+            
+            if (dayOffType == 2 && crossesAnniversary)
             {
-                if (crossesAnniversary)
+                var daysBeforeAnniversarty = GetWorkingDays(startDate, anniversaryDate) + 1;
+                if (daysBeforeAnniversarty > remainingDayOffs)
                 {
-                    var daysBeforeAnniversary = (anniversaryDate.DayNumber - startDate.DayNumber) + 1;
-                    employee.RemainingDayOffs -= daysBeforeAnniversary;
-
-                    var daysAfterAnniversary = (endDate.DayNumber - anniversaryDate.DayNumber) + 1;
-                    employee.NextDayOffUpdateAmount -= daysAfterAnniversary;
+                    throw new InvalidCastException("Insufficient Day Off Before Annual Day Off Update");
                 }
-                else
+
+                var daysAfterAnniversary = GetWorkingDays(anniversaryDate, endDate) + 1;
+                if (daysAfterAnniversary > employee.NextDayOffUpdateAmount) 
                 {
-                    employee.RemainingDayOffs -= totalDayOff;
+                    throw new InvalidCastException("Insufficient Day Off After Annul Day Off Update");
+                }
+                employee.NextDayOffUpdateAmount -= daysAfterAnniversary;
+            }
+            else if (dayOffType == 2 && !crossesAnniversary)
+            {
+                int totalDays = GetWorkingDays(startDate, endDate);
+                if (remainingDayOffs < totalDays) 
+                {
+                    throw new InvalidCastException("Insufficient Day Off");
                 }
             }
+
             var manager = await GetManagerAsync(employeeId);
             var dayOffRequest = new DayOffRequest
             {
@@ -288,31 +291,38 @@ namespace EmployeeManagement.Repositories
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
             var yearsWorked = today.Year - employee.StartDate.Value.Year;
 
-            if (employee.StartDate.Value.Month == today.Month && employee.StartDate.Value.Day == today.Day) 
+            if (yearsWorked > 0)
             {
-                if (yearsWorked > 0)
+                if (yearsWorked <= 5)
                 {
-                    if (yearsWorked <= 5)
-                    {
-                        employee.NextDayOffUpdateAmount = 14;
-                        additionalDayOffs += 14 * (yearsWorked - 1);
-                    }
-                    else if (yearsWorked <= 15)
-                    {
-                        employee.NextDayOffUpdateAmount = 20;
-                        additionalDayOffs += 20 * (yearsWorked - 1);
-                    }
-                    else
-                    {
-                        employee.NextDayOffUpdateAmount = 26;
-                        additionalDayOffs += 26 * (yearsWorked - 1);
-                    }
+                    additionalDayOffs += 14 * (yearsWorked);
+                }
+                else if (yearsWorked <= 15)
+                {
+                    additionalDayOffs += 20 * (yearsWorked);
+                }
+                else
+                {
+                    additionalDayOffs += 26 * (yearsWorked);
                 }
             }
-            additionalDayOffs += employee.NextDayOffUpdateAmount;
-            return additionalDayOffs;
-            
+            if (employee.StartDate.Value.Month == today.Month && employee.StartDate.Value.Day == today.Day)
+            {
 
+                if (yearsWorked <= 5)
+                {
+                    employee.NextDayOffUpdateAmount = 14;
+                }
+                else if (yearsWorked <= 15)
+                {
+                    employee.NextDayOffUpdateAmount = 20;
+                }
+                else
+                {
+                    employee.NextDayOffUpdateAmount = 26;
+                }
+            }
+            return additionalDayOffs;
         }
 
         public async Task<int> CalculateRemainingDayOffs(int employeeId)
