@@ -18,6 +18,7 @@ namespace EmployeeManagement.Interfaces
         Task<IEnumerable<DayOffRequest>> GetApprovedDayOffs(int employeeId);
         Task<IEnumerable<DayOffRequest>> GetRejectedDayOffs(int employeeId);
         Task<IEnumerable<ClientEmployee>> GetPossibleManagersForEmployee(int employeeId);
+        Task<int> CalculateRemainingDayOffs(int employeeId);
         bool IsAnniversary(DateOnly startDate);
 
         /*

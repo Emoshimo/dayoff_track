@@ -104,15 +104,10 @@ namespace EmployeeManagement.Repositories
             return dayOffRequest;
         }
 
-        private static int GetWorkingDays(DateOnly startDate, DateOnly endDate)
+        private int GetWorkingDays(DateOnly startDate, DateOnly endDate)
         {
             int workingDays = 0;
-            if (startDate > endDate)
-            {
-                var temp = startDate;
-                startDate = endDate;
-                endDate = temp;
-            }
+  
             for (var date = startDate; date <= endDate; date = date.AddDays(1))
             {
                 if (date.DayOfWeek != DayOfWeek.Saturday || date.DayOfWeek != DayOfWeek.Sunday)
@@ -287,34 +282,56 @@ namespace EmployeeManagement.Repositories
             return today.Month == startDate.Month && today.Day == startDate.Day;
         }
 
-        public async Task UpdateRemainingDayOffsOnAnniversary(Employee employee)
+        public int AnniversaryDayOffAdditions(Employee employee)
         {
+            int additionalDayOffs = 0;
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var yearsWorked = today.Year - employee.StartDate.Value.Year;
+
             if (employee.StartDate.Value.Month == today.Month && employee.StartDate.Value.Day == today.Day) 
             {
-                var yearsWorked = today.Year - employee.StartDate.Value.Year;
-                employee.RemainingDayOffs += employee.NextDayOffUpdateAmount;
-
                 if (yearsWorked > 0)
                 {
                     if (yearsWorked <= 5)
                     {
                         employee.NextDayOffUpdateAmount = 14;
+                        additionalDayOffs += 14 * (yearsWorked - 1);
                     }
                     else if (yearsWorked <= 15)
                     {
                         employee.NextDayOffUpdateAmount = 20;
+                        additionalDayOffs += 20 * (yearsWorked - 1);
                     }
                     else
                     {
                         employee.NextDayOffUpdateAmount = 26;
+                        additionalDayOffs += 26 * (yearsWorked - 1);
                     }
                 }
-                employee.LastUpdatedDate = today;
-                _context.Entry(employee).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
             }
+            additionalDayOffs += employee.NextDayOffUpdateAmount;
+            return additionalDayOffs;
+            
 
+        }
+
+        public async Task<int> CalculateRemainingDayOffs(int employeeId)
+        {
+            var employee = await _context.Employees.FindAsync(employeeId);
+            int firstRemainingDayOff = employee.RemainingDayOffs;
+            var dayOffRequests = await _context.DayOffRequests
+                .Where(d => d.EmployeeId == employeeId)
+                .Where(d => d.Status == "Pending" || d.Status == "Approved")
+                .ToListAsync();
+
+            int dayOffs = dayOffRequests
+                .Sum(d => GetWorkingDays(d.StartDate, d.EndDate));
+            int anniversaryDayOffs = AnniversaryDayOffAdditions(employee);
+
+            var remainingDayOff = firstRemainingDayOff + anniversaryDayOffs - dayOffs;
+            
+
+            return remainingDayOff;
         }
 
 

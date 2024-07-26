@@ -42,6 +42,11 @@ namespace EmployeeManagement.Controllers
             return employee;
         }
 
+        [HttpGet("remaining_day_off")]
+        public async Task<ActionResult<int>> GetRemainingDayOff(int id)
+        {
+            return Ok(await _employeeRepository.CalculateRemainingDayOffs(id));
+        }
 
         // GET : api/employee/dayoff/pending/{id}
         [HttpGet("dayoff/pending/{id}")]
@@ -148,7 +153,7 @@ namespace EmployeeManagement.Controllers
         private async Task<IEnumerable<DayOffRequest>> GetRejectedDayOffsCache(int id)
         {
             return await _cacheService.GetOrCreateAsync(
-                $"Approved_Days_Of_Employee_{id}",
+                $"Rejected_Days_Of_Employee_{id}",
                 () => _employeeRepository.GetRejectedDayOffs(id),
                 TimeSpan.FromMinutes(15),
                 TimeSpan.FromHours(1)
