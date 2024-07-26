@@ -24,7 +24,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     throw new InvalidOperationException("WebApiDatabase String not found.")
 ));
 
-
+// Swagger Authenticate Check
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -47,7 +47,7 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
                 builder.Configuration.GetSection("Jwt:Key").Value!))
     };
 });
-
+// Repositories
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
@@ -55,13 +55,17 @@ builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
 builder.Services.AddScoped<IDayOffTypesRepository, DayOffTypesRepository>();
 builder.Services.AddScoped<IJobScheduleRepository, JobScheduleRepository>();
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 //Register Hosted Service
-builder.Services.AddHostedService<AnniversaryHostedService>();
+//builder.Services.AddHostedService<AnniversaryHostedService>();
 
 
 // Quartz Configuration:
 builder.Services.ConfigureQuartz();
+
+// Caching
+builder.Services.AddMemoryCache();
 
 
 // Ending Custom Configurations

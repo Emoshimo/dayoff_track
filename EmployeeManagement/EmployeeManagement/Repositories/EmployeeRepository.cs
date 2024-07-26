@@ -59,10 +59,6 @@ namespace EmployeeManagement.Repositories
         public async Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
-            if (employee == null)
-            {
-                return null;
-            }
             int totalDayOff = GetWorkingDays(startDate, endDate);
 
             if (employee.RemainingDayOffs < totalDayOff)
@@ -73,7 +69,7 @@ namespace EmployeeManagement.Repositories
             if (dayOffType == 2)
             {
                 employee.RemainingDayOffs = employee.RemainingDayOffs - totalDayOff;
-
+                //_context.Entry(employee).State = EntityState.Modified;
             }
             var manager = await GetManagerAsync(employeeId);
             var dayOffRequest = new DayOffRequest
@@ -148,9 +144,33 @@ namespace EmployeeManagement.Repositories
                 ManagerId = employee.ManagerId,
                 Name = employee.Name,
                 Surname = employee.Surname,
-                RemainingDayOffs = employee.RemainingDayOffs
+                RemainingDayOffs = employee.RemainingDayOffs,
+                StartDate = employee.StartDate
             };
             return clientEmployee;
+        }
+        public async Task<Employee> GetEmployee(int id)
+        {
+            return await _context.Employees.FindAsync(id);
+        }
+        public async Task UpdateEmployee(ClientEmployee employee)
+        {
+            var target = await _context.Employees.FindAsync(employee.Id);
+            if (target != null)
+            {
+                // Update the properties of the target entity
+                target.Name = employee.Name;
+                target.Surname = employee.Surname;
+                target.ManagerId = employee.ManagerId;
+                target.RemainingDayOffs = employee.RemainingDayOffs;
+                target.StartDate = employee.StartDate;
+
+                // Mark the target entity as modified
+                _context.Entry(target).State = EntityState.Modified;
+
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<IEnumerable<DayOffRequest>> GetPendingDayOffs(int employeeId)
@@ -247,6 +267,36 @@ namespace EmployeeManagement.Repositories
 
             return list;
         }
+
+        public bool IsAnniversary(DateOnly startDate)
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            return today.Month == startDate.Month && today.Day == startDate.Day;
+        }
+
+        public async Task UpdateRemainingDayOffsOnAnniversary(Employee employee)
+        {
+            var yearsWorked = DateOnly.FromDateTime(DateTime.UtcNow).Year - employee.StartDate!.Value.Year;
+            if (yearsWorked > 0)
+            {
+                if (yearsWorked <= 5)
+                {
+                    employee.RemainingDayOffs += 14;
+                }
+                else if (yearsWorked <= 15)
+                {
+                    employee.RemainingDayOffs += 20;
+                }
+                else
+                {
+                    employee.RemainingDayOffs += 26;
+                }
+            }
+            var emp = await  _context.Employees.FindAsync(employee.Id);
+            emp.RemainingDayOffs += employee.RemainingDayOffs;
+            await _context.SaveChangesAsync();
+        }
+
 
         /*
         public async Task<bool> DeleteEmployee(string id)
