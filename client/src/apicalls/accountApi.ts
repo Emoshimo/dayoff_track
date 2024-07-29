@@ -16,7 +16,8 @@ export const login = async (
   } catch (error: any) {
     return handleApiError(error, showError);
   }
-};export const register = async (
+};
+export const register = async (
   employeeDTO: IEmployee,
   token: string,
   showError: (message: string) => void

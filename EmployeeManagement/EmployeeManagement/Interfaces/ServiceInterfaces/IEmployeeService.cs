@@ -11,5 +11,7 @@ namespace EmployeeManagement.Interfaces.ServiceInterfaces
         Task<IEnumerable<ClientEmployee>> GetPossibleManagersForEmployee(int employeeId);
         Task<int> CalculateRemainingDayOffs(int employeeId);
         bool IsAnniversary(DateOnly startDate);
+        int GetWorkingDays(DateOnly startDate, DateOnly endDate);
+        int AnniversaryDayOffAdditions(Employee employee);
     }
 }

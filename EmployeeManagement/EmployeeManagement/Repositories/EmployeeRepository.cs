@@ -40,6 +40,10 @@ namespace EmployeeManagement.Repositories
             }
             return await _context.Employees.FindAsync(employee.ManagerId);
         }
+        public async Task<Employee> GetEmployee(int id)
+        {
+            return await _context.Employees.FindAsync(id);
+        }
         public async Task<IEnumerable<Employee>> GetManagers()
         {
             var managerIds= await _context.Employees

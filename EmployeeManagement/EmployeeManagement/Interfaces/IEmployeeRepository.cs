@@ -11,6 +11,7 @@ namespace EmployeeManagement.Interfaces
         Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate);
         Task<bool> CancelDayOffRequest(IEnumerable<int> requestIds);
         Task<ClientEmployee> GetEmployeeById(int id);
+        Task<Employee> GetEmployee(int id);
         Task UpdateEmployee(ClientEmployee employee);
         Task<IEnumerable<DayOffRequest>> GetPendingDayOffs(int employeeId);
         Task<IEnumerable<DayOffRequest>> GetApprovedDayOffs(int employeeId);
