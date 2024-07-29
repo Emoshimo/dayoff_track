@@ -45,7 +45,7 @@ namespace EmployeeManagement.Controllers
         [HttpGet("remaining_day_off")]
         public async Task<ActionResult<int>> GetRemainingDayOff(int id)
         {
-            return Ok(await _employeeRepository.CalculateRemainingDayOffs(id));
+            return Ok(await CacheRemainingDayOff(id));
         }
 
         // GET : api/employee/dayoff/pending/{id}
@@ -158,6 +158,16 @@ namespace EmployeeManagement.Controllers
                 TimeSpan.FromMinutes(15),
                 TimeSpan.FromHours(1)
             );
+        }
+        
+        private async Task<int> CacheRemainingDayOff(int id)
+        {
+            return await _cacheService.GetOrCreateAsync(
+               $"Remaining_Day_Of_Employee_{id}",
+               () => _employeeRepository.CalculateRemainingDayOffs(id),
+               TimeSpan.FromMinutes(15),
+               TimeSpan.FromHours(1)
+           );
         }
     }
 }

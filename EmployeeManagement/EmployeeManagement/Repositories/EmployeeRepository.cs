@@ -136,10 +136,6 @@ namespace EmployeeManagement.Repositories
 
             foreach (var request in targetRequests)
             {
-                var startDate = request.StartDate;
-                var endDate = request.EndDate;
-                int workingDays = GetWorkingDays(startDate, endDate);
-                employee.RemainingDayOffs = employee.RemainingDayOffs + workingDays;
                 request.Status = "Cancelled";
             }
             await _context.SaveChangesAsync();
@@ -155,15 +151,12 @@ namespace EmployeeManagement.Repositories
                 ManagerId = employee.ManagerId,
                 Name = employee.Name,
                 Surname = employee.Surname,
-                RemainingDayOffs = employee.RemainingDayOffs,
+                RemainingDayOffs = await CalculateRemainingDayOffs(id),
                 StartDate = employee.StartDate
             };
             return clientEmployee;
         }
-        public async Task<Employee> GetEmployee(int id)
-        {
-            return await _context.Employees.FindAsync(id);
-        }
+   
         public async Task UpdateEmployee(ClientEmployee employee)
         {
             var target = await _context.Employees.FindAsync(employee.Id);
@@ -340,45 +333,9 @@ namespace EmployeeManagement.Repositories
 
             var remainingDayOff = firstRemainingDayOff + anniversaryDayOffs - dayOffs;
             
-
             return remainingDayOff;
         }
 
-
-        /*
-        public async Task<bool> DeleteEmployee(string id)
-        {
-            var employee = await _userManager.FindByIdAsync(id);
-            if (employee == null) 
-            {
-                return false;
-            }
-            var result = await _userManager.DeleteAsync(employee);
-            if (!result.Succeeded)
-            {
-                return false;
-            }
-            await _context.SaveChangesAsync();
-            return true;
-        }
-    
-        public async Task<GeneralResponse> AssignManagerRole(string employeeId)
-        {
-            var employee = await _userManager.FindByIdAsync(employeeId);
-            if (employee == null)
-            {
-                return new GeneralResponse(false, "Employee not found");
-            }
-
-            var result = await _userManager.AddToRoleAsync(employee, "Manager");
-            if (result.Succeeded)
-            {
-                return new GeneralResponse(true, "Manager role assigned");
-            }
-
-            return new GeneralResponse(false, "Failed to assign manager role");
-        }
-    */
     }
 
 }
