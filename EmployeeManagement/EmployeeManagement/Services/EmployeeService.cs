@@ -2,6 +2,7 @@
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
+using EmployeeManagement.Services.EmployeeCacheService;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.Services
@@ -10,27 +11,27 @@ namespace EmployeeManagement.Services
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDayOffRequestRepository _dayOffRequestRepository;
-        public EmployeeService(IEmployeeRepository employeeRepository, IDayOffRequestRepository dayOffRequestRepository)
+        private readonly IEmployeeCache _employeeCache;
+        private readonly ICacheService _cacheService;
+        public EmployeeService(IEmployeeRepository employeeRepository, IDayOffRequestRepository dayOffRequestRepository, IEmployeeCache employeeCache, ICacheService cacheService)
         {
             _employeeRepository = employeeRepository;
             _dayOffRequestRepository = dayOffRequestRepository;
+            _employeeCache = employeeCache;
+            _cacheService = cacheService;
         }
-
         public async Task<int> CalculateRemainingDayOffs(int employeeId)
         {
             var employee = await _employeeRepository.GetEmployee(employeeId);
             int firstRemainingDayOff = employee.RemainingDayOffs;
-            var dayOffRequests = await _context.DayOffRequests
-                .Where(d => d.EmployeeId == employeeId)
-                .Where(d => d.Status == "Pending" || d.Status == "Approved")
-                .ToListAsync();
+            var dayOffRequests = await _dayOffRequestRepository.GetDayOffRequestsByEmployeeId(employeeId);
 
             int dayOffs = dayOffRequests
                 .Sum(d => GetWorkingDays(d.StartDate, d.EndDate));
             int anniversaryDayOffs = AnniversaryDayOffAdditions(employee);
 
             var remainingDayOff = firstRemainingDayOff + anniversaryDayOffs - dayOffs;
-
+                
             return remainingDayOff;
         }
         public int AnniversaryDayOffAdditions(Employee employee)
@@ -72,34 +73,177 @@ namespace EmployeeManagement.Services
             }
             return additionalDayOffs;
         }
-        public Task<bool> CancelDayOffRequest(IEnumerable<int> requestIds)
+        public async Task<bool> CancelDayOffRequest(IEnumerable<int> requestIds)
         {
-            throw new NotImplementedException();
+            var targetRequests = await _dayOffRequestRepository.GetDayOffRequestsByIds(requestIds);
+            var targetRequestsList = targetRequests.ToList();
+
+            var cancelledDayOffs = 0;
+            var employeeId = targetRequestsList[0].EmployeeId;
+
+            var employee = await _employeeRepository.GetEmployee(employeeId);
+            if (employee == null)
+            {
+                return false;
+            }
+
+            foreach (var request in targetRequests)
+            {
+                request.Status = "Cancelled";
+                cancelledDayOffs += GetWorkingDays(request.StartDate, request.EndDate);
+            }
+            int remainingDayOffs = await CacheRemainingDayOff(employeeId);
+            int newRDO = remainingDayOffs + cancelledDayOffs;
+            _employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
+            await _dayOffRequestRepository.SaveChangesAsync();
+            return true;
         }
 
-        public Task<IEnumerable<ClientEmployee>> GetEmployees()
+        public async Task<IEnumerable<ClientEmployee>> GetPossibleManagersForEmployee(int employeeId)
         {
-            throw new NotImplementedException();
+            // List without the employee itself 
+            var initialList = await _employeeRepository.GetAllEmployeesExcept(employeeId);
+
+            if (initialList.Count == 1)
+            {
+                return initialList.Select(e => new ClientEmployee
+                {
+                    Id = e.Id,
+                    ManagerId = e.ManagerId,
+                    Name = e.Name,
+                    Surname = e.Surname
+                });
+            }
+
+            var result = await RecursiveSearch(employeeId, initialList);
+
+            return result.Select(e => new ClientEmployee
+            {
+                Id = e.Id,
+                ManagerId = e.ManagerId,
+                Name = e.Name,
+                Surname = e.Surname
+            });
         }
 
-        public Task<IEnumerable<ClientEmployee>> GetPossibleManagersForEmployee(int employeeId)
+        private async Task<List<Employee>> RecursiveSearch(int employeeId, List<Employee> list)
         {
-            throw new NotImplementedException();
+            var directSubordinates = await _employeeRepository.GetDirectSubordinates(employeeId);
+
+            if (!directSubordinates.Any())
+            {
+                return list;
+            }
+
+            list.RemoveAll(e => directSubordinates.Any(ds => ds.Id == e.Id));
+
+            foreach (var subordinate in directSubordinates)
+            {
+                list = await RecursiveSearch(subordinate.Id, list);
+            }
+
+            return list;
         }
 
         public int GetWorkingDays(DateOnly startDate, DateOnly endDate)
         {
-            throw new NotImplementedException();
+            int workingDays = 0;
+
+            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                if (date.DayOfWeek != DayOfWeek.Saturday || date.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    workingDays++;
+                }
+            }
+            return workingDays;
         }
 
         public bool IsAnniversary(DateOnly startDate)
         {
-            throw new NotImplementedException();
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            return today.Month == startDate.Month && today.Day == startDate.Day;
         }
 
-        public Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate)
+        public async Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate)
         {
-            throw new NotImplementedException();
+            var employee = await _employeeRepository.GetEmployee(employeeId);
+            var remainingDayOffs = await CacheRemainingDayOff(employeeId);
+            var anniversaryDate = new DateOnly(startDate.Year, employee.StartDate.Value.Month, employee.StartDate.Value.Day);
+            bool crossesAnniversary = startDate < anniversaryDate && endDate >= anniversaryDate;
+
+            if (dayOffType == 2 && crossesAnniversary)
+            {
+                var daysBeforeAnniversary = GetWorkingDays(startDate, anniversaryDate) + 1;
+                if (daysBeforeAnniversary > remainingDayOffs)
+                {
+                    throw new InvalidCastException("Insufficient Day Off Before Annual Day Off Update");
+                }
+                var newRDO = remainingDayOffs - daysBeforeAnniversary;
+                _employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
+
+                var daysAfterAnniversary = GetWorkingDays(anniversaryDate, endDate) + 1;
+                if (daysAfterAnniversary > employee.NextDayOffUpdateAmount)
+                {
+                    throw new InvalidCastException("Insufficient Day Off After Annual Day Off Update");
+                }
+                employee.NextDayOffUpdateAmount -= daysAfterAnniversary;
+            }
+            else if (dayOffType == 2 && !crossesAnniversary)
+            {
+                int totalDays = GetWorkingDays(startDate, endDate);
+                if (remainingDayOffs < totalDays)
+                {
+                    throw new InvalidCastException("Insufficient Day Off");
+                }
+                int newRDO = remainingDayOffs - totalDays;
+                _employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
+            }
+
+            var manager = await _employeeRepository.GetManagerAsync(employeeId);
+            var dayOffRequest = new DayOffRequest
+            {
+                EmployeeId = employeeId,
+                StartDate = startDate,
+                EndDate = endDate,
+                PendingManagerId = manager?.Id,
+                Status = "Pending",
+                DayOffTypeId = dayOffType
+            };
+            if (manager == null)
+            {
+                dayOffRequest.Status = "Approved";
+            }
+            await _dayOffRequestRepository.AddDayOffRequest(dayOffRequest);
+
+            await _dayOffRequestRepository.SaveChangesAsync();
+            return dayOffRequest;
+        }
+
+        public async Task<int> CacheRemainingDayOff(int id)
+        {
+            return await _employeeCache.CacheRemainingDayOff(
+                id,
+                () => CalculateRemainingDayOffs(id)
+            );
+        }
+        public async Task<IEnumerable<DayOffRequest>> GetApprovedDayOffsCache(int id)
+        {
+            return await _cacheService.GetOrCreateAsync(
+                $"Approved_Days_Of_Employee_{id}",
+                () => _employeeRepository.GetApprovedDayOffs(id),
+                TimeSpan.FromMinutes(15),
+                TimeSpan.FromHours(1)
+            );
+        }
+        public async Task<IEnumerable<DayOffRequest>> GetRejectedDayOffsCache(int id)
+        {
+            return await _cacheService.GetOrCreateAsync(
+                $"Rejected_Days_Of_Employee_{id}",
+                () => _employeeRepository.GetRejectedDayOffs(id),
+                TimeSpan.FromMinutes(15),
+                TimeSpan.FromHours(1)
+            );
         }
     }
 }

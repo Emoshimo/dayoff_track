@@ -1,6 +1,7 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
+using EmployeeManagement.Interfaces.ServiceInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
@@ -13,10 +14,12 @@ namespace EmployeeManagement.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly ICacheService _cacheService;
-        public EmployeeController(IEmployeeRepository employeeRepository, ICacheService cacheService)
+        private readonly IEmployeeService _employeeService;
+        public EmployeeController(IEmployeeRepository employeeRepository, ICacheService cacheService, IEmployeeService employeeService)
         {
             _employeeRepository = employeeRepository;
             _cacheService = cacheService;
+            _employeeService = employeeService;
         }
         // GET: api/employee
         [HttpGet("all")]
@@ -42,7 +45,7 @@ namespace EmployeeManagement.Controllers
         [HttpGet("{id}/remaining_day_off")]
         public async Task<ActionResult<int>> GetRemainingDayOff(int id)
         {
-            return Ok(await _employeeRepository.CacheRemainingDayOff(id));
+            return Ok(await _employeeService.CacheRemainingDayOff(id));
         }
 
         // GET : api/employee/dayoff/pending/{id}
@@ -63,7 +66,7 @@ namespace EmployeeManagement.Controllers
 
         public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetApprovedDayOffs(int id)
         {
-            var response = await GetApprovedDayOffsCache(id);
+            var response = await _employeeService.GetApprovedDayOffsCache(id);
             if (response == null)
             {
                 return NotFound();
@@ -77,7 +80,7 @@ namespace EmployeeManagement.Controllers
 
         public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetRejectedDayOffs(int id)
         {
-            var response = await GetRejectedDayOffsCache(id);
+            var response = await _employeeService.GetRejectedDayOffsCache(id);
             if (response == null)
             {
                 return NotFound();
@@ -109,7 +112,7 @@ namespace EmployeeManagement.Controllers
                     return NotFound("Employee not found.");
                 }
 
-                var response = await _employeeRepository.RequestDayOff(id ,model.DayOffTypeId, startDateOnly, endDateOnly);
+                var response = await _employeeService.RequestDayOff(id ,model.DayOffTypeId, startDateOnly, endDateOnly);
     
                 return StatusCode(201, "Request has sent.");
             }
@@ -119,12 +122,11 @@ namespace EmployeeManagement.Controllers
             }
         }
 
-
         [HttpPatch("dayoff/cancel")]
         [Authorize(Roles ="User")]
         public async Task<IActionResult> CancelDayOff(IEnumerable<int> ids)
         {
-            var response = await _employeeRepository.CancelDayOffRequest(ids);
+            var response = await _employeeService.CancelDayOffRequest(ids);
             if (!response)
             {
                 return NotFound("Employee does not exist anymore.");
@@ -134,28 +136,11 @@ namespace EmployeeManagement.Controllers
         [HttpGet("possible_managers/{id}")]
         public async Task<ActionResult<IEnumerable<ClientEmployee>>> FetchPossibleManagers(int id)
         {
-            var possibleMangers = await _employeeRepository.GetPossibleManagersForEmployee(id);
+            var possibleMangers = await _employeeService.GetPossibleManagersForEmployee(id);
             return Ok(possibleMangers);
         }
 
-        private async Task<IEnumerable<DayOffRequest>> GetApprovedDayOffsCache(int id)
-        {
-            return await _cacheService.GetOrCreateAsync(
-                $"Approved_Days_Of_Employee_{id}",
-                () => _employeeRepository.GetApprovedDayOffs(id),
-                TimeSpan.FromMinutes(15),
-                TimeSpan.FromHours(1)
-            );
-        }
-        private async Task<IEnumerable<DayOffRequest>> GetRejectedDayOffsCache(int id)
-        {
-            return await _cacheService.GetOrCreateAsync(
-                $"Rejected_Days_Of_Employee_{id}",
-                () => _employeeRepository.GetRejectedDayOffs(id),
-                TimeSpan.FromMinutes(15),
-                TimeSpan.FromHours(1)
-            );
-        }
+
         
     }
 }
