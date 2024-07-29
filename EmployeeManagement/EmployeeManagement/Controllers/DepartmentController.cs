@@ -40,12 +40,7 @@ namespace EmployeeManagement.Controllers
             var departments = await _departmentRepository.GetAll();
             return Ok(departments);
         }
-        [HttpGet("without_manager")]
-        public async Task<ActionResult<DepartmentDTO>> GetDepartmentsWithoutManager()
-        {
-            var response = await _departmentRepository.GetDepartmentsWithoutManager();
-            return Ok(response);
-        }
+
         [HttpPut("{id}")]
         [Authorize(Roles ="Admin")]
         public async Task<ActionResult<DepartmentDTO>> EditDepartment(DepartmentDTO department)

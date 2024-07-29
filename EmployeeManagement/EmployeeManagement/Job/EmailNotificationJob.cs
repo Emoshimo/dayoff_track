@@ -1,6 +1,7 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
+using EmployeeManagement.Interfaces.ServiceInterfaces;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 
@@ -19,12 +20,12 @@ namespace EmployeeManagement.Job
             JobDataMap dataMap = context.MergedJobDataMap;
             var employeeRepository = scope.ServiceProvider.GetRequiredService<IEmployeeRepository>();
             var emailRepository = scope.ServiceProvider.GetRequiredService<IEmailRepository>();
-            var managerRepository = scope.ServiceProvider.GetRequiredService<IManagerRepository>();
+            var managerService = scope.ServiceProvider.GetRequiredService<IManagerService>();
 
             var managers = await employeeRepository.GetManagers();
             foreach(var manager in managers ) 
             {
-                var dayOffRequests = await managerRepository.GetDayOffRequests(manager.Id);
+                var dayOffRequests = await managerService.GetDayOffRequests(manager.Id);
                 foreach (var request in dayOffRequests)
                 {
                     var emailRequest = new EmailRequestDTO

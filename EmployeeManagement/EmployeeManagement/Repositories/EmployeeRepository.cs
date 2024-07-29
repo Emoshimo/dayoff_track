@@ -29,6 +29,11 @@ namespace EmployeeManagement.Repositories
             }).ToList();
             return clientEmployees;
         }
+        public IQueryable<Employee> GetAll()
+        {
+            var employees = _context.Employees;
+            return employees;
+        }
         public async Task<Employee> GetManagerAsync(int employeeId)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
@@ -40,6 +45,11 @@ namespace EmployeeManagement.Repositories
         }
         public async Task<Employee> GetEmployee(int id)
         {
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null)
+            {
+                return null;
+            }
             return await _context.Employees.FindAsync(id);
         }
         public async Task<IEnumerable<Employee>> GetManagers()

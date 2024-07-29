@@ -13,12 +13,10 @@ namespace EmployeeManagement.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly ICacheService _cacheService;
         private readonly IEmployeeService _employeeService;
-        public EmployeeController(IEmployeeRepository employeeRepository, ICacheService cacheService, IEmployeeService employeeService)
+        public EmployeeController(IEmployeeRepository employeeRepository, IEmployeeService employeeService)
         {
             _employeeRepository = employeeRepository;
-            _cacheService = cacheService;
             _employeeService = employeeService;
         }
         // GET: api/employee

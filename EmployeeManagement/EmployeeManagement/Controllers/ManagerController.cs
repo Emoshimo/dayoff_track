@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.Interfaces;
+using EmployeeManagement.Interfaces.ServiceInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,10 +12,12 @@ namespace EmployeeManagement.Controllers
     public class ManagerController : ControllerBase
     {
         private readonly IManagerRepository _managerRepository;
+        private readonly IManagerService _managerService;
 
-        public ManagerController(IManagerRepository managerRepository)
+        public ManagerController(IManagerRepository managerRepository, IManagerService managerService)
         {
             _managerRepository = managerRepository;
+            _managerService = managerService;
         }
         // POST: api/Manager/dayoff/{id}
         [HttpPost("dayoff/{id}")]
@@ -23,7 +26,7 @@ namespace EmployeeManagement.Controllers
         {
             try
             {
-                var response = await _managerRepository.EvaluateDayOff(id, approved);
+                var response = await _managerService.EvaluateDayOff(id, approved);
                 if (response == null)
                 {
                     return NotFound();
@@ -47,7 +50,7 @@ namespace EmployeeManagement.Controllers
         {
             try
             {
-                var response = await _managerRepository.GetDayOffRequests(managerId);
+                var response = await _managerService.GetDayOffRequests(managerId);
                 if (response == null )
                 {
                     return NotFound();

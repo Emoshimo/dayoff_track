@@ -8,6 +8,7 @@ using Swashbuckle.AspNetCore.Filters;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Services;
 using EmployeeManagement.Services.EmployeeCacheService;
+using EmployeeManagement.Interfaces.ServiceInterfaces;
 
 
 
@@ -54,8 +55,13 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IManagerRepository, ManagerRepository>();
 builder.Services.AddScoped<IDayOffTypesRepository, DayOffTypesRepository>();
+builder.Services.AddScoped<IDayOffRequestRepository, DayOffRequestRepository>();
 builder.Services.AddScoped<IJobScheduleRepository, JobScheduleRepository>();
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
+
+// Services
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IManagerService, ManagerService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<IEmployeeCache,  EmployeeCache>();
 

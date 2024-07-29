@@ -31,7 +31,6 @@ namespace EmployeeManagement.Repositories
             await _context.SaveChangesAsync();
             return department;
         }
-
         public async Task<Department> Create(DepartmentDTO departmentDTO)
         {
 
@@ -44,7 +43,6 @@ namespace EmployeeManagement.Repositories
                 await _context.SaveChangesAsync();
                 return department;
         }
-
         public async Task<DepartmentDTO> EditDepartment(DepartmentDTO department)
         {
             var target = await _context.Departments.FindAsync(department.Id);
@@ -63,7 +61,6 @@ namespace EmployeeManagement.Repositories
             };
             return returnDepartment;
         }
-
         public async Task<IEnumerable<DepartmentDTO>> GetAll()
         {
             var departments = await _context.Departments
@@ -77,13 +74,11 @@ namespace EmployeeManagement.Repositories
 
             return departments;
         }
-
         public async Task<Department> GetById(int id)
         {
             var targetDepartment = await _context.Departments.FindAsync(id);
             return targetDepartment;
         }
-
         public async Task<bool> DeleteDepartment(int id)
         {
             var department = await _context.Departments.FindAsync(id);
@@ -96,36 +91,7 @@ namespace EmployeeManagement.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-
-        public async Task<GeneralResponse> SetManagerForDepartment(int departmentId, int managerId)
-        {
-            var department = await _context.Departments.FindAsync(departmentId);
-            if (department == null)
-            {
-                return new GeneralResponse(false, "Department not found.");
-            }
-            department.ManagerId = managerId;
-            await _context.SaveChangesAsync();
-            return new GeneralResponse(true, $"Manager assigned for {departmentId}.");
-        }
         
-        public async Task<IEnumerable<DepartmentDTO>> GetDepartmentsWithoutManager()
-        {
-            var response = await _context.Departments
-                .Where(d => d.ManagerId == null)
-                .ToListAsync();
-            if (response == null)
-            {
-                return null;
-            }
-            var clientDepartments = response.Select(d => new DepartmentDTO
-            {
-               Id = d.Id,
-               Name = d.Name,
-               ManagerId = d.ManagerId,
-            });
-            return clientDepartments;
-        }
     }
     
 }

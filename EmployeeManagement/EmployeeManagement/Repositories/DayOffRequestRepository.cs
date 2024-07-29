@@ -14,9 +14,15 @@ namespace EmployeeManagement.Repositories
 
         public async Task<DayOffRequest> AddDayOffRequest(DayOffRequest request)
         {
-
             _context.DayOffRequests.Add(request);
+            await SaveChangesAsync();
             return request;
+        }
+
+        public async Task<DayOffRequest> GetDayOffRequestById(int requestId)
+        {
+            var target = await _context.DayOffRequests.FindAsync(requestId);
+            return target;
         }
 
         public async Task<IEnumerable<DayOffRequest>> GetDayOffRequestsByEmployeeId(int employeeId)
@@ -35,6 +41,15 @@ namespace EmployeeManagement.Repositories
                 .ToListAsync();
             return targetRequests;
         }
+
+        public IQueryable<DayOffRequest> GetPendingRequests(int managerId)
+        {
+            var pendingRequests = _context.DayOffRequests
+                .Where(request => request.PendingManagerId == managerId && request.Status == "Pending");
+
+            return pendingRequests;
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
