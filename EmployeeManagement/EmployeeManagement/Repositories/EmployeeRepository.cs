@@ -25,7 +25,6 @@ namespace EmployeeManagement.Repositories
             var clientEmployees = employees.Select(e => new ClientEmployee
             {
                 Id = e.Id,
-                RemainingDayOffs = e.RemainingDayOffs,
                 ManagerId = e.ManagerId,
                 Name = e.Name,
                 Surname = e.Surname,
@@ -156,7 +155,6 @@ namespace EmployeeManagement.Repositories
                 ManagerId = employee.ManagerId,
                 Name = employee.Name,
                 Surname = employee.Surname,
-                RemainingDayOffs = await CalculateRemainingDayOffs(id),
                 StartDate = employee.StartDate
             };
             return clientEmployee;
@@ -170,7 +168,6 @@ namespace EmployeeManagement.Repositories
                 target.Name = employee.Name;
                 target.Surname = employee.Surname;
                 target.ManagerId = employee.ManagerId;
-                target.RemainingDayOffs = employee.RemainingDayOffs;
                 target.StartDate = employee.StartDate;
 
                 // Mark the target entity as modified
@@ -232,7 +229,6 @@ namespace EmployeeManagement.Repositories
                 return initialList.Select(e => new ClientEmployee
                 {
                     Id = e.Id,
-                    RemainingDayOffs = e.RemainingDayOffs,
                     ManagerId = e.ManagerId,
                     Name = e.Name,
                     Surname = e.Surname
@@ -244,7 +240,6 @@ namespace EmployeeManagement.Repositories
             return result.Select(e => new ClientEmployee
             {
                 Id = e.Id,
-                RemainingDayOffs = e.RemainingDayOffs,
                 ManagerId = e.ManagerId,
                 Name = e.Name,
                 Surname = e.Surname

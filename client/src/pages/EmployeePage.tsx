@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import useEmployeeStore from "../stores/employeeStore";
 import EmployeeDetails from "../components/EmployeePageComponents/EmployeeDetails";
-import { fetchEmployeeDetails, fetchRemainingDayOffs } from "../apicalls/api";
+import { fetchRemainingDayOffs } from "../apicalls/employeeApi";
+import { fetchEmployeeDetails } from "../apicalls/employeeApi";
 
 const EmployeePage = () => {
   const [, setPopupMessage] = useState<string | null>(null);

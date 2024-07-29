@@ -23,10 +23,8 @@ namespace EmployeeManagement.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
-
            var employees = await _employeeRepository.GetEmployees();
            return Ok(employees);
-
         }
         // GET : api/employee/get
         [HttpGet("{id}")]

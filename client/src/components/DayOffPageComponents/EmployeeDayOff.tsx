@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PopUp from "../PopUp";
-import { fetchDayOffTypes, fetchRemainingDayOffs, requestDayOff } from "../../apicalls/api";
+import { fetchDayOffTypes, requestDayOff } from "../../apicalls/api";
+import { fetchRemainingDayOffs } from "../../apicalls/employeeApi";
 import { ClientEmployee, DayOffType } from "../../interfaces/interfaces";
 
 interface EmployeeDayOffProps {

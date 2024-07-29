@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import EmployeeDayOff from "../components/DayOffPageComponents/EmployeeDayOff";
 import useEmployeeStore from "../stores/employeeStore";
-import {
-  fetchApprovedEmployeeDayOffs,
-  fetchPendingEmployeeDayOffs,
-  fetchRejectedEmployeeDayOffs,
-} from "../apicalls/api";
+import { fetchRejectedEmployeeDayOffs } from "../apicalls/employeeApi";
+import { fetchApprovedEmployeeDayOffs } from "../apicalls/employeeApi";
+import { fetchPendingEmployeeDayOffs } from "../apicalls/employeeApi";
 import DayOffList from "../components/DayOffPageComponents/DayOffList";
 import { DayOffRequest } from "../interfaces/interfaces";
 import DayOffModal from "../components/DayOffPageComponents/DayOffModal";

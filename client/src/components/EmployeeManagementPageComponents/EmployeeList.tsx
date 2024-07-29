@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { fetchEmployees, fetchPossibleManagers, fetchRemainingDayOffs } from "../../apicalls/api";
+import { fetchRemainingDayOffs } from "../../apicalls/employeeApi";
+import { fetchPossibleManagers } from "../../apicalls/employeeApi";
+import { fetchEmployees } from "../../apicalls/employeeApi";
 import { editEmployee } from "../../apicalls/departmentApi";
 import PopUp from "../PopUp";
 import { ClientEmployee } from "../../interfaces/interfaces";

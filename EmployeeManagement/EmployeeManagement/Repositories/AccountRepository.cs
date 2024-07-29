@@ -140,7 +140,6 @@ namespace EmployeeManagement.Repositories
 
             targetEmployee.Name = employee.Name;
             targetEmployee.Surname = employee.Surname;
-            targetEmployee.RemainingDayOffs = employee.RemainingDayOffs;
             targetEmployee.ManagerId = employee.ManagerId;
             await _context.SaveChangesAsync();
             var outputEmployee = new ClientEmployee
@@ -148,7 +147,6 @@ namespace EmployeeManagement.Repositories
                 Id = employee.Id,
                 Name = employee.Name,
                 Surname = employee.Surname,
-                RemainingDayOffs = employee.RemainingDayOffs,
                 ManagerId = employee.ManagerId,
             };
 
