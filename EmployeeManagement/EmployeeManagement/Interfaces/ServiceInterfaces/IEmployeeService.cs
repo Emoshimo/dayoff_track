@@ -13,7 +13,5 @@ namespace EmployeeManagement.Interfaces.ServiceInterfaces
         int GetWorkingDays(DateOnly startDate, DateOnly endDate);
         int AnniversaryDayOffAdditions(Employee employee);
         Task<int> CacheRemainingDayOff(int id);
-        Task<IEnumerable<DayOffRequest>> GetApprovedDayOffsCache(int id);
-        Task<IEnumerable<DayOffRequest>> GetRejectedDayOffsCache(int id);
     }
 }

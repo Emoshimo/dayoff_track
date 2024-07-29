@@ -1,8 +1,8 @@
-﻿
-using EmployeeManagement.Interfaces;
+﻿using EmployeeManagement.Interfaces;
+using EmployeeManagement.Interfaces.ServiceInterfaces;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace EmployeeManagement.Services.EmployeeCacheService
+namespace EmployeeManagement.Services
 {
     public class EmployeeCache : IEmployeeCache
     {
@@ -10,8 +10,8 @@ namespace EmployeeManagement.Services.EmployeeCacheService
         private readonly IMemoryCache _memoryCache;
         private readonly SemaphoreSlim _cacheSemaphore = new SemaphoreSlim(1, 1);
 
-        public EmployeeCache(IMemoryCache memoryCache) 
-        { 
+        public EmployeeCache(IMemoryCache memoryCache)
+        {
             _memoryCache = memoryCache;
         }
         public async Task<int> CacheRemainingDayOff(int id, Func<Task<int>> calculateRemainingDayOff)

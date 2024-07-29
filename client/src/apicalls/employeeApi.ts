@@ -59,7 +59,7 @@ export const fetchPendingEmployeeDayOffs = async (
   showError: (message: string) => void
 ): Promise<ApiResponse<DayOffRequest[]>> => {
   try {
-    const response = await axiosInstance.get(`/Employee/dayoff/pending/${id}`, {
+    const response = await axiosInstance.get(`/DayOffRequest/dayoff/pending/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -94,7 +94,7 @@ export const fetchApprovedEmployeeDayOffs = async (
 ): Promise<ApiResponse<DayOffRequest[]>> => {
   try {
     const response = await axiosInstance.get(
-      `/Employee/dayoff/approved/${id}`,
+      `/DayOffRequest/dayoff/approved/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -130,7 +130,7 @@ export const fetchRejectedEmployeeDayOffs = async (
 ): Promise<ApiResponse<DayOffRequest[]>> => {
   try {
     const response = await axiosInstance.get(
-      `/Employee/dayoff/rejected/${id}`,
+      `/DayOffRequest/dayoff/rejected/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -2,7 +2,6 @@
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
-using EmployeeManagement.Services.EmployeeCacheService;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.Services
@@ -225,24 +224,6 @@ namespace EmployeeManagement.Services
             return await _employeeCache.CacheRemainingDayOff(
                 id,
                 () => CalculateRemainingDayOffs(id)
-            );
-        }
-        public async Task<IEnumerable<DayOffRequest>> GetApprovedDayOffsCache(int id)
-        {
-            return await _cacheService.GetOrCreateAsync(
-                $"Approved_Days_Of_Employee_{id}",
-                () => _employeeRepository.GetApprovedDayOffs(id),
-                TimeSpan.FromMinutes(15),
-                TimeSpan.FromHours(1)
-            );
-        }
-        public async Task<IEnumerable<DayOffRequest>> GetRejectedDayOffsCache(int id)
-        {
-            return await _cacheService.GetOrCreateAsync(
-                $"Rejected_Days_Of_Employee_{id}",
-                () => _employeeRepository.GetRejectedDayOffs(id),
-                TimeSpan.FromMinutes(15),
-                TimeSpan.FromHours(1)
             );
         }
     }

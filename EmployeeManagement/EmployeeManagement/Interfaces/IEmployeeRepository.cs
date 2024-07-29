@@ -12,9 +12,6 @@ namespace EmployeeManagement.Interfaces
         Task<Employee> GetEmployee(int id);
         IQueryable<Employee> GetAll();
         Task UpdateEmployee(ClientEmployee employee);
-        Task<IEnumerable<DayOffRequest>> GetPendingDayOffs(int employeeId);
-        Task<IEnumerable<DayOffRequest>> GetApprovedDayOffs(int employeeId);
-        Task<IEnumerable<DayOffRequest>> GetRejectedDayOffs(int employeeId);
         Task<List<Employee>> GetAllEmployeesExcept(int employeeId);
         Task<List<Employee>> GetDirectSubordinates(int managerId);
     }

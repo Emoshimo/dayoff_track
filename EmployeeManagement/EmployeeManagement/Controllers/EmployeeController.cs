@@ -2,6 +2,7 @@
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
+using EmployeeManagement.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
@@ -46,45 +47,6 @@ namespace EmployeeManagement.Controllers
             return Ok(await _employeeService.CacheRemainingDayOff(id));
         }
 
-        // GET : api/employee/dayoff/pending/{id}
-        [HttpGet("dayoff/pending/{id}")]
-        [Authorize(Roles = "Manager, User, Admin")]
-        public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetPendingDayOffs(int id)
-        {
-            var response = await _employeeRepository.GetPendingDayOffs(id);
-            if (response == null)
-            {
-                return NotFound();
-            }
-            return Ok(response);
-        }
-        // GET : api/employee/dayoff/approved/{id}
-        [HttpGet("dayoff/approved/{id}")]
-        [Authorize(Roles = "Manager, User, Admin")]
-
-        public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetApprovedDayOffs(int id)
-        {
-            var response = await _employeeService.GetApprovedDayOffsCache(id);
-            if (response == null)
-            {
-                return NotFound();
-            }
-            return Ok(response);
-        }        
-        
-        // GET : api/employee/dayoff/rejected/{id}
-        [HttpGet("dayoff/rejected/{id}")]
-        [Authorize(Roles = "Manager, User, Admin")]
-
-        public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetRejectedDayOffs(int id)
-        {
-            var response = await _employeeService.GetRejectedDayOffsCache(id);
-            if (response == null)
-            {
-                return NotFound();
-            }
-            return Ok(response);
-        }
 
         // POST: api/Employee/dayoff/{id}
         [HttpPost("dayoff/{id}")]

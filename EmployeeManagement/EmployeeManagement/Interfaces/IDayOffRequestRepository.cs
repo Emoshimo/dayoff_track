@@ -8,6 +8,9 @@ namespace EmployeeManagement.Interfaces
         Task<DayOffRequest> GetDayOffRequestById(int requestId);
         Task<IEnumerable<DayOffRequest>> GetDayOffRequestsByIds(IEnumerable<int> requestIds);
         Task<DayOffRequest> AddDayOffRequest(DayOffRequest dayOffRequest);
+        Task<IEnumerable<DayOffRequest>> GetPendingDayOffs(int employeeId);
+        Task<IEnumerable<DayOffRequest>> GetApprovedDayOffs(int employeeId);
+        Task<IEnumerable<DayOffRequest>> GetRejectedDayOffs(int employeeId);
         IQueryable<DayOffRequest> GetPendingRequests(int managerId);
         Task SaveChangesAsync();
     }

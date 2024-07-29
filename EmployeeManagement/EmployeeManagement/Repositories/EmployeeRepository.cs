@@ -2,7 +2,6 @@
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Services;
-using EmployeeManagement.Services.EmployeeCacheService;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.Repositories
@@ -96,46 +95,6 @@ namespace EmployeeManagement.Repositories
                 // Save changes to the database
                 await _context.SaveChangesAsync();
             }
-        }
-        public async Task<IEnumerable<DayOffRequest>> GetPendingDayOffs(int employeeId)
-        {
-            var employee = await _context.Employees.FindAsync(employeeId);
-            if (employee == null)
-            {
-                return null;
-            }
-            var pendingDayOffs = await _context.DayOffRequests
-                                .OrderBy(rq => rq.StartDate)   
-                                .Where(rq => rq.EmployeeId == employeeId && rq.Status == "Pending")
-                                .ToListAsync();
-
-            return pendingDayOffs;
-        }
-        public async Task<IEnumerable<DayOffRequest>> GetApprovedDayOffs(int employeeId)
-        {
-            var employee = await _context.Employees.FindAsync(employeeId);
-            if (employee == null)
-            {
-                return null;
-            }
-            var approvedDayOffs = await _context.DayOffRequests
-                                .Where(rq => rq.EmployeeId == employeeId && rq.Status == "Approved")
-                                .ToListAsync();
-
-            return approvedDayOffs;
-        }
-        public async Task<IEnumerable<DayOffRequest>> GetRejectedDayOffs(int employeeId)
-        {
-            var employee = await _context.Employees.FindAsync(employeeId);
-            if (employee == null)
-            {
-                return null;
-            }
-            var rejectedDayOffs = await _context.DayOffRequests
-                                .Where(rq => rq.EmployeeId == employeeId && rq.Status == "Rejected")
-                                .ToListAsync();
-
-            return rejectedDayOffs;
         }
         public async Task<List<Employee>> GetAllEmployeesExcept(int employeeId)
         {

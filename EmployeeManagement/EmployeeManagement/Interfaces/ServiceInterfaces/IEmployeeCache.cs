@@ -1,4 +1,4 @@
-﻿namespace EmployeeManagement.Services.EmployeeCacheService
+﻿namespace EmployeeManagement.Interfaces.ServiceInterfaces
 {
     public interface IEmployeeCache
     {

@@ -2,7 +2,6 @@
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
-using EmployeeManagement.Services.EmployeeCacheService;
 using EmployeeManagement.Utils;
 
 namespace EmployeeManagement.Services

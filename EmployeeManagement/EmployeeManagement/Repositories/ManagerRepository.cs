@@ -1,6 +1,6 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.Interfaces;
-using EmployeeManagement.Services.EmployeeCacheService;
+using EmployeeManagement.Interfaces.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
