@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.Interfaces;
+using EmployeeManagement.Interfaces.ServiceInterfaces;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace EmployeeManagement.Services

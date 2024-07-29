@@ -1,4 +1,4 @@
-﻿namespace EmployeeManagement.Interfaces
+﻿namespace EmployeeManagement.Interfaces.ServiceInterfaces
 {
     public interface ICacheService
     {
