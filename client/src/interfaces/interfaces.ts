@@ -12,7 +12,7 @@ export interface ClientEmployee {
   name?: string;
   surname?: string;
   managerId?: number;
-  remainingDayOffs?: number;
+  //remainingDayOffs?: number;
 }
 
 export interface IDepartment {

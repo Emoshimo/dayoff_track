@@ -1,6 +1,5 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.DTO;
-using static EmployeeManagement.DTO.ServiceResponses;
 
 namespace EmployeeManagement.Interfaces
 {
@@ -18,12 +17,7 @@ namespace EmployeeManagement.Interfaces
         Task<IEnumerable<DayOffRequest>> GetRejectedDayOffs(int employeeId);
         Task<IEnumerable<ClientEmployee>> GetPossibleManagersForEmployee(int employeeId);
         Task<int> CalculateRemainingDayOffs(int employeeId);
+        Task<int> CacheRemainingDayOff(int id);
         bool IsAnniversary(DateOnly startDate);
-
-        /*
-        Task<bool> DeleteEmployee(string id);
-        Task<GeneralResponse> AssignManagerRole(string employeeId);
-         */
-
     }
 }

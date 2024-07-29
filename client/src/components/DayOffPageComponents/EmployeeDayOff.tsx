@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PopUp from "../PopUp";
-import { fetchDayOffTypes, requestDayOff } from "../../apicalls/api";
+import { fetchDayOffTypes, fetchRemainingDayOffs, requestDayOff } from "../../apicalls/api";
 import { ClientEmployee, DayOffType } from "../../interfaces/interfaces";
 
 interface EmployeeDayOffProps {
@@ -19,10 +19,10 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
   const [endDate, setEndDate] = useState(new Date());
   const [dayOffTypes, setDayOffTypes] = useState<DayOffType[]>([]);
   const [selectedDayOffTypeId, setSelectedDayOffTypeId] = useState<number | null>(null);
-
+  const [remainingDayOff, setRemainingDayOff] = useState<number>(0);
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [newRemainingDays, setNewRemainingDays] = useState<number | null>(
-    (employee.remainingDayOffs! - 1) | 0
+    (1) | 0
   );
 
   const showError = (message: string) => {
@@ -66,7 +66,7 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
 
     console.log(roundedDifferenceInDays);
     setNewRemainingDays(
-      Math.floor(employee.remainingDayOffs! - roundedDifferenceInDays)
+      Math.floor(remainingDayOff - roundedDifferenceInDays)
     );
   };
 
@@ -112,13 +112,18 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
       setDayOffTypes(result.data!);
     } 
   };
-
+  const getRemainingDayOff = async () => {
+    const result = await fetchRemainingDayOffs(employee.id!);
+    setRemainingDayOff(result);
+    console.log(result)
+  } 
   const handleDayOffTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedDayOffTypeId(value ? Number(value) : null);
   };
 
   useEffect(() => {
+    getRemainingDayOff();
     fetchTypes();
   }, [])
   
@@ -172,7 +177,7 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
           ))}
         </select>
       </div>
-      <h4>Remaining Day Off: {employee.remainingDayOffs}</h4>
+      <h4>Remaining Day Off: {remainingDayOff}</h4>
       <h4>New Remaining Day Off: {newRemainingDays}</h4>
 
       <hr className="my-6 border-gray-300" />

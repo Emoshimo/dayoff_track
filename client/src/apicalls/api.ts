@@ -125,6 +125,15 @@ export const fetchEmployeeDetails = async (
     return handleApiError(error, showError);
   }
 };
+export const fetchRemainingDayOffs = async (
+  id: number
+) => {
+  const response = await axiosInstance.get(`/Employee/${id}/remaining_day_off`);
+  if (response.status === 200)
+  {
+    return response.data;
+  }
+}
 
 export const fetchPendingEmployeeDayOffs = async (
   id: number,

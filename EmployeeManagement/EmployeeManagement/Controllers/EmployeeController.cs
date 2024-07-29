@@ -1,7 +1,6 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
-using EmployeeManagement.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
@@ -42,10 +41,10 @@ namespace EmployeeManagement.Controllers
             return employee;
         }
 
-        [HttpGet("remaining_day_off")]
+        [HttpGet("{id}/remaining_day_off")]
         public async Task<ActionResult<int>> GetRemainingDayOff(int id)
         {
-            return Ok(await CacheRemainingDayOff(id));
+            return Ok(await _employeeRepository.CacheRemainingDayOff(id));
         }
 
         // GET : api/employee/dayoff/pending/{id}
@@ -160,14 +159,5 @@ namespace EmployeeManagement.Controllers
             );
         }
         
-        private async Task<int> CacheRemainingDayOff(int id)
-        {
-            return await _cacheService.GetOrCreateAsync(
-               $"Remaining_Day_Of_Employee_{id}",
-               () => _employeeRepository.CalculateRemainingDayOffs(id),
-               TimeSpan.FromMinutes(15),
-               TimeSpan.FromHours(1)
-           );
-        }
     }
 }

@@ -3,8 +3,9 @@ import { ClientEmployee } from "../../interfaces/interfaces";
 
 interface Props {
   employee: ClientEmployee;
+  remainingDayOffs: number
 }
-const EmployeeDetails: React.FC<Props> = ({ employee }) => {
+const EmployeeDetails: React.FC<Props> = ({ employee, remainingDayOffs }) => {
   return (
     <div className="bg-white shadow-md rounded-md p-4">
       <h2 className="text-primary text-2xl">Details</h2>
@@ -12,7 +13,7 @@ const EmployeeDetails: React.FC<Props> = ({ employee }) => {
       <p className="text-primary">Name: {employee.name}</p>
       <p className="text-primary">Surname: {employee.surname}</p>
       <p className="text-primary">
-        Remaining Day Offs Number: {employee.remainingDayOffs}
+        Remaining Day Offs Number: {remainingDayOffs}
       </p>
     </div>
   );

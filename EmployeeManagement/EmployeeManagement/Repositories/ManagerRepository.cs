@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.Interfaces;
+using EmployeeManagement.Services.EmployeeCacheService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,12 @@ namespace EmployeeManagement.Repositories
     public class ManagerRepository : IManagerRepository
     {
         private readonly AppDbContext _context;
+        private readonly IEmployeeCache _employeeCache;
 
-        public ManagerRepository(AppDbContext context)
+        public ManagerRepository(AppDbContext context, IEmployeeCache employeeCache)
         {
             _context = context;
+            _employeeCache = employeeCache;
         }
         public async Task<IEnumerable<DayOffRequestForManager>> GetDayOffRequests(int managerId)
         {
@@ -60,11 +63,26 @@ namespace EmployeeManagement.Repositories
                 else
                 {
                     dayOffRequest.Status = "Rejected";
+                    int RDOChange = GetWorkingDays(dayOffRequest.StartDate, dayOffRequest.EndDate);
+                    _employeeCache.UpdateRemainingDayOff(dayOffRequest.EmployeeId, RDOChange);
                 }
             }
             await _context.SaveChangesAsync();
             return dayOffRequest;
 
+        }
+        private int GetWorkingDays(DateOnly startDate, DateOnly endDate)
+        {
+            int workingDays = 0;
+
+            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                if (date.DayOfWeek != DayOfWeek.Saturday || date.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    workingDays++;
+                }
+            }
+            return workingDays;
         }
     }
 }

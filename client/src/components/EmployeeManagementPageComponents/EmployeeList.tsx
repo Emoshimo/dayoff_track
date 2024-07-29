@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { fetchEmployees, fetchPossibleManagers } from "../../apicalls/api";
+import { fetchEmployees, fetchPossibleManagers, fetchRemainingDayOffs } from "../../apicalls/api";
 import { editEmployee } from "../../apicalls/departmentApi";
 import PopUp from "../PopUp";
 import { ClientEmployee } from "../../interfaces/interfaces";
+
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState<any[]>([]);
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [editingEmployeeId, setEditingEmployeeId] = useState<number>();
-  const [editedEmployee, setEditedEmployee] = useState<ClientEmployee>();
+  const [editedEmployee, setEditedEmployee] = useState<any>();
   const [possibleManagers, setPossibleManagers] = useState<
     Record<number, any[]>
   >({});
@@ -24,27 +25,30 @@ const EmployeeList = () => {
       const newEmployees = await fetchEmployees(token!, showError);
 
       if (newEmployees) {
-        console.log(newEmployees);
-        setEmployees(newEmployees);
-        const possibleManagersPromises = newEmployees.map(
-          async (employee: any) => {
-            const managers = await fetchPossibleManagers(employee.id);
-            return { employeeId: employee.id, managers };
-          }
-        );
-        const possibleManagersArray = await Promise.all(
-          possibleManagersPromises
-        );
-        const possibleManagersMap: Record<number, any[]> = {};
-        possibleManagersArray.forEach((item) => {
-          possibleManagersMap[item.employeeId] = item.managers;
+        // Fetch remaining day offs and possible managers for each employee
+        const updatedEmployeesPromises = newEmployees.map(async (employee: ClientEmployee) => {
+          const remainingDayOffs = await fetchRemainingDayOffs(employee.id!);
+          const managers = await fetchPossibleManagers(employee.id!);
+          return {
+            ...employee,
+            remainingDayOffs, // Attach remaining day offs here
+            managers
+          };
         });
+
+        const updatedEmployees = await Promise.all(updatedEmployeesPromises);
+
+        // Create a map for possible managers
+        const possibleManagersMap: Record<number, any[]> = {};
+        updatedEmployees.forEach(emp => {
+          possibleManagersMap[emp.id] = emp.managers;
+        });
+
+        // Update state with employees and possible managers
+        setEmployees(updatedEmployees);
         setPossibleManagers(possibleManagersMap);
       } else {
-        console.error(
-          "Fetch employees returned non-iterable data:",
-          newEmployees
-        );
+        console.error("Fetch employees returned non-iterable data:", newEmployees);
       }
     } catch (error) {
       console.error("Error fetching employees:", error);
@@ -54,29 +58,21 @@ const EmployeeList = () => {
 
   const handleSaveClick = async () => {
     try {
-      const response = await editEmployee(
-        editingEmployeeId!,
-        editedEmployee!,
-        token!,
-        showError
-      );
+      const response = await editEmployee(editingEmployeeId!, editedEmployee!, token!, showError);
       if (response.success) {
-        const index = employees.findIndex(
-          (emp) => emp.id === editingEmployeeId
+        // Update the employee in state with new data
+        const updatedEmployees = employees.map(emp =>
+          emp.id === editingEmployeeId ? { ...editedEmployee!, remainingDayOffs: emp.remainingDayOffs } : emp
         );
-        if (index !== -1) {
-          // Create a new array with the updated employee
-          const updatedEmployees = [...employees];
-          updatedEmployees[index] = { ...editedEmployee };
 
-          // Update the state
-          setEmployees(updatedEmployees);
-        }
+        // Update the state
+        setEmployees(updatedEmployees);
       }
-      console.log(response);
-    } catch (error) {}
-    setEditingEmployeeId(0);
-    setEditedEmployee({});
+    } catch (error) {
+      showError("Failed to save employee.");
+    }
+    setEditingEmployeeId(undefined);
+    setEditedEmployee(undefined);
   };
   const handleCancelClick = () => {
     setEditedEmployee({});
@@ -97,6 +93,8 @@ const EmployeeList = () => {
     setEditingEmployeeId(employee.id);
     setEditedEmployee(employee);
   };
+
+
 
   useEffect(() => {
     fetchMoreEmployee();
@@ -120,7 +118,7 @@ const EmployeeList = () => {
           </thead>
           <tbody>
             {employees &&
-              employees.map((item: ClientEmployee, index: number) => (
+              employees.map((item: any, index: number) => (
                 <tr
                   key={item.id}
                   className={`text-center ${
@@ -157,21 +155,18 @@ const EmployeeList = () => {
                     )}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 w-32">
-                    {editingEmployeeId === item.id ? (
-                      <input
-                        type="number"
-                        value={editedEmployee?.remainingDayOffs || ""}
-                        onChange={(e) => handleChange(e, "remainingDayOffs")}
-                        className="border p-1 text-center w-full"
-                        style={{
-                          MozAppearance: "textfield",
-                          WebkitAppearance: "none",
-                        }}
-                      />
-                    ) : (
-                      item.remainingDayOffs
-                    )}
-                  </td>
+                  {editingEmployeeId === item.id ? (
+                    <input
+                      type="number"
+                      value={editedEmployee?.remainingDayOffs || ""}
+                      onChange={(e) => handleChange(e, "remainingDayOffs")}
+                      className="border p-1 text-center w-full"
+                      style={{ MozAppearance: "textfield", WebkitAppearance: "none" }}
+                    />
+                  ) : (
+                    item.remainingDayOffs || 0
+                  )}
+                </td>
                   <td className="border border-gray-300 px-4 py-2 w-24">
                     {editingEmployeeId === item.id ? (
                       <select
