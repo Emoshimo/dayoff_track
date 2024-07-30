@@ -35,7 +35,7 @@ namespace EmployeeManagement.Services
 
                 ITrigger trigger = TriggerBuilder.Create()
                     .WithIdentity($"{jobSchedule.JobKey}.trigger", jobSchedule.Group)
-                    .WithCronSchedule((jobSchedule.CronExpression))
+                    .WithCronSchedule(jobSchedule.CronExpression)
                     .ForJob(jobDetail)
                     .Build();
 

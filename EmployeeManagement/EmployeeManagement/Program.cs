@@ -58,11 +58,17 @@ builder.Services.AddScoped<IDayOffRequestRepository, DayOffRequestRepository>();
 builder.Services.AddScoped<IJobScheduleRepository, JobScheduleRepository>();
 builder.Services.AddScoped<IEmailRepository, EmailRepository>();
 
+// Caching
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 10;
+});
+
 // Services
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IManagerService, ManagerService>();
-builder.Services.AddScoped<ICacheService, CacheService>();
-builder.Services.AddScoped<IEmployeeCache,  EmployeeCache>();
+builder.Services.AddSingleton<ICacheService, CacheService>();
+builder.Services.AddSingleton<IEmployeeCache,  EmployeeCache>();
 builder.Services.AddScoped<IDayOffRequestService, DayOffRequestService>();
 
 //Register Hosted Service
@@ -71,10 +77,6 @@ builder.Services.AddScoped<IDayOffRequestService, DayOffRequestService>();
 
 // Quartz Configuration:
 builder.Services.ConfigureQuartz();
-
-// Caching
-builder.Services.AddMemoryCache();
-
 
 // Ending Custom Configurations
 

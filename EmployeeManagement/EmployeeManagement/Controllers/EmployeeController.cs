@@ -15,10 +15,13 @@ namespace EmployeeManagement.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IEmployeeService _employeeService;
-        public EmployeeController(IEmployeeRepository employeeRepository, IEmployeeService employeeService)
+        private readonly IEmployeeCache _employeeCache;
+
+        public EmployeeController(IEmployeeRepository employeeRepository, IEmployeeService employeeService, IEmployeeCache employeeCache)
         {
             _employeeRepository = employeeRepository;
             _employeeService = employeeService;
+            _employeeCache = employeeCache;
         }
         // GET: api/employee
         [HttpGet("all")]
@@ -44,7 +47,8 @@ namespace EmployeeManagement.Controllers
         [HttpGet("{id}/remaining_day_off")]
         public async Task<ActionResult<int>> GetRemainingDayOff(int id)
         {
-            return Ok(await _employeeService.CacheRemainingDayOff(id));
+            var rdo = await _employeeService.CalculateRemainingDayOffs(id);
+            return _employeeCache.CacheRemainingDayOff(id, rdo);
         }
 
 

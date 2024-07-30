@@ -28,11 +28,10 @@ namespace EmployeeManagement.Controllers
 
         private async Task<IEnumerable<DayOffType>> CacheDayOffTypes()
         {
-            return await _cacheService.GetOrCreateAsync(
+            var dayOffTypes = await _dayOffTypesRepository.GetAll();
+            return  _cacheService.GetOrCreate(
             "DayOff_Types",
-            () => _dayOffTypesRepository.GetAll(),
-            TimeSpan.FromHours(12),
-            TimeSpan.FromHours(24)
+            dayOffTypes
             );
         }
     }

@@ -11,11 +11,13 @@ namespace EmployeeManagement.Controllers
     public class DayOffRequestController : ControllerBase
     {
         private readonly IDayOffRequestRepository _dayOffRequestRepository;
-        private readonly IDayOffRequestService _dayOffRequestService;
-        public DayOffRequestController(IDayOffRequestRepository dayOffRequestRepository, IDayOffRequestService dayOffRequestService)
+        private readonly ICacheService _cacheService;
+        public DayOffRequestController(
+            IDayOffRequestRepository dayOffRequestRepository, 
+            ICacheService cacheService)
         {
             _dayOffRequestRepository = dayOffRequestRepository;
-            _dayOffRequestService = dayOffRequestService;
+            _cacheService = cacheService;
         }
         // GET : api/employee/dayoff/pending/{id}
         [HttpGet("dayoff/pending/{id}")]
@@ -36,11 +38,12 @@ namespace EmployeeManagement.Controllers
 
         public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetApprovedDayOffs(int id)
         {
-            var response = await _dayOffRequestService.GetApprovedDayOffsCache(id);
+            var response = await _dayOffRequestRepository.GetApprovedDayOffs(id);
             if (response == null)
             {
                 return NotFound();
             }
+            _cacheService.GetOrCreate($"Approved_Day_Offs_Employee{id}", response);
             return Ok(response);
         }
 
@@ -50,11 +53,12 @@ namespace EmployeeManagement.Controllers
 
         public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetRejectedDayOffs(int id)
         {
-            var response = await _dayOffRequestService.GetRejectedDayOffsCache(id);
+            var response = await _dayOffRequestRepository.GetRejectedDayOffs(id);
             if (response == null)
             {
                 return NotFound();
             }
+            _cacheService.GetOrCreate($"Rejected_Day_Offs_Employee{id}", response);
             return Ok(response);
         }
     }

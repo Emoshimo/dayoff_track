@@ -10,16 +10,13 @@ namespace EmployeeManagement.Services
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDayOffRequestRepository _dayOffRequestRepository;
-        private readonly IEmployeeCache _employeeCache;
 
         public ManagerService(
             IEmployeeRepository employeeRepository,
-            IDayOffRequestRepository dayOffRequestRepository,
-            IEmployeeCache employeeCache)
+            IDayOffRequestRepository dayOffRequestRepository)
         {
             _employeeRepository = employeeRepository;
             _dayOffRequestRepository = dayOffRequestRepository;
-            _employeeCache = employeeCache;
         }
         public async Task<IEnumerable<DayOffRequestForManager>> GetDayOffRequests(int managerId)
         {
@@ -82,7 +79,7 @@ namespace EmployeeManagement.Services
                 {
                     dayOffRequest.Status = "Rejected";
                     int RDOChange = DateUtils.GetWorkingDays(dayOffRequest.StartDate, dayOffRequest.EndDate);
-                    _employeeCache.UpdateRemainingDayOff(dayOffRequest.EmployeeId, RDOChange);
+                    //_employeeCache.UpdateRemainingDayOff(dayOffRequest.EmployeeId, RDOChange);
                 }
             }
 

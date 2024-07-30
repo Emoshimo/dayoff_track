@@ -8,13 +8,12 @@ namespace EmployeeManagement.Services
     {
         //private readonly IEmployeeRepository _employeeRepository;
         private readonly IMemoryCache _memoryCache;
-        private readonly SemaphoreSlim _cacheSemaphore = new SemaphoreSlim(1, 1);
 
         public EmployeeCache(IMemoryCache memoryCache)
         {
             _memoryCache = memoryCache;
         }
-        public async Task<int> CacheRemainingDayOff(int id, Func<Task<int>> calculateRemainingDayOff)
+        public int CacheRemainingDayOff(int id, int calculateRemainingDayOff)
         {
             string cacheKey = $"Remaining_Day_Of_Employee_{id}";
             if (_memoryCache.TryGetValue(cacheKey, out int cacheEntry))
@@ -24,20 +23,12 @@ namespace EmployeeManagement.Services
             }
             Console.WriteLine("Remaining Day off Cache Miss");
 
-            await _cacheSemaphore.WaitAsync();
-            try
-            {
-                cacheEntry = await calculateRemainingDayOff();
 
-                Console.WriteLine("Caching new remaining day off item");
-                _memoryCache.Set(cacheKey, cacheEntry, GetMemoryOptionsForRemainingDayOff());
-                return cacheEntry;
-            }
-            finally
-            {
-                _cacheSemaphore.Release();
-            }
+            cacheEntry = calculateRemainingDayOff;
 
+            Console.WriteLine("Caching new remaining day off item");
+            _memoryCache.Set(cacheKey, cacheEntry, GetMemoryOptionsForRemainingDayOff());
+            return cacheEntry;
         }
         public void UpdateRemainingDayOff(int id, int newRemainingDayOff)
         {
@@ -46,12 +37,13 @@ namespace EmployeeManagement.Services
             Console.WriteLine("Updated remaining day off cache");
         }
 
-        private MemoryCacheEntryOptions GetMemoryOptionsForRemainingDayOff()
+        private static MemoryCacheEntryOptions GetMemoryOptionsForRemainingDayOff()
         {
             var cacheOptions = new MemoryCacheEntryOptions
             {
-                SlidingExpiration = TimeSpan.FromHours(2),
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(12)
+                SlidingExpiration = TimeSpan.FromMinutes(45),
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(3),
+                Size = 2
             };
             return cacheOptions;
         }

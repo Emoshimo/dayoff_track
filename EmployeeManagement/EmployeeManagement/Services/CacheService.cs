@@ -9,12 +9,12 @@ namespace EmployeeManagement.Services
     public class CacheService : ICacheService
     {
         private readonly IMemoryCache _memoryCache;
-        public CacheService(IMemoryCache memoryCache, IEmployeeRepository employeeRepository)
+        public CacheService(IMemoryCache memoryCache)
         {
             _memoryCache = memoryCache;
         }
 
-        public async Task<T> GetOrCreateAsync<T>(string cacheKey, Func<Task<T>> createItem, TimeSpan? slidingExpiration = null, TimeSpan? absoluteExpiration = null)
+        public T GetOrCreate<T>(string cacheKey, T values)
         {
             Console.WriteLine($"Checking cache for key: {cacheKey}");
 
@@ -26,7 +26,7 @@ namespace EmployeeManagement.Services
 
             Console.WriteLine("Cache Miss");
 
-            cacheEntry = await createItem();
+            cacheEntry = values;
 
                 if (cacheEntry != null)
                 {
@@ -34,8 +34,9 @@ namespace EmployeeManagement.Services
 
                     var cacheOptions = new MemoryCacheEntryOptions
                     {
-                        SlidingExpiration = slidingExpiration ?? TimeSpan.FromMinutes(5),
-                        AbsoluteExpirationRelativeToNow = absoluteExpiration ?? TimeSpan.FromMinutes(15)
+                        SlidingExpiration = TimeSpan.FromMinutes(5),
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15),
+                        Size = 1
                     };
                     _memoryCache.Set(cacheKey, cacheEntry, cacheOptions);
                 }

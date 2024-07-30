@@ -10,14 +10,10 @@ namespace EmployeeManagement.Services
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDayOffRequestRepository _dayOffRequestRepository;
-        private readonly IEmployeeCache _employeeCache;
-        private readonly ICacheService _cacheService;
-        public EmployeeService(IEmployeeRepository employeeRepository, IDayOffRequestRepository dayOffRequestRepository, IEmployeeCache employeeCache, ICacheService cacheService)
+        public EmployeeService(IEmployeeRepository employeeRepository, IDayOffRequestRepository dayOffRequestRepository)
         {
             _employeeRepository = employeeRepository;
             _dayOffRequestRepository = dayOffRequestRepository;
-            _employeeCache = employeeCache;
-            _cacheService = cacheService;
         }
         public async Task<int> CalculateRemainingDayOffs(int employeeId)
         {
@@ -91,9 +87,9 @@ namespace EmployeeManagement.Services
                 request.Status = "Cancelled";
                 cancelledDayOffs += GetWorkingDays(request.StartDate, request.EndDate);
             }
-            int remainingDayOffs = await CacheRemainingDayOff(employeeId);
+            int remainingDayOffs = await CalculateRemainingDayOffs(employeeId);
             int newRDO = remainingDayOffs + cancelledDayOffs;
-            _employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
+            //_employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
             await _dayOffRequestRepository.SaveChangesAsync();
             return true;
         }
@@ -143,7 +139,6 @@ namespace EmployeeManagement.Services
 
             return list;
         }
-
         public int GetWorkingDays(DateOnly startDate, DateOnly endDate)
         {
             int workingDays = 0;
@@ -167,7 +162,7 @@ namespace EmployeeManagement.Services
         public async Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate)
         {
             var employee = await _employeeRepository.GetEmployee(employeeId);
-            var remainingDayOffs = await CacheRemainingDayOff(employeeId);
+            var remainingDayOffs = await CalculateRemainingDayOffs(employeeId);
             var anniversaryDate = new DateOnly(startDate.Year, employee.StartDate.Value.Month, employee.StartDate.Value.Day);
             bool crossesAnniversary = startDate < anniversaryDate && endDate >= anniversaryDate;
 
@@ -179,7 +174,7 @@ namespace EmployeeManagement.Services
                     throw new InvalidCastException("Insufficient Day Off Before Annual Day Off Update");
                 }
                 var newRDO = remainingDayOffs - daysBeforeAnniversary;
-                _employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
+                //_employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
 
                 var daysAfterAnniversary = GetWorkingDays(anniversaryDate, endDate) + 1;
                 if (daysAfterAnniversary > employee.NextDayOffUpdateAmount)
@@ -196,7 +191,7 @@ namespace EmployeeManagement.Services
                     throw new InvalidCastException("Insufficient Day Off");
                 }
                 int newRDO = remainingDayOffs - totalDays;
-                _employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
+                //_employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
             }
 
             var manager = await _employeeRepository.GetManagerAsync(employeeId);
@@ -219,12 +214,15 @@ namespace EmployeeManagement.Services
             return dayOffRequest;
         }
 
-        public async Task<int> CacheRemainingDayOff(int id)
+        public async Task<int> CacheDayOffs(int id)
         {
-            return await _employeeCache.CacheRemainingDayOff(
-                id,
-                () => CalculateRemainingDayOffs(id)
-            );
+            var newRDO = await CalculateRemainingDayOffs(id);
+            CacheRemainingDayOff(id, newRDO);
+            return newRDO;
+        }
+        public void CacheRemainingDayOff(int id, int newCacheEntry)
+        {
+           return;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace EmployeeManagement.Interfaces.ServiceInterfaces
         bool IsAnniversary(DateOnly startDate);
         int GetWorkingDays(DateOnly startDate, DateOnly endDate);
         int AnniversaryDayOffAdditions(Employee employee);
-        Task<int> CacheRemainingDayOff(int id);
+        Task<int> CacheDayOffs(int id);
+        void CacheRemainingDayOff(int id, int newEntry);
     }
 }
