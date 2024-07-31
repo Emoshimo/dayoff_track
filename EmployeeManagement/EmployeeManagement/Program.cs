@@ -61,7 +61,6 @@ builder.Services.AddScoped<IEmailRepository, EmailRepository>();
 // Caching
 builder.Services.AddMemoryCache(options =>
 {
-    options.SizeLimit = 10;
 });
 
 // Services

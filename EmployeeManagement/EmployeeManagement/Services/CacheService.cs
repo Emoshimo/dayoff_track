@@ -34,9 +34,7 @@ namespace EmployeeManagement.Services
 
                     var cacheOptions = new MemoryCacheEntryOptions
                     {
-                        SlidingExpiration = TimeSpan.FromMinutes(5),
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15),
-                        Size = 1
+                        SlidingExpiration = TimeSpan.FromSeconds(45),
                     };
                     _memoryCache.Set(cacheKey, cacheEntry, cacheOptions);
                 }

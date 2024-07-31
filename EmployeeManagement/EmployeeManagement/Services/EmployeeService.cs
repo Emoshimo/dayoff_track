@@ -18,16 +18,21 @@ namespace EmployeeManagement.Services
         public async Task<int> CalculateRemainingDayOffs(int employeeId)
         {
             var employee = await _employeeRepository.GetEmployee(employeeId);
-            int firstRemainingDayOff = employee.RemainingDayOffs;
-            var dayOffRequests = await _dayOffRequestRepository.GetDayOffRequestsByEmployeeId(employeeId);
+            if (employee != null)
+            {
+                int firstRemainingDayOff = employee.RemainingDayOffs;
+                var dayOffRequests = await _dayOffRequestRepository.GetDayOffRequestsByEmployeeId(employeeId);
 
-            int dayOffs = dayOffRequests
-                .Sum(d => GetWorkingDays(d.StartDate, d.EndDate));
-            int anniversaryDayOffs = AnniversaryDayOffAdditions(employee);
+                int dayOffs = dayOffRequests
+                    .Sum(d => GetWorkingDays(d.StartDate, d.EndDate));
+                int anniversaryDayOffs = AnniversaryDayOffAdditions(employee);
 
-            var remainingDayOff = firstRemainingDayOff + anniversaryDayOffs - dayOffs;
-                
-            return remainingDayOff;
+                var remainingDayOff = firstRemainingDayOff + anniversaryDayOffs - dayOffs;
+
+                return remainingDayOff;
+            }
+            return -1;
+            
         }
         public int AnniversaryDayOffAdditions(Employee employee)
         {

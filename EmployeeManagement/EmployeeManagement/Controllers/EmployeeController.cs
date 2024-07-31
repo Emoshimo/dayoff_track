@@ -48,7 +48,11 @@ namespace EmployeeManagement.Controllers
         public async Task<ActionResult<int>> GetRemainingDayOff(int id)
         {
             var rdo = await _employeeService.CalculateRemainingDayOffs(id);
-            return _employeeCache.CacheRemainingDayOff(id, rdo);
+            if (rdo == -1)
+            {
+                return NotFound();
+            }
+            return await _employeeCache.CacheRemainingDayOff(id, rdo);
         }
 
 

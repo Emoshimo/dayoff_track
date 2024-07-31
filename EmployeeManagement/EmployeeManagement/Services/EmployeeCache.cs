@@ -13,7 +13,9 @@ namespace EmployeeManagement.Services
         {
             _memoryCache = memoryCache;
         }
-        public int CacheRemainingDayOff(int id, int calculateRemainingDayOff)
+        static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1);
+
+        public async Task<int> CacheRemainingDayOff(int id, int calculateRemainingDayOff)
         {
             string cacheKey = $"Remaining_Day_Of_Employee_{id}";
             if (_memoryCache.TryGetValue(cacheKey, out int cacheEntry))
@@ -21,14 +23,26 @@ namespace EmployeeManagement.Services
                 Console.WriteLine("Remaining Day Off Cache Hit");
                 return cacheEntry;
             }
-            Console.WriteLine("Remaining Day off Cache Miss");
+            await semaphoreSlim.WaitAsync();
+            try
+            {
+                cacheEntry = calculateRemainingDayOff;
+
+                Console.WriteLine("Caching new remaining day off item");
+
+                _memoryCache.Set(cacheKey, cacheEntry, GetMemoryOptionsForRemainingDayOff());
+                return cacheEntry;
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception($"Caching Exception: ${ex.Message}  ${ex.InnerException}");
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
 
 
-            cacheEntry = calculateRemainingDayOff;
-
-            Console.WriteLine("Caching new remaining day off item");
-            _memoryCache.Set(cacheKey, cacheEntry, GetMemoryOptionsForRemainingDayOff());
-            return cacheEntry;
         }
         public void UpdateRemainingDayOff(int id, int newRemainingDayOff)
         {
@@ -41,9 +55,7 @@ namespace EmployeeManagement.Services
         {
             var cacheOptions = new MemoryCacheEntryOptions
             {
-                SlidingExpiration = TimeSpan.FromMinutes(45),
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(3),
-                Size = 2
+                SlidingExpiration = TimeSpan.FromSeconds(45),
             };
             return cacheOptions;
         }

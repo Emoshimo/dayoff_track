@@ -10,6 +10,7 @@ namespace EmployeeManagement.Services
         {
             services.AddQuartz(q =>
             {
+                
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             services.AddTransient<EmailNotificationJob>();
@@ -24,6 +25,7 @@ namespace EmployeeManagement.Services
             var jobSchedules = await jobScheduleRepository.GetJobSchedulesAsync();
             foreach (var jobSchedule in jobSchedules)
             {
+                Console.WriteLine("Hello");
                 IJobDetail jobDetail = jobSchedule.JobKey switch
                 {
                     "EmailNotificationJob" => JobBuilder.Create<EmailNotificationJob>()
