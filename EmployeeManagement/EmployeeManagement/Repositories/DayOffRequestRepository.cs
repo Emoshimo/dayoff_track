@@ -19,8 +19,6 @@ namespace EmployeeManagement.Repositories
             return request;
         }
 
-
-
         public async Task<DayOffRequest> GetDayOffRequestById(int requestId)
         {
             var target = await _context.DayOffRequests.FindAsync(requestId);
@@ -35,6 +33,7 @@ namespace EmployeeManagement.Repositories
                 .ToListAsync();
             return targets;
         }
+
 
         public async Task<IEnumerable<DayOffRequest>> GetDayOffRequestsByIds(IEnumerable<int> requestIds)
         {
@@ -96,6 +95,23 @@ namespace EmployeeManagement.Repositories
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<DayOffRequest>> GetPendingAndApprovedByDates(DateOnly startDate, DateOnly endDate)
+        {
+            return await _context.DayOffRequests
+            .Where(d => d.Status == "Approved" || d.Status == "Pending")
+            .Where(d => d.StartDate >= startDate && d.EndDate <= endDate).ToListAsync();
+        }
+
+        public async Task<IEnumerable<DayOffRequest>> GetDayOffRequestsByIdAndDates(int employeeId, DateOnly startDate, DateOnly endDate)
+        {
+            var targets = await _context.DayOffRequests
+                .Where(d => d.EmployeeId == employeeId)
+                .Where(d => d.Status == "Pending" || d.Status == "Approved")
+                .Where(d => d.StartDate <= endDate && d.EndDate >= startDate)
+                .ToListAsync();
+            return targets;
         }
     }
 }

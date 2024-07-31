@@ -54,6 +54,30 @@ namespace EmployeeManagement.Controllers
             }
             return await _employeeCache.CacheRemainingDayOff(id, rdo);
         }
+        
+        // Returns possible Managers for a given employee id 
+        // Possible Managers -> managers that won't cause a cycle in hierarchy tree
+        [HttpGet("possible_managers/{id}")]
+        public async Task<ActionResult<IEnumerable<ClientEmployee>>> FetchPossibleManagers(int id)
+        {
+            var possibleMangers = await _employeeService.GetPossibleManagersForEmployee(id);
+            return Ok(possibleMangers);
+        }
+        // Returns A list of top X employees that took the most day offs in given date period
+        [HttpGet("top_employees")]
+        public async Task<ActionResult<IEnumerable<EmployeeDayOffsDTO>>> GetTopEmployees(string timePeriod, int topX)
+        {
+            try
+            {
+                var topEmployees = await _employeeService.GetTopEmployeesDayOffsAsync(timePeriod, topX);
+                return Ok(topEmployees);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
 
 
         // POST: api/Employee/dayoff/{id}
@@ -101,12 +125,7 @@ namespace EmployeeManagement.Controllers
             }
             return Ok(response);
         }
-        [HttpGet("possible_managers/{id}")]
-        public async Task<ActionResult<IEnumerable<ClientEmployee>>> FetchPossibleManagers(int id)
-        {
-            var possibleMangers = await _employeeService.GetPossibleManagersForEmployee(id);
-            return Ok(possibleMangers);
-        }
+
 
 
         

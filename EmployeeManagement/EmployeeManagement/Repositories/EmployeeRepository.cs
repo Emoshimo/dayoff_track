@@ -108,5 +108,12 @@ namespace EmployeeManagement.Repositories
                 .Where(e => e.ManagerId == managerId)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Employee>> GetByListOfIds(IEnumerable<int> ids)
+        {
+            return await _context.Employees
+                .Where(e => ids.Contains(e.Id))
+                .ToListAsync();
+        }
     }
 }

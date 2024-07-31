@@ -2,6 +2,7 @@
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
+using EmployeeManagement.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.Services
@@ -219,15 +220,59 @@ namespace EmployeeManagement.Services
             return dayOffRequest;
         }
 
-        public async Task<int> CacheDayOffs(int id)
+        
+        public async Task<IEnumerable<EmployeeDayOffsDTO>> GetTopEmployeesDayOffsAsync(string timePeriod, int topN)
         {
-            var newRDO = await CalculateRemainingDayOffs(id);
-            CacheRemainingDayOff(id, newRDO);
-            return newRDO;
+            DateOnly endDate = DateOnly.FromDateTime(DateTime.Now);
+            DateOnly startDate;
+
+            switch (timePeriod)
+            {
+                case "month":
+                    startDate = endDate.AddMonths(-1);
+                    break;
+                case "3months":
+                    startDate = endDate.AddMonths(-3);
+                    break;
+                default:
+                    throw new ArgumentException("Invalid Time Period");
+            }
+            var dayOffRequests = await _dayOffRequestRepository.GetPendingAndApprovedByDates(startDate, endDate);
+            // Group requests by Employee 
+            var groupedData = dayOffRequests
+                .GroupBy(d => d.EmployeeId)
+                .Select(g => new
+                {
+                    EmployeeId = g.Key,
+                    // Calculate the total working days for each employee
+                    DayOffs = g.Sum(d => DateUtils.GetWorkingDays(d.StartDate, d.EndDate))
+                })
+                .OrderByDescending(g => g.DayOffs)
+                .Take(topN)
+                .ToList();
+            var employeeIds = groupedData.Select(g => g.EmployeeId).ToList();
+
+            var employees = await _employeeRepository.GetByListOfIds(employeeIds);
+
+            var result = new List<EmployeeDayOffsDTO>();
+
+            foreach (var employee in employees)
+            {
+                var groupedEmployee = groupedData.First(g => g.EmployeeId == employee.Id);
+                result.Add(new EmployeeDayOffsDTO
+                {
+                    Name = employee.Name,
+                    Surname = employee.Surname,
+                    Days = groupedEmployee.DayOffs
+                });
+            }
+
+            return result;
         }
-        public void CacheRemainingDayOff(int id, int newCacheEntry)
+
+        public Task<int> CalculateTakenDayOffsByTimePeriod(int id, string timePeriod)
         {
-           return;
+            throw new Exception("Not Implemented");
         }
     }
 }
