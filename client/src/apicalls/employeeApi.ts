@@ -202,7 +202,7 @@ export const fetchTopDayOffEmployees = async (
   timePeriod: string,
   topX: number,
   showError: (message: string) => void
-): Promise<ApiResponse<EmployeeDayOffs>> => {
+): Promise<ApiResponse<EmployeeDayOffs[]>> => {
   const response = await axiosInstance.get(`Employee/top_employees?timePeriod=${timePeriod}&topX=${topX}`, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -210,8 +210,8 @@ export const fetchTopDayOffEmployees = async (
   })
   if (response.status === 200)
   {
-    console.log(response);
-    return response.data;
+    console.log(response.data)
+    return {success: true, data: response.data};
   }
   else {
     return handleApiError(response.data.message, showError);

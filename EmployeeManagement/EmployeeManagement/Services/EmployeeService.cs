@@ -234,6 +234,9 @@ namespace EmployeeManagement.Services
                 case "3months":
                     startDate = endDate.AddMonths(-3);
                     break;
+                case "2weeks":
+                    startDate = endDate.AddDays(-14);
+                    break;
                 default:
                     throw new ArgumentException("Invalid Time Period");
             }
