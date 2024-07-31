@@ -1,4 +1,4 @@
-import { ApiResponse, ClientEmployee, DayOffRequest, DayOffRequestForManager } from "../interfaces/interfaces";
+import { ApiResponse, ClientEmployee, DayOffRequest, DayOffRequestForManager, EmployeeDayOffs } from "../interfaces/interfaces";
 import { axiosInstance, handleApiError } from "./api";
 
 
@@ -197,3 +197,23 @@ export const fetchDayOffsForManager = async (
   }
 };
 
+export const fetchTopDayOffEmployees = async (
+  token: string,
+  timePeriod: string,
+  topX: number,
+  showError: (message: string) => void
+): Promise<ApiResponse<EmployeeDayOffs>> => {
+  const response = await axiosInstance.get(`Employee/top_employees?timePeriod=${timePeriod}&topX=${topX}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  if (response.status === 200)
+  {
+    console.log(response);
+    return response.data;
+  }
+  else {
+    return handleApiError(response.data.message, showError);
+  }
+}

@@ -64,6 +64,12 @@ export interface JobSchedule {
   group: string
 }
 
+export interface EmployeeDayOffs{
+  name: string,
+  surname: string,
+  days: number
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;

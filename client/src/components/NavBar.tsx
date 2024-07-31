@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { MdAdminPanelSettings, MdLogout, MdSchedule  } from "react-icons/md";
+import { MdAdminPanelSettings, MdLogout, MdSchedule } from "react-icons/md";
 import { FaCalendarDay, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { HiOfficeBuilding } from "react-icons/hi";
 import { FaCodePullRequest, FaUser } from "react-icons/fa6";
+import { IoMdAnalytics } from "react-icons/io";
 
 import useEmployeeStore from "../stores/employeeStore";
 
@@ -21,7 +22,7 @@ const NavBar = () => {
   }
   let userRole =
     decodedToken?.[
-      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
     ];
   const handleLogout = () => {
     localStorage.clear();
@@ -53,9 +54,8 @@ const NavBar = () => {
 
   return (
     <div
-      className={`flex h-screen transition-all duration-1000 ${
-        isExpanded ? "w-56" : "w-20"
-      } bg-primary text-slate-200`}
+      className={`flex h-screen transition-all duration-1000 ${isExpanded ? "w-56" : "w-20"
+        } bg-primary text-slate-200`}
     >
       <div className={`flex flex-col items-center justify-between flex-grow `}>
         <div>
@@ -69,8 +69,7 @@ const NavBar = () => {
             <NavLink
               to="/dashboard/employee"
               className={({ isActive }) =>
-                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                  isActive ? "bg-second" : ""
+                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
                 }`
               }
             >
@@ -80,8 +79,7 @@ const NavBar = () => {
             <NavLink
               to="/dashboard/dayoff"
               className={({ isActive }) =>
-                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                  isActive ? "bg-second" : ""
+                `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
                 }`
               }
             >
@@ -94,8 +92,7 @@ const NavBar = () => {
                 <NavLink
                   to="/dashboard/admin"
                   className={({ isActive }) =>
-                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                      isActive ? "bg-second" : ""
+                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
                     }`
                   }
                 >
@@ -107,8 +104,7 @@ const NavBar = () => {
                 <NavLink
                   to="/dashboard/create-department"
                   className={({ isActive }) =>
-                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                      isActive ? "bg-second" : ""
+                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
                     }`
                   }
                 >
@@ -118,8 +114,7 @@ const NavBar = () => {
                 <NavLink
                   to="/dashboard/register-employee"
                   className={({ isActive }) =>
-                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                      isActive ? "bg-second" : ""
+                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
                     }`
                   }
                 >
@@ -128,16 +123,15 @@ const NavBar = () => {
                   />
                   {isExpanded && "Employees"}
                 </NavLink>
-                <NavLink 
-                to="/dashboard/jobschedules"
-                className={({isActive}) => 
-                  `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                    isActive ? "bg-second" : ""
-                      }`
+                <NavLink
+                  to="/dashboard/jobschedules"
+                  className={({ isActive }) =>
+                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
+                    }`
                   }
                 >
                   <MdSchedule
-                    style={{width: "32px", height: "32px"}}
+                    style={{ width: "32px", height: "32px" }}
                   />
                   {isExpanded && "Job Schedules"}
                 </NavLink>
@@ -145,17 +139,30 @@ const NavBar = () => {
             )}
 
             {userRole === "Manager" && (
-              <NavLink
-                to="/dashboard/manager"
-                className={({ isActive }) =>
-                  `flex flex-row items-center px-4 py-2 text-lg rounded hover:bg-hover ${
-                    isActive ? "bg-second" : ""
-                  }`
-                }
-              >
-                <FaCodePullRequest style={{ width: "32px", height: "32px" }} />{" "}
-                {isExpanded && "Manager"}
-              </NavLink>
+              <>
+                <NavLink
+                  to="/dashboard/manager"
+                  className={({ isActive }) =>
+                    `flex flex-row items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
+                    }`
+                  }
+                >
+                  <FaCodePullRequest style={{ width: "32px", height: "32px" }} />{" "}
+                  {isExpanded && "Manager"}
+                </NavLink>
+                <NavLink
+                  to="/dashboard/analytics"
+                  className={({ isActive }) =>
+                    `flex flex-row items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
+                    }`
+                  }
+                >
+                  <IoMdAnalytics style={{ width: "32px", height: "32px" }} />{" "}
+                  {isExpanded && "Analytics"}
+                </NavLink>
+              </>
+
+
             )}
           </nav>
         </div>
