@@ -9,7 +9,6 @@ namespace EmployeeManagement.Interfaces.ServiceInterfaces
         Task<bool> CancelDayOffRequest(IEnumerable<int> requestIds);
         Task<IEnumerable<ClientEmployee>> GetPossibleManagersForEmployee(int employeeId);
         Task<IEnumerable<EmployeeDayOffsDTO>> GetTopEmployeesDayOffsAsync(string timePeriod, int topN);
-        Task<int> CalculateTakenDayOffsByTimePeriod(int id, string timePeriod);
         Task<int> CalculateRemainingDayOffs(int employeeId);
         bool IsAnniversary(DateOnly startDate);
         int GetWorkingDays(DateOnly startDate, DateOnly endDate);

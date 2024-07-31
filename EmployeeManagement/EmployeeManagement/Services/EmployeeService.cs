@@ -270,9 +270,5 @@ namespace EmployeeManagement.Services
             return result;
         }
 
-        public Task<int> CalculateTakenDayOffsByTimePeriod(int id, string timePeriod)
-        {
-            throw new Exception("Not Implemented");
-        }
     }
 }
