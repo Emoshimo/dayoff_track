@@ -117,22 +117,56 @@ const EmployeeList = () => {
             onChange={(e) => setPageSize(Number(e.target.value))}
             className="border p-1 ml-2"
           >
-            <option value={5}>5</option>
             <option value={10}>10</option>
-            <option value={20}>20</option>
+            <option value={20}>25</option>
             <option value={50}>50</option>
+            <option value={100}>100</option>
           </select>
         </div>
         <table className="table-auto min-w-full bg-white border-collapse border">
           <thead>
             <tr className="bg-primary text-slate-200">
               <th className="border border-gray-300 px-4 py-2">Id</th>
-              <th className="border border-gray-300 px-4 py-2">Name</th>
-              <th className="border border-gray-300 px-4 py-2">Surname</th>
               <th className="border border-gray-300 px-4 py-2">
-                Remaining Day Offs
+                <div className="flex flex-col">
+                  <span>Name</span>
+                  <input
+                    type="text"
+                    placeholder="Search by name"
+                    className="mt-1 px-2 py-1 border border-gray-300 rounded"
+                  />
+                </div>
               </th>
-              <th className="border border-gray-300 px-4 py-2">Manager</th>
+              <th className="border border-gray-300 px-4 py-2">
+                <div className="flex flex-col">
+                  <span>Surname</span>
+                  <input
+                    type="text"
+                    placeholder="Search by surname"
+                    className="mt-1 px-2 py-1 border border-gray-300 rounded"
+                  />
+                </div>
+              </th>
+              <th className="border border-gray-300 px-4 py-2">
+                <div className="flex flex-col">
+                  <span>Remaining Day Offs</span>
+                  <input
+                    type="text"
+                    placeholder="Search by day offs"
+                    className="mt-1 px-2 py-1 border border-gray-300 rounded"
+                  />
+                </div>
+              </th>
+              <th className="border border-gray-300 px-4 py-2">
+                <div className="flex flex-col">
+                  <span>Manager</span>
+                  <input
+                    type="text"
+                    placeholder="Search by manager"
+                    className="mt-1 px-2 py-1 border border-gray-300 rounded"
+                  />
+                </div>
+              </th>
               <th className="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
           </thead>
@@ -235,11 +269,11 @@ const EmployeeList = () => {
               ))}
           </tbody>
         </table>
-        <div className="m-4 flex justify-center">
+        <div className="m-4 flex items-center justify-center">
           <button
             onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
             disabled={pageNumber === 1}
-            className="bg-gray-300 text-gray-700 px-3 py-1 rounded mr-2"
+            className={`text-slate-200 px-3 py-1 rounded mr-2 ${pageNumber === 1 ? `bg-gray-400` : `bg-primary`}`}
           >
             Previous
           </button>
@@ -247,7 +281,7 @@ const EmployeeList = () => {
           <button
             onClick={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
             disabled={pageNumber === totalPages}
-            className="bg-gray-300 text-gray-700 px-3 py-1 rounded ml-2"
+            className={`text-slate-200 px-3 py-1 rounded ml-2 ${pageNumber === totalPages ? `bg-gray-400` : `bg-primary`}`}
           >
             Next
           </button>
