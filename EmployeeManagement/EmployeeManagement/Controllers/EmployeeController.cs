@@ -26,10 +26,38 @@ namespace EmployeeManagement.Controllers
         // GET: api/employee
         [HttpGet("all")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
+        public async Task<ActionResult<IEnumerable<ClientEmployee>>> GetEmployees()
         {
            var employees = await _employeeRepository.GetEmployees();
            return Ok(employees);
+        }
+        [HttpGet("pagination")]
+        public async Task<ActionResult<PaginationResponse>> GetEmployeesWithPagination(int pageNumber, int pageSize)
+        {
+            var TotalPages = await _employeeService.GetPageNumber(pageSize);
+            var Employees = await _employeeRepository.GetEmployees(pageNumber, pageSize);
+            var response = new PaginationResponse{
+                employees = Employees,
+                totalPageNumber = TotalPages
+            };
+            return Ok(response);
+        }
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<ClientEmployee>>> SearchEmployees(
+            [FromQuery] string searchTerm,
+            [FromQuery] string columnName,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                var result = await _employeeService.SearchEmployees(pageNumber, pageSize, searchTerm, columnName);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
         // GET : api/employee/get
         [HttpGet("{id}")]
@@ -124,9 +152,5 @@ namespace EmployeeManagement.Controllers
             }
             return Ok(response);
         }
-
-
-
-        
     }
 }

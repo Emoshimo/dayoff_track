@@ -71,6 +71,11 @@ export interface EmployeeDayOffs{
   fullName: string
 }
 
+export interface PaginationResponse {
+  employees: ClientEmployee[],
+  totalPageNumber: number
+};
+
 
 export interface ApiResponse<T> {
   success: boolean;

@@ -41,7 +41,7 @@ namespace EmployeeManagement.Services
                     .ForJob(jobDetail)
                     .Build();
 
-                await scheduler.ScheduleJob(jobDetail, trigger);
+                //await scheduler.ScheduleJob(jobDetail, trigger);
 
             }
 

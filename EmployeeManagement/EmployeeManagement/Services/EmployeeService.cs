@@ -274,5 +274,38 @@ namespace EmployeeManagement.Services
             return result;
         }
 
+        public async Task<IEnumerable<ClientEmployee>> SearchEmployees(int pageNumber, int pageSize, string searchTerm, string columnName)
+        {
+            var query = _employeeRepository.GetAll();
+            
+            if (!string.IsNullOrEmpty(searchTerm) && !string.IsNullOrEmpty(columnName))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(e => EF.Functions.Like(EF.Property<string>(e, columnName).ToLower(), $"%{searchTerm}%"));
+            }
+
+            var employees = await query
+                .OrderBy(e => e.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            var clientEmployees = employees.Select(e => new ClientEmployee
+            {
+                Id = e.Id,
+                ManagerId = e.ManagerId,
+                Name = e.Name,
+                Surname = e.Surname,
+            }).ToList();
+
+            return clientEmployees;
+        }
+        
+        public async Task<int> GetPageNumber(int pageSize)
+        {
+            var count = await _employeeRepository.GetEmployeeCount();
+            var totalPages = (int)Math.Ceiling((double)count / pageSize);
+            return totalPages;
+        }
+
     }
 }

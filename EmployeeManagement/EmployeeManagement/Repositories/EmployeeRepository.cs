@@ -28,6 +28,30 @@ namespace EmployeeManagement.Repositories
             }).ToList();
             return clientEmployees;
         }
+        public async Task<IEnumerable<ClientEmployee>> GetEmployees(int pageNumber, int pageSize)
+        {
+            int skip = pageSize * (pageNumber - 1);
+            var employees = await _context.Employees
+                .OrderBy(e => e.Id)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var clientEmployees = employees.Select(e => new ClientEmployee
+            {
+                Id = e.Id,
+                ManagerId = e.ManagerId,
+                Name = e.Name,
+                Surname = e.Surname,
+            }).ToList();
+            return clientEmployees;
+
+        }
+        public async Task<int> GetEmployeeCount()
+        {
+            int count =  await _context.Employees.CountAsync();
+            return count;
+        }
         public IQueryable<Employee> GetAll()
         {
             var employees = _context.Employees;

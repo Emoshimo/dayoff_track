@@ -15,20 +15,25 @@ const EmployeeList = () => {
   const [possibleManagers, setPossibleManagers] = useState<
     Record<number, any[]>
   >({});
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
   const token = localStorage.getItem("token");
   const showError = (message: string) => {
     setPopupMessage(message);
   };
+  const [totalPages, setTotalPages] = useState<number>(0);
+
   const handleClosePopup = () => {
     setPopupMessage(null);
   };
   const fetchMoreEmployee = async () => {
     try {
-      const newEmployees = await fetchEmployees(token!, showError);
+      const { employees, totalPageNumber } = await fetchEmployees(pageNumber, pageSize, token!, showError);
 
-      if (newEmployees) {
+      if (employees) {
         // Fetch remaining day offs and possible managers for each employee
-        const updatedEmployeesPromises = newEmployees.map(async (employee: ClientEmployee) => {
+        setTotalPages(totalPageNumber);
+        const updatedEmployeesPromises = employees.map(async (employee: ClientEmployee) => {
           const remainingDayOffs = await fetchRemainingDayOffs(employee.id!);
           const managers = await fetchPossibleManagers(employee.id!);
           return {
@@ -50,7 +55,7 @@ const EmployeeList = () => {
         setEmployees(updatedEmployees);
         setPossibleManagers(possibleManagersMap);
       } else {
-        console.error("Fetch employees returned non-iterable data:", newEmployees);
+        console.error("Fetch employees returned non-iterable data:", employees);
       }
     } catch (error) {
       console.error("Error fetching employees:", error);
@@ -96,15 +101,28 @@ const EmployeeList = () => {
     setEditedEmployee(employee);
   };
 
-
-
   useEffect(() => {
     fetchMoreEmployee();
-  }, []);
+    console.log(totalPages);
+  }, [pageNumber, pageSize]);
 
   return (
     <div>
       <div className="overflow-x-auto">
+        <div>
+          <label htmlFor="pageSize">Page Size: </label>
+          <select
+            id="pageSize"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+            className="border p-1 ml-2"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </div>
         <table className="table-auto min-w-full bg-white border-collapse border">
           <thead>
             <tr className="bg-primary text-slate-200">
@@ -123,9 +141,8 @@ const EmployeeList = () => {
               employees.map((item: any, index: number) => (
                 <tr
                   key={item.id}
-                  className={`text-center ${
-                    index % 2 === 0 ? "" : "bg-slate-100"
-                  }`}
+                  className={`text-center ${index % 2 === 0 ? "" : "bg-slate-100"
+                    }`}
                 >
                   <td className="border border-gray-300 px-4 py-2 w-24">
                     {item.id}
@@ -157,18 +174,18 @@ const EmployeeList = () => {
                     )}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 w-32">
-                  {editingEmployeeId === item.id ? (
-                    <input
-                      type="number"
-                      value={editedEmployee?.remainingDayOffs || ""}
-                      onChange={(e) => handleChange(e, "remainingDayOffs")}
-                      className="border p-1 text-center w-full"
-                      style={{ MozAppearance: "textfield", WebkitAppearance: "none" }}
-                    />
-                  ) : (
-                    item.remainingDayOffs || 0
-                  )}
-                </td>
+                    {editingEmployeeId === item.id ? (
+                      <input
+                        type="number"
+                        value={editedEmployee?.remainingDayOffs || ""}
+                        onChange={(e) => handleChange(e, "remainingDayOffs")}
+                        className="border p-1 text-center w-full"
+                        style={{ MozAppearance: "textfield", WebkitAppearance: "none" }}
+                      />
+                    ) : (
+                      item.remainingDayOffs || 0
+                    )}
+                  </td>
                   <td className="border border-gray-300 px-4 py-2 w-24">
                     {editingEmployeeId === item.id ? (
                       <select
@@ -218,6 +235,23 @@ const EmployeeList = () => {
               ))}
           </tbody>
         </table>
+        <div className="m-4 flex justify-center">
+          <button
+            onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+            disabled={pageNumber === 1}
+            className="bg-gray-300 text-gray-700 px-3 py-1 rounded mr-2"
+          >
+            Previous
+          </button>
+          <span>Page {pageNumber} of {totalPages}</span>
+          <button
+            onClick={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
+            disabled={pageNumber === totalPages}
+            className="bg-gray-300 text-gray-700 px-3 py-1 rounded ml-2"
+          >
+            Next
+          </button>
+        </div>
       </div>
       {popupMessage && (
         <PopUp message={popupMessage} onClose={handleClosePopup} />

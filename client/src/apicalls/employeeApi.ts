@@ -3,11 +3,13 @@ import { axiosInstance, handleApiError } from "./api";
 
 
 export const fetchEmployees = async (
+  pageNumber: number,
+  pageSize: number,
   token: string,
   showError: (message: string) => void
 ) => {
   try {
-    const response = await axiosInstance.get(`/Employee/all`, {
+    const response = await axiosInstance.get(`/Employee/pagination?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -18,7 +20,9 @@ export const fetchEmployees = async (
   } catch (error) {
     return handleApiError(error, showError);
   }
-};export const fetchPossibleManagers = async (id: number) => {
+};
+
+export const fetchPossibleManagers = async (id: number) => {
   const response = await axiosInstance.get(`/Employee/possible_managers/${id}`);
   if (response.status === 200) {
     return response.data;
