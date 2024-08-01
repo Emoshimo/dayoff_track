@@ -14,7 +14,7 @@ namespace EmployeeManagement.Services
             _memoryCache = memoryCache;
         }
 
-        public T GetOrCreate<T>(string cacheKey, T values)
+        public T GetOrCreate<T>(string cacheKey, Func<T> creator)
         {
             Console.WriteLine($"Checking cache for key: {cacheKey}");
 
@@ -26,7 +26,7 @@ namespace EmployeeManagement.Services
 
             Console.WriteLine("Cache Miss");
 
-            cacheEntry = values;
+            cacheEntry = creator();
 
                 if (cacheEntry != null)
                 {

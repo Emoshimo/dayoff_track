@@ -165,13 +165,16 @@ namespace EmployeeManagement.Services
             return today.Month == startDate.Month && today.Day == startDate.Day;
         }
 
-        public async Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate)
+        public async Task<int> RequestDayOff(int employeeId, int dayOffType, int remainingDayOffs, DateOnly startDate, DateOnly endDate)
         {
             var employee = await _employeeRepository.GetEmployee(employeeId);
-            var remainingDayOffs = await CalculateRemainingDayOffs(employeeId);
+            if (employee == null)
+            {
+                throw new ArgumentException("Not found");
+            }
             var anniversaryDate = new DateOnly(startDate.Year, employee.StartDate.Value.Month, employee.StartDate.Value.Day);
             bool crossesAnniversary = startDate < anniversaryDate && endDate >= anniversaryDate;
-
+            int newRDO = remainingDayOffs;
             if (dayOffType == 2 && crossesAnniversary)
             {
                 var daysBeforeAnniversary = GetWorkingDays(startDate, anniversaryDate) + 1;
@@ -179,8 +182,7 @@ namespace EmployeeManagement.Services
                 {
                     throw new InvalidCastException("Insufficient Day Off Before Annual Day Off Update");
                 }
-                var newRDO = remainingDayOffs - daysBeforeAnniversary;
-                //_employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
+                newRDO = remainingDayOffs - daysBeforeAnniversary;
 
                 var daysAfterAnniversary = GetWorkingDays(anniversaryDate, endDate) + 1;
                 if (daysAfterAnniversary > employee.NextDayOffUpdateAmount)
@@ -196,8 +198,7 @@ namespace EmployeeManagement.Services
                 {
                     throw new InvalidCastException("Insufficient Day Off");
                 }
-                int newRDO = remainingDayOffs - totalDays;
-                //_employeeCache.UpdateRemainingDayOff(employeeId, newRDO);
+                newRDO = remainingDayOffs - totalDays;
             }
 
             var manager = await _employeeRepository.GetManagerAsync(employeeId);
@@ -217,7 +218,7 @@ namespace EmployeeManagement.Services
             await _dayOffRequestRepository.AddDayOffRequest(dayOffRequest);
 
             await _dayOffRequestRepository.SaveChangesAsync();
-            return dayOffRequest;
+            return newRDO;
         }
 
         

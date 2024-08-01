@@ -41,7 +41,7 @@ export const requestDayOff = async (
   endDate: string,
   dayOffTypeId: number,
   showError: (message: string) => void
-): Promise<ApiResponse<DayOffRequest> | null> => {
+): Promise<ApiResponse<number> | null> => {
 
   try {
     const response = await axiosInstance.post(
@@ -96,7 +96,7 @@ export const evaluateDayOff = async (
   token: string,
   approved: boolean,
   showError: (message: string) => void
-): Promise<ApiResponse<DayOffRequestForManager>> => {
+): Promise<ApiResponse<number>> => {
   try {
     const response = await axiosInstance.post(
       `/Manager/dayoff/${id}`,

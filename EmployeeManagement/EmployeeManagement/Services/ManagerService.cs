@@ -43,12 +43,13 @@ namespace EmployeeManagement.Services
             return result;
         }
 
-        public async Task<DayOffRequest> EvaluateDayOff(int dayOffRequestId, bool approved)
+        public async Task<int> EvaluateDayOff(int dayOffRequestId, int rdo, bool approved)
         {
+            int newRDO = rdo;
             var dayOffRequest = await _dayOffRequestRepository.GetDayOffRequestById(dayOffRequestId);
             if (dayOffRequest == null)
             {
-                return null;
+                throw new ArgumentException("Day off request not found.");
             }
 
             if (dayOffRequest.Status != "Pending")
@@ -63,11 +64,20 @@ namespace EmployeeManagement.Services
             }
             else
             {
-                return null;
+                throw new InvalidCastException("This day off request has no manager.");
             }
             if (evaluatingManager?.ManagerId != null)
             {
-                dayOffRequest.PendingManagerId = evaluatingManager.ManagerId;
+                if (!approved)
+                {
+                    dayOffRequest.Status = "Rejected";
+                    int RDOChange = DateUtils.GetWorkingDays(dayOffRequest.StartDate, dayOffRequest.EndDate);
+                    newRDO = rdo + RDOChange;
+                }
+                else
+                {
+                    dayOffRequest.PendingManagerId = evaluatingManager.ManagerId;
+                }
             }
             else
             {
@@ -79,12 +89,12 @@ namespace EmployeeManagement.Services
                 {
                     dayOffRequest.Status = "Rejected";
                     int RDOChange = DateUtils.GetWorkingDays(dayOffRequest.StartDate, dayOffRequest.EndDate);
-                    //_employeeCache.UpdateRemainingDayOff(dayOffRequest.EmployeeId, RDOChange);
+                    newRDO = rdo + RDOChange;
                 }
             }
 
             await _dayOffRequestRepository.SaveChangesAsync();
-            return dayOffRequest;
+            return newRDO;
         }
     }
 }

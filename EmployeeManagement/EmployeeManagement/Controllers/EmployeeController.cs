@@ -47,12 +47,13 @@ namespace EmployeeManagement.Controllers
         [HttpGet("{id}/remaining_day_off")]
         public async Task<ActionResult<int>> GetRemainingDayOff(int id)
         {
-            var rdo = await _employeeService.CalculateRemainingDayOffs(id);
-            if (rdo == -1)
+
+            var response = await _employeeCache.CacheRemainingDayOff(id, () => _employeeService.CalculateRemainingDayOffs(id));
+            if (response == -1)
             {
-                return NotFound();
+                return NotFound("User Not found");
             }
-            return await _employeeCache.CacheRemainingDayOff(id, rdo);
+            return Ok(response);
         }
         
         // Returns possible Managers for a given employee id 
@@ -79,7 +80,6 @@ namespace EmployeeManagement.Controllers
             
         }
 
-
         // POST: api/Employee/dayoff/{id}
         [HttpPost("dayoff/{id}")]
         [Authorize(Roles = "Manager, User")]
@@ -98,15 +98,14 @@ namespace EmployeeManagement.Controllers
             var endDateOnly = new DateOnly(parsedEndDate.Year, parsedEndDate.Month, parsedEndDate.Day);
             try
             {
-                var employee = await _employeeRepository.GetEmployeeById(id);
-                if (employee == null)
-                {
-                    return NotFound("Employee not found.");
-                }
-
-                var response = await _employeeService.RequestDayOff(id ,model.DayOffTypeId, startDateOnly, endDateOnly);
-    
+                var rdo = await _employeeCache.CacheRemainingDayOff(id, () => _employeeService.CalculateRemainingDayOffs(id));
+                var response = await _employeeService.RequestDayOff(id ,model.DayOffTypeId, rdo, startDateOnly, endDateOnly);
+                _employeeCache.UpdateRemainingDayOff(id, response);
                 return StatusCode(201, "Request has sent.");
+            }
+            catch (ArgumentException ae)
+            {
+                return NotFound(ae.Message);
             }
             catch (Exception ex) 
             {

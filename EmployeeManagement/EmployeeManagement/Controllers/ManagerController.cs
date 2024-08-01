@@ -13,11 +13,15 @@ namespace EmployeeManagement.Controllers
     {
         private readonly IManagerRepository _managerRepository;
         private readonly IManagerService _managerService;
+        private readonly IEmployeeCache _employeeCache;
+        private readonly IEmployeeService _employeeService;
 
-        public ManagerController(IManagerRepository managerRepository, IManagerService managerService)
+        public ManagerController(IManagerRepository managerRepository, IManagerService managerService, IEmployeeCache employeeCache, IEmployeeService employeeService)
         {
             _managerRepository = managerRepository;
             _managerService = managerService;
+            _employeeCache = employeeCache;
+            _employeeService = employeeService;
         }
         // POST: api/Manager/dayoff/{id}
         [HttpPost("dayoff/{id}")]
@@ -26,12 +30,17 @@ namespace EmployeeManagement.Controllers
         {
             try
             {
-                var response = await _managerService.EvaluateDayOff(id, approved);
-                if (response == null)
-                {
-                    return NotFound();
-                }
+                var rdo = await _employeeCache.CacheRemainingDayOff(id, () =>_employeeService.CalculateRemainingDayOffs(id));
+                var response = await _managerService.EvaluateDayOff(id, rdo, approved);
                 return StatusCode(201, response);
+            }
+            catch(InvalidCastException ice)
+            {
+                return NotFound(ice.Message);
+            }
+            catch (ArgumentException ae)
+            {
+                return NotFound(ae.Message);
             }
             catch (UnauthorizedAccessException)
             {
@@ -51,7 +60,7 @@ namespace EmployeeManagement.Controllers
             try
             {
                 var response = await _managerService.GetDayOffRequests(managerId);
-                if (response == null )
+                if (response == null)
                 {
                     return NotFound();
                 }

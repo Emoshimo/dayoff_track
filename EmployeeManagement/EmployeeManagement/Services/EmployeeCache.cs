@@ -15,7 +15,7 @@ namespace EmployeeManagement.Services
         }
         static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1);
 
-        public async Task<int> CacheRemainingDayOff(int id, int calculateRemainingDayOff)
+        public async Task<int> CacheRemainingDayOff(int id, Func<Task<int>> creator)
         {
             string cacheKey = $"Remaining_Day_Of_Employee_{id}";
             if (_memoryCache.TryGetValue(cacheKey, out int cacheEntry))
@@ -26,7 +26,7 @@ namespace EmployeeManagement.Services
             await semaphoreSlim.WaitAsync();
             try
             {
-                cacheEntry = calculateRemainingDayOff;
+                cacheEntry = await creator();
 
                 Console.WriteLine("Caching new remaining day off item");
 
@@ -41,9 +41,8 @@ namespace EmployeeManagement.Services
             {
                 semaphoreSlim.Release();
             }
-
-
         }
+
         public void UpdateRemainingDayOff(int id, int newRemainingDayOff)
         {
             string cacheKey = $"Remaining_Day_Of_Employee_{id}";

@@ -2,7 +2,7 @@
 {
     public interface IEmployeeCache
     {
-        Task<int> CacheRemainingDayOff(int id, int calculateRemainingDayOff);
+        Task<int> CacheRemainingDayOff(int id, Func<Task<int>> creator);
         void UpdateRemainingDayOff(int id, int newRemainingDayOff);
     }
 }

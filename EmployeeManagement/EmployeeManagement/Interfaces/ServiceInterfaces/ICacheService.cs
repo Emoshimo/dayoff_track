@@ -2,6 +2,6 @@
 {
     public interface ICacheService
     {
-        T GetOrCreate<T>(string cacheKey, T values);
+        T GetOrCreate<T>(string cacheKey, Func<T> creator);
     }
 }

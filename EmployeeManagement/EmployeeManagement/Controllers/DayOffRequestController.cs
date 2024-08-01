@@ -38,12 +38,7 @@ namespace EmployeeManagement.Controllers
 
         public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetApprovedDayOffs(int id)
         {
-            var response = await _dayOffRequestRepository.GetApprovedDayOffs(id);
-            if (response == null)
-            {
-                return NotFound();
-            }
-            _cacheService.GetOrCreate($"Approved_Day_Offs_Employee{id}", response);
+            var response = await _cacheService.GetOrCreate($"Approved_Day_Offs_Employee{id}", () => _dayOffRequestRepository.GetApprovedDayOffs(id));
             return Ok(response);
         }
 
@@ -53,12 +48,7 @@ namespace EmployeeManagement.Controllers
 
         public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetRejectedDayOffs(int id)
         {
-            var response = await _dayOffRequestRepository.GetRejectedDayOffs(id);
-            if (response == null)
-            {
-                return NotFound();
-            }
-            _cacheService.GetOrCreate($"Rejected_Day_Offs_Employee{id}", response);
+            var response = await _cacheService.GetOrCreate($"Rejected_Day_Offs_Employee{id}", () => _dayOffRequestRepository.GetRejectedDayOffs(id));
             return Ok(response);
         }
     }

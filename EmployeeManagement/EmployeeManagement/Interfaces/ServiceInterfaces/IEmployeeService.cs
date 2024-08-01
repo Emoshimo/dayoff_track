@@ -5,7 +5,7 @@ namespace EmployeeManagement.Interfaces.ServiceInterfaces
 {
     public interface IEmployeeService
     {
-        Task<DayOffRequest> RequestDayOff(int employeeId, int dayOffType, DateOnly startDate, DateOnly endDate);
+        Task<int> RequestDayOff(int employeeId, int dayOffType, int rdo, DateOnly startDate, DateOnly endDate);
         Task<bool> CancelDayOffRequest(IEnumerable<int> requestIds);
         Task<IEnumerable<ClientEmployee>> GetPossibleManagersForEmployee(int employeeId);
         Task<IEnumerable<EmployeeDayOffsDTO>> GetTopEmployeesDayOffsAsync(string timePeriod, int topN);
