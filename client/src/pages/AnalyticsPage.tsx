@@ -3,6 +3,7 @@ import { fetchTopDayOffEmployees } from '../apicalls/employeeApi'
 import { EmployeeDayOffs } from '../interfaces/interfaces';
 import TopBarChart from '../components/AnalyticsPageComponents/TopBarChart';
 import ChartSelector from '../components/AnalyticsPageComponents/ChartSelector';
+import TopPieChart from '../components/AnalyticsPageComponents/TopPieChart';
 
 const AnalyticsPage = () => {
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
@@ -38,7 +39,10 @@ const AnalyticsPage = () => {
       </header>
       <div className="flex flex-col gap-6">
         <ChartSelector topX={topX} setTopX={setTopX} timePeriod={timePeriod} setTimePeriod={setTimePeriod} />
-        {employeeDayOffs.length > 0 && <TopBarChart data={employeeDayOffs} />}
+        <div className="flex flex-row">
+          {employeeDayOffs.length > 0 && <TopBarChart data={employeeDayOffs} />}
+          {employeeDayOffs.length > 0 && <TopPieChart data={employeeDayOffs} />}
+        </div>
         {popupMessage && <div className="text-red-500">{popupMessage}</div>}
       </div>
     </div>
