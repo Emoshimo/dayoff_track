@@ -10,6 +10,7 @@ const AnalyticsPage = () => {
   const [employeeDayOffs, setEmployeeDayOffs] = useState<EmployeeDayOffs[]>([])
   const [topX, setTopX] = useState<number>(5);
   const [timePeriod, setTimePeriod] = useState<string>("month");
+  const [chartType, setChartType] = useState<string>("BarChart");
 
   const showError = (message: string) => {
     setPopupMessage(message);
@@ -38,12 +39,23 @@ const AnalyticsPage = () => {
         <h3 className="text-primary text-2xl font-semibold">Analytics Page</h3>
       </header>
       <div className="flex flex-col gap-6">
-        <ChartSelector topX={topX} setTopX={setTopX} timePeriod={timePeriod} setTimePeriod={setTimePeriod} />
-        <div className="flex flex-row">
-          {employeeDayOffs.length > 0 && <TopBarChart data={employeeDayOffs} />}
-          {employeeDayOffs.length > 0 && <TopPieChart data={employeeDayOffs} />}
+        <ChartSelector
+          topX={topX}
+          setTopX={setTopX}
+          timePeriod={timePeriod}
+          setTimePeriod={setTimePeriod}
+          chartType={chartType}
+          setChartType={setChartType}
+        />
+        <div className="flex flex-row justify-center">
+          {employeeDayOffs.length > 0 && (
+            <>
+              {chartType === "BarChart" && <TopBarChart data={employeeDayOffs} />}
+              {chartType === "PieChart" && <TopPieChart data={employeeDayOffs} />}
+              {/* Add more chart types here as needed */}
+            </>
+          )}
         </div>
-        {popupMessage && <div className="text-red-500">{popupMessage}</div>}
       </div>
     </div>
   )

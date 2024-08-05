@@ -222,7 +222,6 @@ namespace EmployeeManagement.Services
             return newRDO;
         }
 
-        
         public async Task<IEnumerable<EmployeeDayOffsDTO>> GetTopEmployeesDayOffsAsync(string timePeriod, int topN)
         {
             DateOnly endDate = DateOnly.FromDateTime(DateTime.Now);
@@ -277,7 +276,7 @@ namespace EmployeeManagement.Services
 
         public async Task<PaginationResponse> SearchEmployees(int pageNumber, int pageSize,
             string nameSearchTerm, string surnameSearchTerm, int? idSearchTerm,
-            int? managerIdSearchTerm, int? remainingDayOffSearchTerm, string? startDateSearchTerm)
+            int? managerIdSearchTerm, string? startDateSearchTerm)
         {
             var query = _employeeRepository.GetAll();
 
@@ -344,15 +343,22 @@ namespace EmployeeManagement.Services
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+            var clientEmployees = new List<ClientEmployee>();
 
-            var clientEmployees = employees.Select(e => new ClientEmployee
+            foreach (var e in employees)
             {
-                Id = e.Id,
-                ManagerId = e.ManagerId,
-                Name = e.Name,
-                Surname = e.Surname,
-                StartDate = e.StartDate,
-            }).ToList();
+                var clientEmployee = new ClientEmployee
+                {
+                    Id = e.Id,
+                    ManagerId = e.ManagerId,
+                    Name = e.Name,
+                    Surname = e.Surname,
+                    StartDate = e.StartDate,
+                    CalculatedRemainingDayOff = await CalculateRemainingDayOffs(e.Id)
+                };
+                clientEmployees.Add(clientEmployee);
+            }
+
             var response = new PaginationResponse
             {
                 employees = clientEmployees,

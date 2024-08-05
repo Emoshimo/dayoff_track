@@ -47,7 +47,6 @@ namespace EmployeeManagement.Controllers
             [FromQuery] string? nameSearchTerm = null,
             [FromQuery] string? surnameSearchTerm = null,
             [FromQuery] int? idSearchTerm = null,
-            [FromQuery] int? remainingDayOffSearchTerm = null,
             [FromQuery] int? managerIdSearchTerm = null,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10,
@@ -55,7 +54,7 @@ namespace EmployeeManagement.Controllers
         {
             try
             {
-                var result = await _employeeService.SearchEmployees(pageNumber, pageSize, nameSearchTerm, surnameSearchTerm, idSearchTerm, managerIdSearchTerm, remainingDayOffSearchTerm, startDateSearchTerm);
+                var result = await _employeeService.SearchEmployees(pageNumber, pageSize, nameSearchTerm, surnameSearchTerm, idSearchTerm, managerIdSearchTerm, startDateSearchTerm);
                 
                 return Ok(result);
             }

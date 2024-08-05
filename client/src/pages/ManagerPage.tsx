@@ -3,7 +3,6 @@ import EmployeeDayOffList from "../components/ManagerPageComponents/EmployeeDayO
 
 const ManagerPage = () => {
   const id = localStorage.getItem("token");
-  console.log(id);
   return (
     <div>
       <header className="flex justify-between items-center bg-white shadow-md rounded-lg p-4 mb-4">

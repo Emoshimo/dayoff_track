@@ -1,28 +1,25 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import { fetchRemainingDayOffs } from "../../apicalls/employeeApi";
-import { fetchPossibleManagers } from "../../apicalls/employeeApi";
-import { fetchEmployees } from "../../apicalls/employeeApi";
 import { editEmployee } from "../../apicalls/departmentApi";
 import PopUp from "../PopUp";
 import { ClientEmployee } from "../../interfaces/interfaces";
 import DynamicTableHeader from "./DynamicTableHeader";
 import DynamicSearchInput from "./DynamicSearchInput";
 import { searchEmployees } from "../../apicalls/api";
+import { fetchEmployees } from "../../apicalls/employeeApi";
 
 
 const EmployeeList = () => {
-  const columnNames = ['Id', 'Name', 'Surname', 'RemainingDayOffs', 'ManagerId', 'StartDate', 'Actions'];
-  const searchFields = ['Id', 'Name', 'Surname', 'RemainingDayOffs', 'ManagerId', 'StartDate']
+  const columnNames = ['Id', 'Name', 'Surname', 'ManagerId', 'StartDate', 'RemainingDayOffs', 'Actions'];
+  const searchFields = ['Id', 'Name', 'Surname', 'ManagerId', 'StartDate']
   const [searchTerms, setSearchTerms] = useState<ClientEmployee>();
   const [employees, setEmployees] = useState<any[]>([]);
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [editingEmployeeId, setEditingEmployeeId] = useState<number>();
   const [editedEmployee, setEditedEmployee] = useState<any>();
-  const [possibleManagers, setPossibleManagers] = useState<
-    Record<number, any[]>
-  >({});
+  const [possibleManagers, setPossibleManagers] = useState<ClientEmployee[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [dropdownBatchNumber, setDropdownBatchNumber] = useState<number>(1);
   const token = localStorage.getItem("token");
   const showError = (message: string) => {
     setPopupMessage(message);
@@ -32,6 +29,7 @@ const EmployeeList = () => {
   const handleClosePopup = () => {
     setPopupMessage(null);
   };
+
 
   const searchChange = useCallback(async (value: string, column: string) => {
     if (column === "ManagerId") {
@@ -48,65 +46,15 @@ const EmployeeList = () => {
   }, []);
 
   const handleSearchTermChange = async () => {
-    const { employees, totalPageNumber } = await searchEmployees(pageNumber, pageSize, searchTerms?.name || null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.managerId || null, 11, searchTerms?.startdate || null, showError);
+    const { employees, totalPageNumber } = await searchEmployees(pageNumber, pageSize, searchTerms?.name || null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.managerId || null, 11, searchTerms?.startDate || null, showError);
 
     if (employees) {
-      const updatedEmployeesPromises = employees!.map(async (employee: ClientEmployee) => {
-        const remainingDayOffs = await fetchRemainingDayOffs(employee.id!);
-        const managers = await fetchPossibleManagers(employee.id!);
-        return {
-          ...employee,
-          remainingDayOffs,
-          managers
-        }
-      })
-      const updatedEmployees = await Promise.all(updatedEmployeesPromises);
 
-      const possibleManagersMap: Record<number, any[]> = {};
-      updatedEmployees.forEach(emp => {
-        possibleManagersMap[emp.id!] = emp.managers;
-      });
-      setEmployees(updatedEmployees);
-      setPossibleManagers(possibleManagersMap);
+      setEmployees(employees);
       setTotalPages(totalPageNumber);
     }
   }
 
-  const fetchMoreEmployee = async () => {
-    try {
-      const { employees, totalPageNumber } = await fetchEmployees(pageNumber, pageSize, token!, showError);
-
-      if (employees) {
-        // Fetch remaining day offs and possible managers for each employee
-        setTotalPages(totalPageNumber);
-        const updatedEmployeesPromises = employees.map(async (employee: ClientEmployee) => {
-          const remainingDayOffs = await fetchRemainingDayOffs(employee.id!);
-          const managers = await fetchPossibleManagers(employee.id!);
-          return {
-            ...employee,
-            remainingDayOffs, // Attach remaining day offs here
-            managers
-          };
-        });
-        const updatedEmployees = await Promise.all(updatedEmployeesPromises);
-
-        // Create a map for possible managers
-        const possibleManagersMap: Record<number, any[]> = {};
-        updatedEmployees.forEach(emp => {
-          possibleManagersMap[emp.id] = emp.managers;
-        });
-
-        // Update state with employees and possible managers
-        setEmployees(updatedEmployees);
-        setPossibleManagers(possibleManagersMap);
-      } else {
-        console.error("Fetch employees returned non-iterable data:", employees);
-      }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-      showError("Failed to fetch more employees.");
-    }
-  };
 
   const handleSaveClick = async () => {
     try {
@@ -143,17 +91,59 @@ const EmployeeList = () => {
   };
 
   const handleEditClick = async (employee: ClientEmployee) => {
+    fetchEmployeesForManagersDropdown();
     setEditingEmployeeId(employee.id);
     setEditedEmployee(employee);
   };
 
-  useEffect(() => {
-    fetchMoreEmployee();
-  }, [pageNumber, pageSize]);
 
   useEffect(() => {
     handleSearchTermChange()
   }, [searchTerms, pageNumber, pageSize])
+
+
+  // Dropdown pagination 
+  const [hasMoreManagers, setHasMoreManagers] = useState<boolean>(true);
+  const dropdownContainerRef = useRef<HTMLDivElement | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    fetchEmployeesForManagersDropdown();
+  }, []);
+
+  useEffect(() => {
+    if (dropdownContainerRef.current && sentinelRef.current && hasMoreManagers) {
+      const observer = new IntersectionObserver(handleObserver, {
+        root: dropdownContainerRef.current,
+        rootMargin: '1px',
+        threshold: 1.0
+      });
+      observer.observe(sentinelRef.current);
+      return () => {
+        observer.unobserve(sentinelRef.current!);
+      };
+    }
+  }, [hasMoreManagers]);
+
+  const fetchEmployeesForManagersDropdown = async () => {
+    const { employees } = await fetchEmployees(dropdownBatchNumber, 30, token!, showError);
+    setPossibleManagers(employees);
+    if (employees.length < 30) {
+      setHasMoreManagers(false);
+    }
+  };
+
+  const handleObserver = async (entries: IntersectionObserverEntry[]) => {
+    console.log("observer triggered")
+    const entry = entries[0];
+    if (entry.isIntersecting && hasMoreManagers) {
+      setDropdownBatchNumber(prev => prev + 1);
+      const { employees } = await fetchEmployees(dropdownBatchNumber + 1, 30, token!, showError);
+      setPossibleManagers(prev => [...prev, ...employees]);
+      if (employees.length < 30) {
+        setHasMoreManagers(false);
+      }
+    }
+  };
 
   return (
     <div>
@@ -164,7 +154,7 @@ const EmployeeList = () => {
             id="pageSize"
             value={pageSize}
             onChange={(e) => setPageSize(Number(e.target.value))}
-            className="border p-1 ml-2"
+            className="border p-1 ml-2 mb-2"
           >
             <option value={10}>10</option>
             <option value={20}>25</option>
@@ -172,7 +162,7 @@ const EmployeeList = () => {
             <option value={100}>100</option>
           </select>
         </div>
-        <div className="flex flex-row items-start justify-between">
+        <div className="flex flex-row items-start">
           {
             searchFields.map(field => (
               <DynamicSearchInput
@@ -190,7 +180,7 @@ const EmployeeList = () => {
 
           <tbody>
             {employees &&
-              employees.map((item: any, index: number) => (
+              employees.map((item: ClientEmployee, index: number) => (
                 <tr
                   key={item.id}
                   className={`text-center ${index % 2 === 0 ? "" : "bg-slate-100"
@@ -225,36 +215,29 @@ const EmployeeList = () => {
                       item.surname
                     )}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2 w-32">
-                    {editingEmployeeId === item.id ? (
-                      <input
-                        type="number"
-                        value={editedEmployee?.remainingDayOffs || ""}
-                        onChange={(e) => handleChange(e, "remainingDayOffs")}
-                        className="border p-1 text-center w-full"
-                        style={{ MozAppearance: "textfield", WebkitAppearance: "none" }}
-                      />
-                    ) : (
-                      item.remainingDayOffs || 0
-                    )}
-                  </td>
+
                   <td className="border border-gray-300 px-4 py-2 w-24">
                     {editingEmployeeId === item.id ? (
-                      <select
-                        value={editedEmployee?.managerId || ""}
-                        onChange={(e) => handleChange(e, "managerId")}
-                        className="border p-1 text-center w-full"
-                      >
-                        <option value="">Select Manager</option>
-                        {possibleManagers[item.id!]?.map((manager) => (
-                          <option key={manager.id} value={manager.id}>
-                            {manager.name} {manager.surname}
-                          </option>
-                        ))}
-                      </select>
+                      <div ref={dropdownContainerRef} className="relative">
+
+                        <select
+                          value={editedEmployee?.managerId || ""}
+                          onChange={(e) => handleChange(e, "managerId")}
+                          className="border p-1 text-center w-full"
+                        >
+                          <option value="">Select Manager</option>
+                          {possibleManagers.map((manager: any) => (
+                            <option key={manager.id} value={manager.id}>
+                              {manager.name} {manager.surname}
+                            </option>
+                          ))}
+                        </select>
+                        <div ref={sentinelRef} style={{ height: 1 }}></div>
+                      </div>
                     ) : (
                       item.managerId || "None"
                     )}
+                    <div ref={sentinelRef} style={{ height: 1, width: '100%' }}></div>
                   </td>
                   <td className="border border-gray-300 px-4 py-2 w-32">
                     {editingEmployeeId === item.id ? (
@@ -267,6 +250,19 @@ const EmployeeList = () => {
                       />
                     ) : (
                       item.startDate
+                    )}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 w-32">
+                    {editingEmployeeId === item.id ? (
+                      <input
+                        type="number"
+                        value={item.calculatedRemainingDayOff || ""}
+                        onChange={(e) => handleChange(e, "remainingDayOffs")}
+                        className="border p-1 text-center w-full"
+                        style={{ MozAppearance: "textfield", WebkitAppearance: "none" }}
+                      />
+                    ) : (
+                      item.calculatedRemainingDayOff || 0
                     )}
                   </td>
                   <td className="border border-gray-300 py-2 w-32">

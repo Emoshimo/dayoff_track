@@ -1,6 +1,6 @@
 import React from 'react'
 import { EmployeeDayOffs } from '../../interfaces/interfaces';
-import { Cell, Legend, Pie, PieChart } from 'recharts';
+import { Cell, TooltipProps, Pie, PieChart } from 'recharts';
 import { Tooltip } from '@material-tailwind/react';
 
 interface TopEmployeesChartProps {
@@ -16,16 +16,6 @@ const getRandomColor = () => {
     return color;
 };
 
-const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-        return (
-            <div className="custom-tooltip">
-                <p>{`${payload[0].name}: ${payload[0].value} days`}</p>
-            </div>
-        );
-    }
-    return null;
-};
 
 const TopPieChart: React.FC<TopEmployeesChartProps> = ({ data }) => {
     return (
@@ -34,13 +24,13 @@ const TopPieChart: React.FC<TopEmployeesChartProps> = ({ data }) => {
                 cy="50%"
                 outerRadius={100}
                 fill="#8884d8"
-                label={(entry) => entry.fullName}
+                label={({ fullName, value }) => `${fullName}: ${value}`}
             >
                 {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={getRandomColor()} />
                 ))}
+
             </Pie>
-            <Tooltip content={<CustomTooltip />} />
 
         </PieChart>
     )

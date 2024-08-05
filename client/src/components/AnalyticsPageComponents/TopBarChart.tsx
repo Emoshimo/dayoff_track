@@ -8,23 +8,20 @@ interface TopEmployeesChartProps {
 const TopBarChart: React.FC<TopEmployeesChartProps> = ({ data }) => {
     console.log(data)
     return (
-        <div className='flex flex-col items-center'>
-            <BarChart
-                width={600}
-                height={300}
-                data={data}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+        <BarChart
+            width={1400}
+            height={400}
+            data={data}
+            margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
 
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="fullName" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="days" fill="#002A56" barSize={50} />
+        >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="fullName" angle={-45} textAnchor='end' interval={0} />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="days" fill="#002A56" barSize={50} />
 
-            </BarChart>
-        </div>
+        </BarChart>
 
     );
 }

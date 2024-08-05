@@ -9,10 +9,11 @@ export interface IEmployee {
 }
 export interface ClientEmployee {
   id?: number;
+  calculatedRemainingDayOff?:number,
   name?: string;
   surname?: string;
   managerId?: number;
-  startdate?: string;
+  startDate?: string;
 }
 
 export interface IDepartment {

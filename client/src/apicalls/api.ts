@@ -153,7 +153,6 @@ export const searchEmployees = async(
         startDateSearchTerm
       }
     });
-    console.log(response);
     return response.data
   }
   catch (error)
