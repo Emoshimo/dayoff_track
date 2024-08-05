@@ -44,15 +44,23 @@ namespace EmployeeManagement.Controllers
         }
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<ClientEmployee>>> SearchEmployees(
-            [FromQuery] string searchTerm,
-            [FromQuery] string columnName,
+            [FromQuery] string? nameSearchTerm = null,
+            [FromQuery] string? surnameSearchTerm = null,
+            [FromQuery] int? idSearchTerm = null,
+            [FromQuery] int? remainingDayOffSearchTerm = null,
+            [FromQuery] int? managerIdSearchTerm = null,
             [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? startDateSearchTerm = null)
         {
             try
             {
-                var result = await _employeeService.SearchEmployees(pageNumber, pageSize, searchTerm, columnName);
+                var result = await _employeeService.SearchEmployees(pageNumber, pageSize, nameSearchTerm, surnameSearchTerm, idSearchTerm, managerIdSearchTerm, remainingDayOffSearchTerm, startDateSearchTerm);
                 return Ok(result);
+            }
+            catch (ArgumentException ae)
+            {
+                return BadRequest(ae.Message);
             }
             catch (Exception ex)
             {

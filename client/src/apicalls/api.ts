@@ -1,8 +1,7 @@
 import axios from "axios";
 import {
   ApiResponse,
-  DayOffRequest,
-  DayOffRequestForManager,
+  ClientEmployee,
   DayOffType,
 } from "../interfaces/interfaces";
 
@@ -128,4 +127,38 @@ export const fetchDayOffTypes = async (
   } catch (error) {
     return handleApiError(error, showError);
   }
+}
+export const searchEmployees = async(
+  pageNumber: number,
+  pageSize: number,
+  nameSearchTerm: string | null,
+  surnameSearchTerm: string | null,
+  idSearchTerm: number | null,
+  managerIdSearchTerm: number | null,
+  remainingDayOffSearchTerm: number | null,
+  startDateSearchTerm: string | null,
+  showError: (message: string) => void
+
+): Promise<ApiResponse<ClientEmployee[]>> => {
+  try{
+    const response = await axiosInstance.get('/Employee/search', {
+      params: {
+        pageNumber,
+        pageSize,
+        nameSearchTerm,
+        surnameSearchTerm,
+        idSearchTerm,
+        managerIdSearchTerm,
+        remainingDayOffSearchTerm,
+        startDateSearchTerm
+      }
+    });
+    console.log(response);
+    return {success: true, data: response.data}
+  }
+  catch (error)
+  {
+    return handleApiError(error, showError)
+  }
+ 
 }

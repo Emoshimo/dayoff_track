@@ -12,7 +12,7 @@ export interface ClientEmployee {
   name?: string;
   surname?: string;
   managerId?: number;
-  //remainingDayOffs?: number;
+  startdate?: string;
 }
 
 export interface IDepartment {
@@ -75,6 +75,7 @@ export interface PaginationResponse {
   employees: ClientEmployee[],
   totalPageNumber: number
 };
+
 
 
 export interface ApiResponse<T> {

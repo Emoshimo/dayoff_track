@@ -25,6 +25,7 @@ namespace EmployeeManagement.Repositories
                 ManagerId = e.ManagerId,
                 Name = e.Name,
                 Surname = e.Surname,
+                StartDate = e.StartDate
             }).ToList();
             return clientEmployees;
         }
@@ -43,6 +44,8 @@ namespace EmployeeManagement.Repositories
                 ManagerId = e.ManagerId,
                 Name = e.Name,
                 Surname = e.Surname,
+                StartDate = e.StartDate
+
             }).ToList();
             return clientEmployees;
 

@@ -15,6 +15,7 @@ export const fetchEmployees = async (
       },
     });
     if (response.status === 200) {
+      console.log(response.data)
       return response.data;
     }
   } catch (error) {
@@ -214,10 +215,10 @@ export const fetchTopDayOffEmployees = async (
   })
   if (response.status === 200)
   {
-    console.log(response.data)
     return {success: true, data: response.data};
   }
   else {
     return handleApiError(response.data.message, showError);
   }
 }
+

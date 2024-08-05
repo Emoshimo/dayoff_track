@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { fetchRemainingDayOffs } from "../../apicalls/employeeApi";
 import { fetchPossibleManagers } from "../../apicalls/employeeApi";
 import { fetchEmployees } from "../../apicalls/employeeApi";
 import { editEmployee } from "../../apicalls/departmentApi";
 import PopUp from "../PopUp";
 import { ClientEmployee } from "../../interfaces/interfaces";
+import DynamicTableHeader from "./DynamicTableHeader";
+import DynamicSearchInput from "./DynamicSearchInput";
+import { searchEmployees } from "../../apicalls/api";
 
 
 const EmployeeList = () => {
+  const columnNames = ['Id', 'Name', 'Surname', 'RemainingDayOffs', 'ManagerId', 'StartDate', 'Actions'];
+  const searchFields = ['Id', 'Name', 'Surname', 'RemainingDayOffs', 'ManagerId', 'StartDate']
+  const [searchTerms, setSearchTerms] = useState<ClientEmployee>();
   const [employees, setEmployees] = useState<any[]>([]);
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [editingEmployeeId, setEditingEmployeeId] = useState<number>();
@@ -26,6 +32,45 @@ const EmployeeList = () => {
   const handleClosePopup = () => {
     setPopupMessage(null);
   };
+
+  const searchChange = useCallback(async (value: string, column: string) => {
+    if (column === "ManagerId") {
+      setSearchTerms(prevTerms => ({
+        ...prevTerms,
+        ["managerId"]: Number(value)
+      }));
+      return;
+    }
+    setSearchTerms(prevTerms => ({
+      ...prevTerms,
+      [column.toLowerCase()]: value,
+    }));
+  }, []);
+
+  const handleSearchTermChange = async () => {
+    const response = await searchEmployees(pageNumber, pageSize, searchTerms?.name || null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.managerId || null, 11, searchTerms?.startdate || null, showError);
+
+    if (response.success) {
+      const updatedEmployeesPromises = response.data!.map(async (employee: ClientEmployee) => {
+        const remainingDayOffs = await fetchRemainingDayOffs(employee.id!);
+        const managers = await fetchPossibleManagers(employee.id!);
+        return {
+          ...employee,
+          remainingDayOffs,
+          managers
+        }
+      })
+      const updatedEmployees = await Promise.all(updatedEmployeesPromises);
+
+      const possibleManagersMap: Record<number, any[]> = {};
+      updatedEmployees.forEach(emp => {
+        possibleManagersMap[emp.id!] = emp.managers;
+      });
+      setEmployees(updatedEmployees);
+      setPossibleManagers(possibleManagersMap);
+    }
+  }
+
   const fetchMoreEmployee = async () => {
     try {
       const { employees, totalPageNumber } = await fetchEmployees(pageNumber, pageSize, token!, showError);
@@ -42,7 +87,6 @@ const EmployeeList = () => {
             managers
           };
         });
-
         const updatedEmployees = await Promise.all(updatedEmployeesPromises);
 
         // Create a map for possible managers
@@ -85,6 +129,7 @@ const EmployeeList = () => {
     setEditedEmployee({});
     setEditingEmployeeId(0);
   };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     field: string
@@ -103,8 +148,11 @@ const EmployeeList = () => {
 
   useEffect(() => {
     fetchMoreEmployee();
-    console.log(totalPages);
   }, [pageNumber, pageSize]);
+
+  useEffect(() => {
+    handleSearchTermChange()
+  }, [searchTerms, pageNumber, pageSize])
 
   return (
     <div>
@@ -123,53 +171,22 @@ const EmployeeList = () => {
             <option value={100}>100</option>
           </select>
         </div>
+        <div className="flex flex-row items-start justify-between">
+          {
+            searchFields.map(field => (
+              <DynamicSearchInput
+                key={field}
+                id={field.toLowerCase()}
+                name={field}
+                placeHolder={`${field}`}
+                onChange={searchChange}
+              />
+            ))
+          }
+        </div>
         <table className="table-auto min-w-full bg-white border-collapse border">
-          <thead>
-            <tr className="bg-primary text-slate-200">
-              <th className="border border-gray-300 px-4 py-2">Id</th>
-              <th className="border border-gray-300 px-4 py-2">
-                <div className="flex flex-col">
-                  <span>Name</span>
-                  <input
-                    type="text"
-                    placeholder="Search by name"
-                    className="mt-1 px-2 py-1 border border-gray-300 rounded"
-                  />
-                </div>
-              </th>
-              <th className="border border-gray-300 px-4 py-2">
-                <div className="flex flex-col">
-                  <span>Surname</span>
-                  <input
-                    type="text"
-                    placeholder="Search by surname"
-                    className="mt-1 px-2 py-1 border border-gray-300 rounded"
-                  />
-                </div>
-              </th>
-              <th className="border border-gray-300 px-4 py-2">
-                <div className="flex flex-col">
-                  <span>Remaining Day Offs</span>
-                  <input
-                    type="text"
-                    placeholder="Search by day offs"
-                    className="mt-1 px-2 py-1 border border-gray-300 rounded"
-                  />
-                </div>
-              </th>
-              <th className="border border-gray-300 px-4 py-2">
-                <div className="flex flex-col">
-                  <span>Manager</span>
-                  <input
-                    type="text"
-                    placeholder="Search by manager"
-                    className="mt-1 px-2 py-1 border border-gray-300 rounded"
-                  />
-                </div>
-              </th>
-              <th className="border border-gray-300 px-4 py-2">Actions</th>
-            </tr>
-          </thead>
+          <DynamicTableHeader fields={columnNames} />
+
           <tbody>
             {employees &&
               employees.map((item: any, index: number) => (
@@ -223,7 +240,7 @@ const EmployeeList = () => {
                   <td className="border border-gray-300 px-4 py-2 w-24">
                     {editingEmployeeId === item.id ? (
                       <select
-                        value={editedEmployee?.managerId || ""}
+                        value={editedEmployee?.manageriId || ""}
                         onChange={(e) => handleChange(e, "managerId")}
                         className="border p-1 text-center w-full"
                       >
@@ -236,6 +253,19 @@ const EmployeeList = () => {
                       </select>
                     ) : (
                       item.managerId || "None"
+                    )}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 w-32">
+                    {editingEmployeeId === item.id ? (
+                      <input
+                        type="text"
+                        value={editedEmployee?.startDate || ""}
+                        onChange={(e) => handleChange(e, "startDate")}
+                        className="border p-1 text-center w-full"
+                        style={{ maxWidth: "100%" }}
+                      />
+                    ) : (
+                      item.startDate
                     )}
                   </td>
                   <td className="border border-gray-300 py-2 w-32">
@@ -269,6 +299,7 @@ const EmployeeList = () => {
               ))}
           </tbody>
         </table>
+
         <div className="m-4 flex items-center justify-center">
           <button
             onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
@@ -293,5 +324,4 @@ const EmployeeList = () => {
     </div>
   );
 };
-
 export default EmployeeList;

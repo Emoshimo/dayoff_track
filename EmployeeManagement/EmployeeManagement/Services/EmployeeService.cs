@@ -4,6 +4,7 @@ using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
 using EmployeeManagement.Utils;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace EmployeeManagement.Services
 {
@@ -274,14 +275,68 @@ namespace EmployeeManagement.Services
             return result;
         }
 
-        public async Task<IEnumerable<ClientEmployee>> SearchEmployees(int pageNumber, int pageSize, string searchTerm, string columnName)
+        public async Task<IEnumerable<ClientEmployee>> SearchEmployees(int pageNumber, int pageSize,
+            string nameSearchTerm, string surnameSearchTerm, int? idSearchTerm,
+            int? managerIdSearchTerm, int? remainingDayOffSearchTerm, string? startDateSearchTerm)
         {
             var query = _employeeRepository.GetAll();
-            
-            if (!string.IsNullOrEmpty(searchTerm) && !string.IsNullOrEmpty(columnName))
+
+            if (!string.IsNullOrEmpty(nameSearchTerm))
             {
-                searchTerm = searchTerm.ToLower();
-                query = query.Where(e => EF.Functions.Like(EF.Property<string>(e, columnName).ToLower(), $"%{searchTerm}%"));
+                nameSearchTerm = nameSearchTerm.ToLower();
+                query = query.Where(e => EF.Functions.Like(e.Name.ToLower(), $"%{nameSearchTerm}%"));
+            }
+
+            if (!string.IsNullOrEmpty(surnameSearchTerm))
+            {
+                surnameSearchTerm = surnameSearchTerm.ToLower();
+                query = query.Where(e => EF.Functions.Like(e.Surname.ToLower(), $"%{surnameSearchTerm}%"));
+            }
+
+            // Handle integer searches
+            if (idSearchTerm.HasValue)
+            {
+                query = query.Where(e => e.Id == idSearchTerm.Value);
+            }
+            if (managerIdSearchTerm.HasValue)
+            {
+                query = query.Where(e => e.ManagerId == managerIdSearchTerm.Value);
+            }
+
+
+            // Handle date search
+            if (!string.IsNullOrEmpty(startDateSearchTerm))
+            {
+                if (!DateTime.TryParseExact(startDateSearchTerm, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedStartDate))
+                {
+                    DateOnly startDate;
+                    DateOnly endDate;
+
+                    // If only the year is provided (e.g., "2021")
+                    if (startDateSearchTerm.Length == 4 && int.TryParse(startDateSearchTerm, out int year))
+                    {
+                        startDate = new DateOnly(year, 1, 1);
+                        endDate = new DateOnly(year, 12, 31);
+                    }
+                    // If year and month are provided (e.g., "2021-08")
+                    else if (startDateSearchTerm.Length == 7 && DateTime.TryParseExact(startDateSearchTerm, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedStartDateYearMonth))
+                    {
+                        startDate = new DateOnly(parsedStartDateYearMonth.Year, parsedStartDateYearMonth.Month, 1);
+                        endDate = startDate.AddMonths(1).AddDays(-1);
+                    }
+                    // If full date is provided (e.g., "2021-08-06")
+                    else if (DateOnly.TryParse(startDateSearchTerm, out DateOnly parsedStartDateFull))
+                    {
+                        startDate = parsedStartDateFull;
+                        endDate = parsedStartDateFull;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Invalid date format.");
+                    }
+
+                    query = query.Where(e => e.StartDate >= startDate && e.StartDate <= endDate);
+                }
             }
 
             var employees = await query
@@ -289,12 +344,14 @@ namespace EmployeeManagement.Services
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+
             var clientEmployees = employees.Select(e => new ClientEmployee
             {
                 Id = e.Id,
                 ManagerId = e.ManagerId,
                 Name = e.Name,
                 Surname = e.Surname,
+                StartDate = e.StartDate,
             }).ToList();
 
             return clientEmployees;
