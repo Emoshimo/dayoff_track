@@ -241,7 +241,7 @@ const EmployeeList = () => {
                   <td className="border border-gray-300 px-4 py-2 w-24">
                     {editingEmployeeId === item.id ? (
                       <select
-                        value={editedEmployee?.manageriId || ""}
+                        value={editedEmployee?.managerId || ""}
                         onChange={(e) => handleChange(e, "managerId")}
                         className="border p-1 text-center w-full"
                       >
