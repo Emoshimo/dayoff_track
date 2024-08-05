@@ -43,7 +43,7 @@ namespace EmployeeManagement.Controllers
             return Ok(response);
         }
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<ClientEmployee>>> SearchEmployees(
+        public async Task<ActionResult<PaginationResponse>> SearchEmployees(
             [FromQuery] string? nameSearchTerm = null,
             [FromQuery] string? surnameSearchTerm = null,
             [FromQuery] int? idSearchTerm = null,
@@ -56,6 +56,7 @@ namespace EmployeeManagement.Controllers
             try
             {
                 var result = await _employeeService.SearchEmployees(pageNumber, pageSize, nameSearchTerm, surnameSearchTerm, idSearchTerm, managerIdSearchTerm, remainingDayOffSearchTerm, startDateSearchTerm);
+                
                 return Ok(result);
             }
             catch (ArgumentException ae)

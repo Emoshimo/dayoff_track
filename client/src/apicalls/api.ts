@@ -139,7 +139,7 @@ export const searchEmployees = async(
   startDateSearchTerm: string | null,
   showError: (message: string) => void
 
-): Promise<ApiResponse<ClientEmployee[]>> => {
+) => {
   try{
     const response = await axiosInstance.get('/Employee/search', {
       params: {
@@ -154,7 +154,7 @@ export const searchEmployees = async(
       }
     });
     console.log(response);
-    return {success: true, data: response.data}
+    return response.data
   }
   catch (error)
   {

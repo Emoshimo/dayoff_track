@@ -275,7 +275,7 @@ namespace EmployeeManagement.Services
             return result;
         }
 
-        public async Task<IEnumerable<ClientEmployee>> SearchEmployees(int pageNumber, int pageSize,
+        public async Task<PaginationResponse> SearchEmployees(int pageNumber, int pageSize,
             string nameSearchTerm, string surnameSearchTerm, int? idSearchTerm,
             int? managerIdSearchTerm, int? remainingDayOffSearchTerm, string? startDateSearchTerm)
         {
@@ -338,7 +338,7 @@ namespace EmployeeManagement.Services
                     query = query.Where(e => e.StartDate >= startDate && e.StartDate <= endDate);
                 }
             }
-
+            var varPageNumber = (int)Math.Ceiling((double)query.Count() / pageSize);
             var employees = await query
                 .OrderBy(e => e.Id)
                 .Skip((pageNumber - 1) * pageSize)
@@ -353,8 +353,12 @@ namespace EmployeeManagement.Services
                 Surname = e.Surname,
                 StartDate = e.StartDate,
             }).ToList();
-
-            return clientEmployees;
+            var response = new PaginationResponse
+            {
+                employees = clientEmployees,
+                totalPageNumber = varPageNumber
+            };
+            return response;
         }
         
         public async Task<int> GetPageNumber(int pageSize)

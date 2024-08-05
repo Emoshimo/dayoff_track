@@ -48,10 +48,10 @@ const EmployeeList = () => {
   }, []);
 
   const handleSearchTermChange = async () => {
-    const response = await searchEmployees(pageNumber, pageSize, searchTerms?.name || null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.managerId || null, 11, searchTerms?.startdate || null, showError);
+    const { employees, totalPageNumber } = await searchEmployees(pageNumber, pageSize, searchTerms?.name || null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.managerId || null, 11, searchTerms?.startdate || null, showError);
 
-    if (response.success) {
-      const updatedEmployeesPromises = response.data!.map(async (employee: ClientEmployee) => {
+    if (employees) {
+      const updatedEmployeesPromises = employees!.map(async (employee: ClientEmployee) => {
         const remainingDayOffs = await fetchRemainingDayOffs(employee.id!);
         const managers = await fetchPossibleManagers(employee.id!);
         return {
@@ -68,6 +68,7 @@ const EmployeeList = () => {
       });
       setEmployees(updatedEmployees);
       setPossibleManagers(possibleManagersMap);
+      setTotalPages(totalPageNumber);
     }
   }
 
