@@ -77,7 +77,12 @@ export interface PaginationResponse {
   totalPageNumber: number
 };
 
-
+export interface ArrowProps {
+  currentKey: string,
+  sortKey: string | null,
+  sortOrder: string | null,
+  handleSort: (key: string, order: string) => void
+}
 
 export interface ApiResponse<T> {
   success: boolean;

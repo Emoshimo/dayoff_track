@@ -11,7 +11,7 @@ namespace EmployeeManagement.Interfaces.ServiceInterfaces
         Task<IEnumerable<EmployeeDayOffsDTO>> GetTopEmployeesDayOffsAsync(string timePeriod, int topN);
         Task<PaginationResponse> SearchEmployees(int pageNumber, int pageSize,
                 string nameSearchTerm, string surnameSearchTerm, int? idSearchTerm,
-                int? managerIdSearchTerm, string? startDateSearchTerm);
+                int? managerIdSearchTerm, string? startDateSearchTerm, string? orderColumn, string? sortOrder);
         Task<int> GetPageNumber(int pageSize);
         Task<int> CalculateRemainingDayOffs(int employeeId);
         bool IsAnniversary(DateOnly startDate);

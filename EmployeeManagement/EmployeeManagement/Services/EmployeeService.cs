@@ -4,7 +4,9 @@ using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
 using EmployeeManagement.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace EmployeeManagement.Services
 {
@@ -276,7 +278,7 @@ namespace EmployeeManagement.Services
 
         public async Task<PaginationResponse> SearchEmployees(int pageNumber, int pageSize,
             string nameSearchTerm, string surnameSearchTerm, int? idSearchTerm,
-            int? managerIdSearchTerm, string? startDateSearchTerm)
+            int? managerIdSearchTerm, string? startDateSearchTerm, string? orderColumn, string? sortOrder)
         {
             var query = _employeeRepository.GetAll();
 
@@ -337,9 +339,25 @@ namespace EmployeeManagement.Services
                     query = query.Where(e => e.StartDate >= startDate && e.StartDate <= endDate);
                 }
             }
+            if (!string.IsNullOrEmpty(orderColumn))
+            {
+                var param = Expression.Parameter(typeof(Employee), "e");
+                var prop = Expression.Property(param, orderColumn);
+                var lamba = Expression.Lambda<Func<Employee, object>>(Expression.Convert(prop, typeof(object)), param);
+                switch (sortOrder.ToLower())
+                {
+                    case "asc":
+                        query = query.OrderBy(lamba);
+                        break;
+                    case "desc":
+                        query = query.OrderByDescending(lamba);
+                        break;
+                    default:
+                        break;
+                }
+            }
             var varPageNumber = (int)Math.Ceiling((double)query.Count() / pageSize);
             var employees = await query
-                .OrderBy(e => e.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

@@ -7,13 +7,14 @@ import DynamicSearchInput from "./DynamicSearchInput";
 import { searchEmployees } from "../../apicalls/api";
 import { fetchEmployees } from "../../apicalls/employeeApi";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+import UpArrowButton from "./UpArrowButton";
+import DownArrowButton from "./DownArrowButton";
 
 
 const EmployeeList = () => {
   const columnNames = ['Id', 'Name', 'Surname', 'ManagerId', 'StartDate', 'RemainingDayOffs', 'Actions'];
-  const [sortKey, setSortKey] = useState('Id');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const searchFields = ['Id', 'Name', 'Surname', 'ManagerId', 'StartDate']
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<string | null>(null);
   const [searchTerms, setSearchTerms] = useState<ClientEmployee>();
   const [employees, setEmployees] = useState<any[]>([]);
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
@@ -22,7 +23,6 @@ const EmployeeList = () => {
   const [possibleManagers, setPossibleManagers] = useState<ClientEmployee[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
-  const [dropdownBatchNumber, setDropdownBatchNumber] = useState<number>(1);
   const token = localStorage.getItem("token");
   const showError = (message: string) => {
     setPopupMessage(message);
@@ -49,7 +49,9 @@ const EmployeeList = () => {
   }, []);
 
   const handleSearchTermChange = async () => {
-    const { employees, totalPageNumber } = await searchEmployees(pageNumber, pageSize, searchTerms?.name || null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.managerId || null, 11, searchTerms?.startDate || null, showError);
+    const { employees, totalPageNumber } = await searchEmployees(pageNumber, pageSize, searchTerms?.name ||
+      null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.managerId ||
+    null, 11, searchTerms?.startDate || null, sortKey, sortOrder, showError);
 
     if (employees) {
 
@@ -57,7 +59,6 @@ const EmployeeList = () => {
       setTotalPages(totalPageNumber);
     }
   }
-
 
   const handleSaveClick = async () => {
     try {
@@ -94,7 +95,6 @@ const EmployeeList = () => {
   };
 
   const handleEditClick = async (employee: ClientEmployee) => {
-    fetchEmployeesForManagersDropdown();
     setEditingEmployeeId(employee.id);
     setEditedEmployee(employee);
   };
@@ -102,65 +102,22 @@ const EmployeeList = () => {
 
   useEffect(() => {
     handleSearchTermChange()
-  }, [searchTerms, pageNumber, pageSize])
+  }, [searchTerms, pageNumber, pageSize, sortKey, sortOrder])
 
 
-  // Dropdown pagination 
-  const [hasMoreManagers, setHasMoreManagers] = useState<boolean>(true);
-  const dropdownContainerRef = useRef<HTMLDivElement | null>(null);
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    fetchEmployeesForManagersDropdown();
-  }, []);
-
-  useEffect(() => {
-    if (dropdownContainerRef.current && sentinelRef.current && hasMoreManagers) {
-      const observer = new IntersectionObserver(handleObserver, {
-        root: dropdownContainerRef.current,
-        rootMargin: '1px',
-        threshold: 1.0
-      });
-      observer.observe(sentinelRef.current);
-      return () => {
-        observer.unobserve(sentinelRef.current!);
-      };
-    }
-  }, [hasMoreManagers]);
-
-  const fetchEmployeesForManagersDropdown = async () => {
-    const { employees } = await fetchEmployees(dropdownBatchNumber, 30, token!, showError);
-    setPossibleManagers(employees);
-    if (employees.length < 30) {
-      setHasMoreManagers(false);
-    }
-  };
-
-  const handleObserver = async (entries: IntersectionObserverEntry[]) => {
-    console.log("observer triggered")
-    const entry = entries[0];
-    if (entry.isIntersecting && hasMoreManagers) {
-      setDropdownBatchNumber(prev => prev + 1);
-      const { employees } = await fetchEmployees(dropdownBatchNumber + 1, 30, token!, showError);
-      setPossibleManagers(prev => [...prev, ...employees]);
-      if (employees.length < 30) {
-        setHasMoreManagers(false);
-      }
-    }
-  };
-  const handleSort = (key: any) => {
+  const handleSort = (key: any, order: string) => {
     if (sortKey === key) {
       // If the same key is clicked, toggle the sort order
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(null);
+      setSortKey(null)
     } else {
       // Set new key and default to ascending order
       setSortKey(key);
-      setSortOrder('asc');
+      setSortOrder(order);
     }
-    console.log(sortKey, sortOrder)
+    console.log(sortKey, order)
   };
-  const getIconColor = (key: any, order: any) => {
-    return sortKey === key ? (sortOrder === order ? 'text-red-500' : 'text-gray-500') : 'text-gray-500';
-  };
+
   return (
     <div>
       <div className="overflow-x-auto">
@@ -178,81 +135,82 @@ const EmployeeList = () => {
             <option value={100}>100</option>
           </select>
         </div>
-        <div className="flex flex-row items-start">
-          {
-            searchFields.map(field => (
-              <DynamicSearchInput
-                key={field}
-                id={field.toLowerCase()}
-                name={field}
-                placeHolder={`${field}`}
-                onChange={searchChange}
-              />
-            ))
-          }
-        </div>
         <table className="table-auto min-w-full bg-white border-collapse border">
           <thead>
-            <tr className='bg-primary text-slate-200'>
-
-              <th key={"Id"} className='border border-gray-300 px-4 py-2'>
+            <tr>
+              <th key={"Id"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
                 {`Id `}
-                <button onClick={() => handleSort('Id')}>
-                  <FaAngleUp className={getIconColor('Id', 'asc')} />
-                </button>
-                <button onClick={() => handleSort('Id')}>
-                  <FaAngleDown />
-                </button>
-
+                <UpArrowButton currentKey='Id' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DownArrowButton currentKey='Id' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <input
+                  id="id"
+                  key={"Id"}
+                  name="Id"
+                  placeholder="Id"
+                  onChange={(e) => searchChange(e.target.value, "Id")}
+                  className="text-slate-200 text-center bg-primary border-2 border-border rounded-md focus:outline-none"
+                  type="text"
+                />
               </th>
-              <th key={"Name"} className='border border-gray-300 px-4 py-2'>
+              <th key={"Name"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
                 {`Name `}
-                <button onClick={() => handleSort('Name')}>
-                  <FaAngleUp />
-                </button>
-                <button onClick={() => handleSort('Name')}>
-                  <FaAngleDown />
-                </button>
-
+                <UpArrowButton currentKey='Name' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DownArrowButton currentKey='Name' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DynamicSearchInput
+                  id="name"
+                  key={"Name"}
+                  name="Name"
+                  placeHolder="Name"
+                  onChange={searchChange}
+                />
               </th>
-              <th key={"Surname"} className='border border-gray-300 px-4 py-2 '>
+              <th key={"Surname"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
                 {`Surname `}
-                <button onClick={() => handleSort('Surname')}>
-                  <FaAngleUp />
-                </button>
-                <button onClick={() => handleSort('Surname')}>
-                  <FaAngleDown />
-                </button>
-
+                <UpArrowButton currentKey='Surname' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DownArrowButton currentKey='Surname' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DynamicSearchInput
+                  id="surname"
+                  key={"Surname"}
+                  name="Surname"
+                  placeHolder="Surname"
+                  onChange={searchChange}
+                />
               </th>
-              <th key={"ManagerId"} className='border border-gray-300 px-4 py-2 '>
+
+              <th key={"ManagerId"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
                 {`ManagerId `}
-                <button onClick={() => handleSort('ManagerId')}>
-                  <FaAngleUp />
-                </button>
-                <button onClick={() => handleSort('ManagerId')}>
-                  <FaAngleDown />
-                </button>
+                <UpArrowButton currentKey='ManagerId' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DownArrowButton currentKey='ManagerId' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DynamicSearchInput
+                  id="managerid"
+                  key={"ManagerId"}
+                  name="ManagerId"
+                  placeHolder="ManagerId"
+                  onChange={searchChange}
+                />
 
               </th>
-              <th key={"StartDate"} className='border border-gray-300 px-4 py-2 '>
+
+              <th key={"StartDate"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
                 {`StartDate `}
-                <button onClick={() => handleSort('StartDate')}>
-                  <FaAngleUp />
-                </button>
-                <button onClick={() => handleSort('StartDate')}>
-                  <FaAngleDown />
-                </button>
-
+                <UpArrowButton currentKey='StartDate' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DownArrowButton currentKey='StartDate' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DynamicSearchInput
+                  id="startdate"
+                  name="StartDate"
+                  onChange={searchChange}
+                />
               </th>
-              <th key={"RemainingDayOff"} className='border border-gray-300 px-4 py-2 '>
+
+              <th key={"RemainingDayOff"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
                 {`RemainingDayOff `}
-
               </th>
-              <th key={"Actions"} className='border border-gray-300 px-4 py-2 '>
+
+              <th key={"Actions"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
                 {`Actions `}
               </th>
             </tr>
+
           </thead>
           <tbody>
             {employees &&
@@ -294,26 +252,21 @@ const EmployeeList = () => {
 
                   <td className="border border-gray-300 px-4 py-2 w-24">
                     {editingEmployeeId === item.id ? (
-                      <div ref={dropdownContainerRef} className="relative">
-
-                        <select
-                          value={editedEmployee?.managerId || ""}
-                          onChange={(e) => handleChange(e, "managerId")}
-                          className="border p-1 text-center w-full"
-                        >
-                          <option value="">Select Manager</option>
-                          {possibleManagers.map((manager: any) => (
-                            <option key={manager.id} value={manager.id}>
-                              {manager.name} {manager.surname}
-                            </option>
-                          ))}
-                        </select>
-                        <div ref={sentinelRef} style={{ height: 1 }}></div>
-                      </div>
+                      <select
+                        value={editedEmployee?.managerId || ""}
+                        onChange={(e) => handleChange(e, "managerId")}
+                        className="border p-1 text-center w-full"
+                      >
+                        <option value="">Select Manager</option>
+                        {possibleManagers.map((manager: any) => (
+                          <option key={manager.id} value={manager.id}>
+                            {manager.name} {manager.surname}
+                          </option>
+                        ))}
+                      </select>
                     ) : (
                       item.managerId || "None"
                     )}
-                    <div ref={sentinelRef} style={{ height: 1, width: '100%' }}></div>
                   </td>
                   <td className="border border-gray-300 px-4 py-2 w-32">
                     {editingEmployeeId === item.id ? (
@@ -371,6 +324,7 @@ const EmployeeList = () => {
                 </tr>
               ))}
           </tbody>
+
         </table>
 
         <div className="m-4 flex items-center justify-center">

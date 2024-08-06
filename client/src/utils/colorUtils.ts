@@ -10,3 +10,4 @@ export const getTitleBackgroundColor = (title: string) => {
       return "bg-second";
   }
 };
+

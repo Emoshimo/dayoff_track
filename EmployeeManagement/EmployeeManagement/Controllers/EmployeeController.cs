@@ -50,11 +50,13 @@ namespace EmployeeManagement.Controllers
             [FromQuery] int? managerIdSearchTerm = null,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10,
-            [FromQuery] string? startDateSearchTerm = null)
+            [FromQuery] string? startDateSearchTerm = null,
+            [FromQuery] string? orderColumn = null,
+            [FromQuery] string? sortOrder = null)
         {
             try
             {
-                var result = await _employeeService.SearchEmployees(pageNumber, pageSize, nameSearchTerm, surnameSearchTerm, idSearchTerm, managerIdSearchTerm, startDateSearchTerm);
+                var result = await _employeeService.SearchEmployees(pageNumber, pageSize, nameSearchTerm, surnameSearchTerm, idSearchTerm, managerIdSearchTerm, startDateSearchTerm, orderColumn, sortOrder);
                 
                 return Ok(result);
             }
