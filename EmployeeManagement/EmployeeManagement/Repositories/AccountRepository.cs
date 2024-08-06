@@ -118,7 +118,7 @@ namespace EmployeeManagement.Repositories
             claims.AddRange(employeeRoles.Select(er => new Claim(ClaimTypes.Role, er.Role.RoleName)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration.GetSection("JWT:Key").Value!));
+                Environment.GetEnvironmentVariable("JWT__Key")));
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
             var token = new JwtSecurityToken(

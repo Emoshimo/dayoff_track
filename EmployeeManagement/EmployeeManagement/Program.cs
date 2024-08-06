@@ -8,10 +8,12 @@ using Swashbuckle.AspNetCore.Filters;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Services;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
+using DotNetEnv;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+Env.Load();
 var configuration = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllers();
@@ -21,7 +23,7 @@ builder.Services.AddEndpointsApiExplorer();
 // Starting Custom Configurations 
 // Database connection
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("WebApiDatabase") ??
+    options.UseNpgsql(Environment.GetEnvironmentVariable("WebApiDatabase") ??
     throw new InvalidOperationException("WebApiDatabase String not found.")
 ));
 
@@ -45,7 +47,7 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
         ValidateAudience = false,
         ValidateIssuer = false,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                builder.Configuration.GetSection("Jwt:Key").Value!))
+                Environment.GetEnvironmentVariable("Jwt__Key") ?? throw new InvalidOperationException("JWT_KEY zort")))
     };
 });
 // Repositories
@@ -67,7 +69,7 @@ builder.Services.AddMemoryCache(options =>
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IManagerService, ManagerService>();
 builder.Services.AddSingleton<ICacheService, CacheService>();
-builder.Services.AddSingleton<IEmployeeCache,  EmployeeCache>();
+builder.Services.AddSingleton<IEmployeeCache, EmployeeCache>();
 builder.Services.AddScoped<IDayOffRequestService, DayOffRequestService>();
 
 //Register Hosted Service
