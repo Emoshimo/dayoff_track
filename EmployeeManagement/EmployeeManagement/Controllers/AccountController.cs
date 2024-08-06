@@ -2,6 +2,7 @@
 using EmployeeManagement.Data;
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
+using EmployeeManagement.Interfaces.ServiceInterfaces;
 using EmployeeManagement.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,12 @@ namespace EmployeeManagement.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IEmployeeService _employeeService;
 
-        public AccountController(IAccountRepository accountRepository)
+        public AccountController(IAccountRepository accountRepository, IEmployeeService employeeService)
         {
             _accountRepository = accountRepository;
+            _employeeService = employeeService;
         }
 
         [HttpPost("register")]
@@ -55,6 +58,13 @@ namespace EmployeeManagement.Controllers
         {
             try
             {
+                var possibleManagers = await _employeeService.GetPossibleManagersForEmployee(employee.Id);
+
+                // Check if manIg is a possible manager
+                if (!possibleManagers.Any(m => m.Id == employee.ManagerId))
+                {
+                    return NotFound($"Manager with ID {employee.ManagerId} is not a possible manager for employee as it creates cycle.");
+                }
                 var response = await _accountRepository.EditEmployee(employee);
                 return Ok(response);
             }

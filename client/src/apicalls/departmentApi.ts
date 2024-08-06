@@ -17,7 +17,9 @@ export const createDepartment = async (
   } catch (error) {
     return handleApiError(error, showError);
   }
-};export const editDepartment = async (
+};
+
+export const editDepartment = async (
   id: number,
   editedDepartment: IDepartment,
   token: string,

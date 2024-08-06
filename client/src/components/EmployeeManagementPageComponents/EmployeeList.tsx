@@ -6,10 +6,13 @@ import DynamicTableHeader from "./DynamicTableHeader";
 import DynamicSearchInput from "./DynamicSearchInput";
 import { searchEmployees } from "../../apicalls/api";
 import { fetchEmployees } from "../../apicalls/employeeApi";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 
 const EmployeeList = () => {
   const columnNames = ['Id', 'Name', 'Surname', 'ManagerId', 'StartDate', 'RemainingDayOffs', 'Actions'];
+  const [sortKey, setSortKey] = useState('Id');
+  const [sortOrder, setSortOrder] = useState('asc');
   const searchFields = ['Id', 'Name', 'Surname', 'ManagerId', 'StartDate']
   const [searchTerms, setSearchTerms] = useState<ClientEmployee>();
   const [employees, setEmployees] = useState<any[]>([]);
@@ -144,7 +147,20 @@ const EmployeeList = () => {
       }
     }
   };
-
+  const handleSort = (key: any) => {
+    if (sortKey === key) {
+      // If the same key is clicked, toggle the sort order
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new key and default to ascending order
+      setSortKey(key);
+      setSortOrder('asc');
+    }
+    console.log(sortKey, sortOrder)
+  };
+  const getIconColor = (key: any, order: any) => {
+    return sortKey === key ? (sortOrder === order ? 'text-red-500' : 'text-gray-500') : 'text-gray-500';
+  };
   return (
     <div>
       <div className="overflow-x-auto">
@@ -176,8 +192,68 @@ const EmployeeList = () => {
           }
         </div>
         <table className="table-auto min-w-full bg-white border-collapse border">
-          <DynamicTableHeader fields={columnNames} />
+          <thead>
+            <tr className='bg-primary text-slate-200'>
 
+              <th key={"Id"} className='border border-gray-300 px-4 py-2'>
+                {`Id `}
+                <button onClick={() => handleSort('Id')}>
+                  <FaAngleUp className={getIconColor('Id', 'asc')} />
+                </button>
+                <button onClick={() => handleSort('Id')}>
+                  <FaAngleDown />
+                </button>
+
+              </th>
+              <th key={"Name"} className='border border-gray-300 px-4 py-2'>
+                {`Name `}
+                <button onClick={() => handleSort('Name')}>
+                  <FaAngleUp />
+                </button>
+                <button onClick={() => handleSort('Name')}>
+                  <FaAngleDown />
+                </button>
+
+              </th>
+              <th key={"Surname"} className='border border-gray-300 px-4 py-2 '>
+                {`Surname `}
+                <button onClick={() => handleSort('Surname')}>
+                  <FaAngleUp />
+                </button>
+                <button onClick={() => handleSort('Surname')}>
+                  <FaAngleDown />
+                </button>
+
+              </th>
+              <th key={"ManagerId"} className='border border-gray-300 px-4 py-2 '>
+                {`ManagerId `}
+                <button onClick={() => handleSort('ManagerId')}>
+                  <FaAngleUp />
+                </button>
+                <button onClick={() => handleSort('ManagerId')}>
+                  <FaAngleDown />
+                </button>
+
+              </th>
+              <th key={"StartDate"} className='border border-gray-300 px-4 py-2 '>
+                {`StartDate `}
+                <button onClick={() => handleSort('StartDate')}>
+                  <FaAngleUp />
+                </button>
+                <button onClick={() => handleSort('StartDate')}>
+                  <FaAngleDown />
+                </button>
+
+              </th>
+              <th key={"RemainingDayOff"} className='border border-gray-300 px-4 py-2 '>
+                {`RemainingDayOff `}
+
+              </th>
+              <th key={"Actions"} className='border border-gray-300 px-4 py-2 '>
+                {`Actions `}
+              </th>
+            </tr>
+          </thead>
           <tbody>
             {employees &&
               employees.map((item: ClientEmployee, index: number) => (
