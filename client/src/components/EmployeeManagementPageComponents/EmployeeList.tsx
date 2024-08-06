@@ -44,7 +44,7 @@ const EmployeeList = () => {
     }
     setSearchTerms(prevTerms => ({
       ...prevTerms,
-      [column.toLowerCase()]: value,
+      [column[0].toLowerCase + column.slice(1)]: value,
     }));
     if (column === "StartDate") {
       setSearchTerms(prevTerms => ({
@@ -148,14 +148,12 @@ const EmployeeList = () => {
                 {`Id `}
                 <UpArrowButton currentKey='Id' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
                 <DownArrowButton currentKey='Id' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
-                <input
+                <DynamicSearchInput
                   id="id"
                   key={"Id"}
                   name="Id"
-                  placeholder="Id"
-                  onChange={(e) => searchChange(e.target.value, "Id")}
-                  className="text-slate-200 text-center bg-primary border-2 border-border rounded-md focus:outline-none"
-                  type="text"
+                  placeHolder="Id"
+                  onChange={searchChange}
                 />
               </th>
               <th key={"Name"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
@@ -300,7 +298,7 @@ const EmployeeList = () => {
                       item.calculatedRemainingDayOff || 0
                     )}
                   </td>
-                  <td className="border border-gray-300 py-2 w-32">
+                  <td className="border border-gray-300 py-2 w-48">
                     <div className="w-full overflow-hidden">
                       {editingEmployeeId === item.id ? (
                         <div className="">

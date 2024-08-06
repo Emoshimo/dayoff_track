@@ -142,7 +142,6 @@ export const searchEmployees = async(
   showError: (message: string) => void
 
 ) => {
-  console.log(startDateSearchTerm)
   try{
     const response = await axiosInstance.get('/Employee/search', {
       params: {
