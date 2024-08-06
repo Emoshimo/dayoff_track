@@ -17,7 +17,7 @@ const DynamicSearchInput: React.FC<DynamicSearchInputProps> = ({ id, name, place
                     id={id}
                     name={name}
                     className="text-slate-200 text-center bg-primary border-2 w-48 border-border rounded-md focus:outline-none"
-                    onChange={(e) => onChange(e, name)}
+                    onChange={(e) => onChange(e.target.value, name)}
                 >
                     <option value="">Select Year</option>
                     {years.map(year => (

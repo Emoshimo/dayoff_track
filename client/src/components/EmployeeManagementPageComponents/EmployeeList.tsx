@@ -46,6 +46,12 @@ const EmployeeList = () => {
       ...prevTerms,
       [column.toLowerCase()]: value,
     }));
+    if (column === "StartDate") {
+      setSearchTerms(prevTerms => ({
+        ...prevTerms,
+        ["startDate"]: value
+      }))
+    }
   }, []);
 
   const handleSearchTermChange = async () => {
@@ -54,7 +60,6 @@ const EmployeeList = () => {
     null, 11, searchTerms?.startDate || null, sortKey, sortOrder, showError);
 
     if (employees) {
-
       setEmployees(employees);
       setTotalPages(totalPageNumber);
     }
@@ -92,6 +97,7 @@ const EmployeeList = () => {
       value = null;
     }
     setEditedEmployee({ ...editedEmployee, [field]: value });
+
   };
 
   const handleEditClick = async (employee: ClientEmployee) => {
