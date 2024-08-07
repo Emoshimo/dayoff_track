@@ -1,18 +1,14 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { editEmployee } from "../../apicalls/departmentApi";
 import PopUp from "../PopUp";
 import { ClientEmployee } from "../../interfaces/interfaces";
-import DynamicTableHeader from "./DynamicTableHeader";
 import DynamicSearchInput from "./DynamicSearchInput";
 import { searchEmployees } from "../../apicalls/api";
-import { fetchEmployees } from "../../apicalls/employeeApi";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import UpArrowButton from "./UpArrowButton";
 import DownArrowButton from "./DownArrowButton";
 
 
 const EmployeeList = () => {
-  const columnNames = ['Id', 'Name', 'Surname', 'ManagerId', 'StartDate', 'RemainingDayOffs', 'Actions'];
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<string | null>(null);
   const [searchTerms, setSearchTerms] = useState<ClientEmployee>();
