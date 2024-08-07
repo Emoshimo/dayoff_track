@@ -35,23 +35,11 @@ const EmployeeList = () => {
 
 
   const searchChange = useCallback(async (value: string, column: string) => {
-    if (column === "ManagerId") {
-      setSearchTerms(prevTerms => ({
-        ...prevTerms,
-        ["managerId"]: Number(value)
-      }));
-      return;
-    }
     setSearchTerms(prevTerms => ({
       ...prevTerms,
-      [column[0].toLowerCase + column.slice(1)]: value,
+      [column[0].toLowerCase() + column.slice(1)]: value,
     }));
-    if (column === "StartDate") {
-      setSearchTerms(prevTerms => ({
-        ...prevTerms,
-        ["startDate"]: value
-      }))
-    }
+
   }, []);
 
   const handleSearchTermChange = async () => {
