@@ -9,5 +9,6 @@
 /EmployeeManagement/EmployeeManagement/bin
 /EmployeeManagement/EmployeeManagement/obj
 /EmployeeManagement/.editorconfig
+/EmployeeManagement/EmployeeManagement/.env
 #General
 .vscode/

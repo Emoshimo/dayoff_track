@@ -42,6 +42,7 @@ namespace EmployeeManagement.Controllers
             };
             return Ok(response);
         }
+        
         [HttpGet("search")]
         public async Task<ActionResult<PaginationResponse>> SearchEmployees(
             [FromQuery] string? nameSearchTerm = null,

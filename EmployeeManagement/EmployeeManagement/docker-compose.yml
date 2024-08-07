@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  app:
+    container_name: dayoff_track
+    image: emoshimo/employeemanagement:1.0
+    build: .
+    ports:
+      - "8080:80"
+    env_file:
+      - .env
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+    depends_on:
+      - db
+
+  db:
+    container_name: postgres_emp_container
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: .Shimo2712
+    volumes:
+      - postgres_data_emp:/var/lib/postgresql/data
+
+volumes:
+  postgres_data_emp:
+    external: true

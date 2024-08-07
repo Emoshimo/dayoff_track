@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { editEmployee } from "../../apicalls/departmentApi";
 import PopUp from "../PopUp";
 import { ClientEmployee } from "../../interfaces/interfaces";
@@ -9,7 +10,6 @@ import DownArrowButton from "./DownArrowButton";
 
 
 const EmployeeList = () => {
-  const columnNames = ['Id', 'Name', 'Surname', 'ManagerId', 'StartDate', 'RemainingDayOffs', 'Actions'];
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<string | null>(null);
   const [searchTerms, setSearchTerms] = useState<ClientEmployee>();
@@ -36,15 +36,19 @@ const EmployeeList = () => {
     setSearchTerms(prevTerms => ({
       ...prevTerms,
       [column[0].toLowerCase() + column.slice(1)]: value,
+      [column[0].toLowerCase() + column.slice(1)]: value,
     }));
+
 
   }, []);
 
   const handleSearchTermChange = async () => {
     const { employees, totalPageNumber } = await searchEmployees(pageNumber, pageSize, searchTerms?.name ||
       null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.managerId ||
-    null, 11, searchTerms?.startDate || null, sortKey, sortOrder, showError);
-
+    null, searchTerms?.startDate || null, sortKey, sortOrder, showError);
+    if (searchTerms?.name || searchTerms?.surname || searchTerms?.id || searchTerms?.managerId || searchTerms?.startDate) {
+      setPageNumber(1)
+    }
     if (employees) {
       setEmployees(employees);
       setTotalPages(totalPageNumber);

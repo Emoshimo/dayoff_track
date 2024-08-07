@@ -43,6 +43,10 @@ namespace EmployeeManagement.Services
             int additionalDayOffs = 0;
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
             var yearsWorked = today.Year - employee.StartDate.Value.Year;
+            if (today < new DateOnly(today.Year, employee.StartDate.Value.Month, employee.StartDate.Value.Day))
+            {
+                yearsWorked--; // Decrement if the anniversary hasn't occurred yet
+            }
 
             if (yearsWorked > 0)
             {
@@ -59,6 +63,7 @@ namespace EmployeeManagement.Services
                     additionalDayOffs += 26 * (yearsWorked);
                 }
             }
+
             if (employee.StartDate.Value.Month == today.Month && employee.StartDate.Value.Day == today.Day)
             {
 
