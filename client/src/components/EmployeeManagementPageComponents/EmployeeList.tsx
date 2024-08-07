@@ -45,8 +45,10 @@ const EmployeeList = () => {
   const handleSearchTermChange = async () => {
     const { employees, totalPageNumber } = await searchEmployees(pageNumber, pageSize, searchTerms?.name ||
       null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.managerId ||
-    null, 11, searchTerms?.startDate || null, sortKey, sortOrder, showError);
-
+    null, searchTerms?.startDate || null, sortKey, sortOrder, showError);
+    if (searchTerms?.name || searchTerms?.surname || searchTerms?.id || searchTerms?.managerId || searchTerms?.startDate) {
+      setPageNumber(1)
+    }
     if (employees) {
       setEmployees(employees);
       setTotalPages(totalPageNumber);

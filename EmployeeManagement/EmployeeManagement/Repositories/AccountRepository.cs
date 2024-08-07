@@ -13,12 +13,10 @@ namespace EmployeeManagement.Repositories
     public class AccountRepository : IAccountRepository
     {
         private readonly AppDbContext _context;
-        private readonly IConfiguration _configuration;
 
-        public AccountRepository(AppDbContext context, IConfiguration configuration)
+        public AccountRepository(AppDbContext context)
         {
             _context = context;
-            _configuration = configuration;
         }
 
         public async Task<GeneralResponse> CreateEmployeeAsync(EmployeeDTO employeeDTO, DateOnly startDate)
@@ -118,7 +116,7 @@ namespace EmployeeManagement.Repositories
             claims.AddRange(employeeRoles.Select(er => new Claim(ClaimTypes.Role, er.Role.RoleName)));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                Environment.GetEnvironmentVariable("JWT__Key")));
+                Environment.GetEnvironmentVariable("Jwt__Key") ?? throw new Exception("JWT_KEY could not be read")));
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
             var token = new JwtSecurityToken(

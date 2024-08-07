@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     environment:
-      ConnectionStrings__WebApiDatabase: "Host=db;Database=postgres;Username=postgres;Password=.Shimo2712"
+      ASPNETCORE_ENVIRONMENT: "Production"
     depends_on:
       - db
 

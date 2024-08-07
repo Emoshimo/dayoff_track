@@ -80,7 +80,16 @@ builder.Services.AddScoped<IDayOffRequestService, DayOffRequestService>();
 builder.Services.ConfigureQuartz();
 
 // Ending Custom Configurations
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000", "https://localhost:7237")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
 
 var app = builder.Build();
 
@@ -96,6 +105,8 @@ if (app.Environment.IsDevelopment())
        .AllowAnyHeader();
     });
 }
+app.UseCors("AllowSpecificOrigins");
+
 
 app.UseHttpsRedirection();
 
