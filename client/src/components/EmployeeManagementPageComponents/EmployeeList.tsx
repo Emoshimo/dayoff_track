@@ -1,12 +1,9 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { editEmployee } from "../../apicalls/departmentApi";
 import PopUp from "../PopUp";
 import { ClientEmployee } from "../../interfaces/interfaces";
-import DynamicTableHeader from "./DynamicTableHeader";
 import DynamicSearchInput from "./DynamicSearchInput";
 import { searchEmployees } from "../../apicalls/api";
-import { fetchEmployees } from "../../apicalls/employeeApi";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import UpArrowButton from "./UpArrowButton";
 import DownArrowButton from "./DownArrowButton";
 
@@ -35,23 +32,12 @@ const EmployeeList = () => {
 
 
   const searchChange = useCallback(async (value: string, column: string) => {
-    if (column === "ManagerId") {
-      setSearchTerms(prevTerms => ({
-        ...prevTerms,
-        ["managerId"]: Number(value)
-      }));
-      return;
-    }
+
     setSearchTerms(prevTerms => ({
       ...prevTerms,
-      [column[0].toLowerCase + column.slice(1)]: value,
+      [column[0].toLowerCase() + column.slice(1)]: value,
     }));
-    if (column === "StartDate") {
-      setSearchTerms(prevTerms => ({
-        ...prevTerms,
-        ["startDate"]: value
-      }))
-    }
+
   }, []);
 
   const handleSearchTermChange = async () => {
@@ -192,7 +178,6 @@ const EmployeeList = () => {
                   placeHolder="ManagerId"
                   onChange={searchChange}
                 />
-
               </th>
 
               <th key={"StartDate"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
