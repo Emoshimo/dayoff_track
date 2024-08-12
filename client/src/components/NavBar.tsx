@@ -137,16 +137,21 @@ const NavBar = () => {
                 </NavLink>
               </>
             )}
-            <NavLink
-              to="/dashboard/manager"
-              className={({ isActive }) =>
-                `flex flex-row items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
-                }`
-              }
-            >
-              <FaCodePullRequest style={{ width: "32px", height: "32px" }} />{" "}
-              {isExpanded && "Manager"}
-            </NavLink>
+            {
+              userRole !== "Admin" && (
+                <NavLink
+                  to="/dashboard/manager"
+                  className={({ isActive }) =>
+                    `flex flex-row items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
+                    }`
+                  }
+                >
+                  <FaCodePullRequest style={{ width: "32px", height: "32px" }} />{" "}
+                  {isExpanded && "Manager"}
+                </NavLink>
+              )
+            }
+
             {userRole === "Manager" && (
               <>
 

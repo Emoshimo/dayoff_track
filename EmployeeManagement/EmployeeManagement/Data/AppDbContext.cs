@@ -23,9 +23,8 @@ namespace EmployeeManagement.Data
         {
             
             base.OnModelCreating(builder);
-            
-            builder.Entity<EmployeeRole>()
-                .HasKey(er => new { er.EmployeeId, er.RoleId });
+
+
         }
 
     }

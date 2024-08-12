@@ -6,11 +6,10 @@ namespace EmployeeManagement.Data
 {
     public class EmployeeRole
     {
-
-        [Key]
+        public int Id { get; set; }
         public int EmployeeId { get; set; }
-        [Key]
         public int RoleId { get; set; }
         public Role Role { get; set; }
+        public Employee Employee { get; set; }
     }
 }

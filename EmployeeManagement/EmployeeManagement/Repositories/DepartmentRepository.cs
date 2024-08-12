@@ -50,6 +50,19 @@ namespace EmployeeManagement.Repositories
             {
                 throw new InvalidOperationException("Target Department Not Found in Database");
             }
+            var manager = await _context.Employees
+                .Include(e => e.EmployeeRoles)
+                .SingleOrDefaultAsync(e => e.Id == department.ManagerId);
+            if (manager == null)
+            {
+                throw new InvalidOperationException("Manager not found in the database");
+            }
+            var managerRole = manager.EmployeeRoles
+                .SingleOrDefault(er => er.RoleId == 3);
+            if (managerRole != null)
+            {
+                managerRole.RoleId = 2;
+            }
             target.Name = department.Name;
             target.ManagerId = department.ManagerId;
             await _context.SaveChangesAsync();

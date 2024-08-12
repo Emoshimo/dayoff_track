@@ -5,7 +5,7 @@ import {
   DayOffType,
 } from "../interfaces/interfaces";
 
-const baseURL = "http://localhost:8080/api";
+const baseURL = "https://localhost:7237/api";
 
 export const axiosInstance = axios.create({
   baseURL,
