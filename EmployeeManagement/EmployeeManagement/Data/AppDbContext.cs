@@ -23,6 +23,9 @@ namespace EmployeeManagement.Data
         {
             
             base.OnModelCreating(builder);
+            builder.Entity<Department>()
+                .HasIndex(d => d.ManagerId)
+                .IsUnique();
 
 
         }

@@ -53,7 +53,14 @@ namespace EmployeeManagement.Repositories
             {
                 throw new InvalidOperationException("Target Department Not Found in Database");
             }
+            // Check if the new manager is already managing another department
+            var existingDepartment = await _context.Departments
+                .SingleOrDefaultAsync(d => d.ManagerId == department.ManagerId);
 
+            if (existingDepartment != null && existingDepartment.Id != department.Id)
+            {
+                throw new InvalidOperationException("This employee is already managing another department.");
+            }
             var oldManager = target.Manager;
             var oldManagerRole = oldManager.EmployeeRoles
                 .SingleOrDefault(er => er.RoleId == 2); // Assuming RoleId 2 is the manager role

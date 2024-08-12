@@ -2,6 +2,7 @@
 using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
+using EmployeeManagement.Repositories;
 using EmployeeManagement.Utils;
 
 namespace EmployeeManagement.Services
@@ -10,13 +11,19 @@ namespace EmployeeManagement.Services
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDayOffRequestRepository _dayOffRequestRepository;
+        private readonly IEmployeeService _employeeService;
+        private readonly IManagerRepository _managerRepository;
 
         public ManagerService(
             IEmployeeRepository employeeRepository,
-            IDayOffRequestRepository dayOffRequestRepository)
+            IDayOffRequestRepository dayOffRequestRepository,
+            IEmployeeService employeeService,
+            IManagerRepository managerRepository)
         {
             _employeeRepository = employeeRepository;
             _dayOffRequestRepository = dayOffRequestRepository;
+            _employeeService = employeeService;
+            _managerRepository = managerRepository;
         }
         public async Task<IEnumerable<DayOffRequestForManager>> GetDayOffRequests(int managerId)
         {
@@ -96,5 +103,28 @@ namespace EmployeeManagement.Services
             await _dayOffRequestRepository.SaveChangesAsync();
             return newRDO;
         }
+
+        public async Task<IEnumerable<ClientEmployee>> GetDepartmentEmployees(int managerId, int pageSize, int pageNumber)
+        {
+            var clientEmployees = new List<ClientEmployee>();
+            var employees = await _managerRepository.GetDepartmentEmployees(managerId, pageSize, pageNumber);
+            foreach (var employee in employees)
+            {
+                var remainingDayOffs = await _employeeService.CalculateRemainingDayOffs(employee.Id);
+
+                var clientEmployee = new ClientEmployee
+                {
+                    Id = employee.Id,
+                    Name = employee.Name,
+                    Surname = employee.Surname,
+                    CalculatedRemainingDayOff = remainingDayOffs 
+                };
+
+                clientEmployees.Add(clientEmployee);
+            }
+
+            return clientEmployees;
+        }
+
     }
 }
