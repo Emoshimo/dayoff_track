@@ -19,7 +19,7 @@ const DepartmentList = () => {
       if (response.success && response.data) {
         setDepartments(response.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -55,7 +55,7 @@ const DepartmentList = () => {
         }
       }
       console.log(response);
-    } catch (error) {}
+    } catch (error) { }
     setEditingDepartmentId(0);
     setEditedDepartment({});
   };
@@ -73,7 +73,6 @@ const DepartmentList = () => {
         <table className="table-auto min-w-full bg-white border-collapse border">
           <thead>
             <tr className="bg-primary text-slate-200">
-              <th className="border-x border-border px-4 py-2">Id</th>
               <th className="border-x border-border px-4 py-2">Name</th>
               <th className="border-x border-border px-4 py-2">ManagerId</th>
               <th className="border-x border-border px-4 py-2">Actions</th>
@@ -84,11 +83,10 @@ const DepartmentList = () => {
               departments?.map((department: IDepartment, index: number) => (
                 <tr
                   key={department.id}
-                  className={`text-center ${
-                    index % 2 === 0 ? "" : "bg-gray-100"
-                  }`}
+                  className={`text-center ${index % 2 === 0 ? "" : "bg-gray-100"
+                    }`}
                 >
-                  <td className="border px-4 py-2 w-24">{department.id}</td>
+
                   <td className="border px-4 py-2 w-32">
                     {editingDepartmentId === department.id ? (
                       <input

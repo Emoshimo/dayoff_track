@@ -14,7 +14,7 @@ export const axiosInstance = axios.create({
   },
 });
 
-export const handleApiError = <T>(
+export const handleApiError = <T> (
   error: any,
   showError: (message: string) => void
 ): ApiResponse<T> => {

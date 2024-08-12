@@ -45,11 +45,25 @@ namespace EmployeeManagement.Repositories
         }
         public async Task<DepartmentDTO> EditDepartment(DepartmentDTO department)
         {
-            var target = await _context.Departments.FindAsync(department.Id);
+            var target = await _context.Departments
+                .Include(d => d.Manager)
+                    .ThenInclude(m => m.EmployeeRoles)
+                .SingleOrDefaultAsync(d => d.Id == department.Id);  
             if (target == null)
             {
                 throw new InvalidOperationException("Target Department Not Found in Database");
             }
+
+            var oldManager = target.Manager;
+            var oldManagerRole = oldManager.EmployeeRoles
+                .SingleOrDefault(er => er.RoleId == 2); // Assuming RoleId 2 is the manager role
+
+            if (oldManagerRole != null)
+            {
+                // Change the old manager's role to RoleId = 3 (non-manager role)
+                oldManagerRole.RoleId = 3;
+            }
+
             var manager = await _context.Employees
                 .Include(e => e.EmployeeRoles)
                 .SingleOrDefaultAsync(e => e.Id == department.ManagerId);
