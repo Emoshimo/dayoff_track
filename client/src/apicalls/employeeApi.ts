@@ -15,17 +15,20 @@ export const fetchEmployees = async (
       },
     });
     if (response.status === 200) {
-      return response.data;
+      return response;
     }
   } catch (error) {
     return handleApiError(error, showError);
   }
 };
 
-export const fetchPossibleManagers = async (id: number) => {
+export const fetchPossibleManagers = async (id: number, showError: (message: string) => void) : Promise<ApiResponse<ClientEmployee[]>> => {
   const response = await axiosInstance.get(`/Employee/possible_managers/${id}`);
   if (response.status === 200) {
-    return response.data;
+    return {success: true, data: response.data}
+  }
+  else {
+    return handleApiError("", showError)
   }
 };
 export const fetchEmployeeDetails = async (
@@ -221,3 +224,15 @@ export const fetchTopDayOffEmployees = async (
   }
 }
 
+export const deleteEmployee = async (token:string, id: number) => {
+  const response = await axiosInstance.delete(`Employee/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  if (response.status !== 200)
+  {
+    console.log("hayda");
+  }
+
+}

@@ -37,7 +37,6 @@ const EmployeePage = () => {
   const getRemainingDayOff = async () => {
     const remainingDayOff = await fetchRemainingDayOffs(Number(id))
     setRemainigDayOff(remainingDayOff);
-    console.log(remainingDayOff)
   }
   useEffect(() => {
     fetchUser();

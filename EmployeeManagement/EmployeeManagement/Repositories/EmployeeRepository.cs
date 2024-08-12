@@ -142,5 +142,20 @@ namespace EmployeeManagement.Repositories
                 .Where(e => ids.Contains(e.Id))
                 .ToListAsync();
         }
+
+        public async Task DeleteEmployeById(int employeeId)
+        {
+            var target = await _context.Employees
+                .Where(e => e.IsActive)
+                .Where(e => e.Id == employeeId)
+                .SingleOrDefaultAsync();
+                
+            if (target == null) 
+            {
+                throw new InvalidDataException("User is already deleted or not found.");
+            }
+            target.IsActive = false;
+            await _context.SaveChangesAsync();
+        }
     }
 }

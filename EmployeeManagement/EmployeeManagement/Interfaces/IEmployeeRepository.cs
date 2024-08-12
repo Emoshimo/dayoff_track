@@ -17,5 +17,6 @@ namespace EmployeeManagement.Interfaces
         Task<List<Employee>> GetAllEmployeesExcept(int employeeId);
         Task<List<Employee>> GetDirectSubordinates(int managerId);
         Task<IEnumerable<Employee>> GetByListOfIds(IEnumerable<int> ids);
+        Task DeleteEmployeById(int employeeId);
     }
 }

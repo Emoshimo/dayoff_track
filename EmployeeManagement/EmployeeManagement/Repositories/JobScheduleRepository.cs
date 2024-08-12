@@ -46,7 +46,6 @@ namespace EmployeeManagement.Repositories
         public async Task<IEnumerable<JobSchedule>> GetJobSchedulesAsync()
         {
             return await _context.JobSchedules
-                .Where(js => js.IsActive)
                 .ToListAsync();
         }
 

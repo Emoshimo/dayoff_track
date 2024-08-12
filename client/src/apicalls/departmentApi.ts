@@ -90,7 +90,6 @@ export const fetchDepartments = async (
       },
     });
     if (response.status === 200) {
-      console.log(response.data);
       return {
         success: true,
         data: response.data,

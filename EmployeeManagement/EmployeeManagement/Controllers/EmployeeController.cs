@@ -163,5 +163,20 @@ namespace EmployeeManagement.Controllers
             }
             return Ok(response);
         }
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteEmployee(int id)
+        {
+            try
+            {
+               await _employeeRepository.DeleteEmployeById(id);
+               return Ok();
+
+            }
+            catch (InvalidDataException iae)
+            {
+                return NotFound(iae.Message);
+            }
+        }
     }
 }

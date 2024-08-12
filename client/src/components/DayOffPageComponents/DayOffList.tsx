@@ -37,7 +37,6 @@ const DayOffList: React.FC<DayOffListProps> = ({ dayOffs }) => {
   };
   useEffect(() => {
     setDayOffList(dayOffs);
-    console.log(dayOffs);
   }, [dayOffs]);
 
   return (

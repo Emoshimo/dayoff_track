@@ -15,9 +15,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole }) => {
   }
   let userRole =
     decodedToken?.[
-      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
     ];
-  console.log(userRole);
   if (userRole !== requiredRole) {
     return <Navigate to="/" replace />;
   }

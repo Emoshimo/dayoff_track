@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from "react";
-import React, { useEffect, useState, useCallback } from "react";
 import { editEmployee } from "../../apicalls/departmentApi";
 import PopUp from "../PopUp";
 import { ClientEmployee } from "../../interfaces/interfaces";
@@ -7,6 +6,8 @@ import DynamicSearchInput from "./DynamicSearchInput";
 import { searchEmployees } from "../../apicalls/api";
 import UpArrowButton from "./UpArrowButton";
 import DownArrowButton from "./DownArrowButton";
+import { deleteEmployee, fetchEmployees } from "../../apicalls/employeeApi";
+import DeletePopUp from "../DeletePopUp";
 
 
 const EmployeeList = () => {
@@ -20,6 +21,8 @@ const EmployeeList = () => {
   const [possibleManagers, setPossibleManagers] = useState<ClientEmployee[]>([]);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
+  const [managerPageNumber, setManagerPageNumber] = useState<number>(1);
+  const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
   const token = localStorage.getItem("token");
   const showError = (message: string) => {
     setPopupMessage(message);
@@ -30,12 +33,10 @@ const EmployeeList = () => {
     setPopupMessage(null);
   };
 
-
   const searchChange = useCallback(async (value: string, column: string) => {
 
     setSearchTerms(prevTerms => ({
       ...prevTerms,
-      [column[0].toLowerCase() + column.slice(1)]: value,
       [column[0].toLowerCase() + column.slice(1)]: value,
     }));
 
@@ -78,6 +79,22 @@ const EmployeeList = () => {
     setEditingEmployeeId(0);
   };
 
+  const handleDeleteClick = (employee: ClientEmployee) => {
+    setEditingEmployeeId(employee.id);
+    setIsPopupVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsPopupVisible(false);
+    await deleteEmployee(token!, editingEmployeeId!);
+    setEditedEmployee({});
+    setEditingEmployeeId(0);
+  };
+
+  const handleCloseDeletePopup = () => {
+    setIsPopupVisible(false);
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     field: string
@@ -95,6 +112,17 @@ const EmployeeList = () => {
     setEditedEmployee(employee);
   };
 
+
+  const fetchManagers = async () => {
+    const response = await fetchEmployees(managerPageNumber, 30, token!, showError);
+    if (response?.data) {
+      const newManagers = response.data.employees;
+      setPossibleManagers(prevManagers => [...prevManagers, ...newManagers]);
+    }
+  };
+  useEffect(() => {
+    fetchManagers();
+  }, [managerPageNumber]);
 
   useEffect(() => {
     handleSearchTermChange()
@@ -245,21 +273,27 @@ const EmployeeList = () => {
 
                   <td className="border border-gray-300 px-4 py-2 w-24">
                     {editingEmployeeId === item.id ? (
-                      <select
-                        value={editedEmployee?.managerId || ""}
-                        onChange={(e) => handleChange(e, "managerId")}
-                        className="border p-1 text-center w-full"
-                      >
-                        <option value="">Select Manager</option>
-                        {possibleManagers.map((manager: any) => (
-                          <option key={manager.id} value={manager.id}>
-                            {manager.name} {manager.surname}
-                          </option>
-                        ))}
-                      </select>
+                      <div>
+                        <select
+                          value={editedEmployee?.managerId || ""}
+                          onChange={(e) => handleChange(e, "managerId")}
+                          className="border p-1 text-center w-full"
+                        >
+                          <option value="">Select Manager</option>
+                          {possibleManagers.map((manager: any) => (
+                            <option value={manager.id}>
+                              {manager.name} {manager.surname}
+                            </option>
+                          ))}
+
+                        </select>
+
+                      </div>
+
                     ) : (
                       item.managerId || "None"
                     )}
+
                   </td>
                   <td className="border border-gray-300 px-4 py-2 w-32">
                     {editingEmployeeId === item.id ? (
@@ -290,27 +324,48 @@ const EmployeeList = () => {
                   <td className="border border-gray-300 py-2 w-48">
                     <div className="w-full overflow-hidden">
                       {editingEmployeeId === item.id ? (
-                        <div className="">
+                        <div className="flex justify-center gap-2">
                           <button
                             onClick={handleSaveClick}
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                            className="bg-approved text-white px-4 py-2 rounded hover:bg-green-600"
                           >
                             Save
                           </button>
                           <button
                             onClick={handleCancelClick}
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                            className="bg-rejected text-white px-4 py-2 rounded hover:bg-red-600"
                           >
                             Cancel
                           </button>
+
                         </div>
                       ) : (
-                        <button
-                          onClick={() => handleEditClick(item)}
-                          className="bg-primary text-white px-4 py-2 rounded hover:bg-gray-600"
-                        >
-                          Edit
-                        </button>
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => handleEditClick(item)}
+                            className="bg-primary text-white px-4 py-2 rounded hover:bg-gray-600"
+                          >
+                            Edit
+                          </button>
+
+                          <div>
+                            <button
+                              onClick={() => handleDeleteClick(item)}
+                              className="bg-rejected text-white hover:bg-hoverReject px-4 py-2 rounded"
+                            >
+                              Delete
+                            </button>
+
+                            {isPopupVisible && (
+                              <DeletePopUp
+                                message="Are you sure you want to delete this employee?"
+                                onClose={handleCloseDeletePopup}
+                                onConfirm={handleConfirmDelete}
+                              />
+                            )}
+                          </div>
+                        </div>
+
                       )}
                     </div>
                   </td>
