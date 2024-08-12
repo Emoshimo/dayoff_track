@@ -10,5 +10,6 @@
 /EmployeeManagement/EmployeeManagement/obj
 /EmployeeManagement/.editorconfig
 /EmployeeManagement/EmployeeManagement/.env
+/EmployeeManagement/EmployeeManagement/*.sql
 #General
 .vscode/
