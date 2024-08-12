@@ -21,6 +21,7 @@ function App() {
           <Route path="/dashboard/*" element={<DashboardLayout />}>
             <Route path="employee" element={<EmployeePage />}></Route>
             <Route path="dayoff" element={<DayOffPage />}></Route>
+            <Route path="manager" element={<ManagerPage />}></Route>
             <Route element={<ProtectedRoute requiredRole="Admin" />}>
               <Route
                 path="create-department"
@@ -36,7 +37,6 @@ function App() {
               ></Route>
             </Route>
             <Route element={<ProtectedRoute requiredRole="Manager" />}>
-              <Route path="manager" element={<ManagerPage />}></Route>
               <Route path="analytics" element={<AnalyticsPage />}></Route>
             </Route>
             <Route path="admin/*" element={<AdminPage />}></Route>

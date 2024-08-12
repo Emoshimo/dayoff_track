@@ -25,7 +25,7 @@ namespace EmployeeManagement.Controllers
         }
         // POST: api/Manager/dayoff/{id}
         [HttpPost("dayoff/{id}")]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Manager, User")]
         public async Task<ActionResult<DayOffRequest>> EvaluateDayOff(int id,[FromBody] bool approved)
         {
             try
@@ -54,7 +54,7 @@ namespace EmployeeManagement.Controllers
 
         // GET: api/Manager/dayoff/
         [HttpGet("dayoff/{managerId}")]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Manager, User")]
         public async Task<ActionResult<IEnumerable<DayOffRequestForManager>>> GetEmployeeDayOffs(int managerId)
         {
             try

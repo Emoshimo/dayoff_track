@@ -73,7 +73,7 @@ const DayOffList: React.FC<DayOffListProps> = ({ dayOffs }) => {
 
                 <td className="border px-4 py-2">{item.id}</td>
                 <td
-                  className={`border px-4 py-2 ${getTitleBackgroundColor(
+                  className={`text-slate-200 border px-4 py-2 ${getTitleBackgroundColor(
                     item.status
                   )}`}
                 >
