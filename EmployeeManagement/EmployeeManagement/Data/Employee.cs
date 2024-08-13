@@ -13,7 +13,7 @@
         public bool IsActive { get; set; }
         public DateOnly? StartDate { get; set; }
         public DateOnly LastUpdatedDate { get; set; }
-        public ICollection<EmployeeRole> EmployeeRoles { get; set; }
+        public EmployeeRole EmployeeRole { get; set; }
 
 
     }

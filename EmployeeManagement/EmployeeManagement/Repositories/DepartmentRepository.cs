@@ -47,12 +47,14 @@ namespace EmployeeManagement.Repositories
         {
             var target = await _context.Departments
                 .Include(d => d.Manager)
-                    .ThenInclude(m => m.EmployeeRoles)
-                .SingleOrDefaultAsync(d => d.Id == department.Id);  
+                .ThenInclude(m => m.EmployeeRole) // Since EmployeeRole is now a single entity, this works directly
+                .SingleOrDefaultAsync(d => d.Id == department.Id);
+
             if (target == null)
             {
                 throw new InvalidOperationException("Target Department Not Found in Database");
             }
+
             // Check if the new manager is already managing another department
             var existingDepartment = await _context.Departments
                 .SingleOrDefaultAsync(d => d.ManagerId == department.ManagerId);
@@ -61,48 +63,57 @@ namespace EmployeeManagement.Repositories
             {
                 throw new InvalidOperationException("This employee is already managing another department.");
             }
-            var oldManager = target.Manager;
-            var oldManagerRole = oldManager.EmployeeRoles
-                .SingleOrDefault(er => er.RoleId == 2); // Assuming RoleId 2 is the manager role
 
-            if (oldManagerRole != null)
+            var oldManager = target.Manager;
+            if (oldManager?.EmployeeRole?.RoleId == 2) // Assuming RoleId 2 is the manager role
             {
                 // Change the old manager's role to RoleId = 3 (non-manager role)
-                oldManagerRole.RoleId = 3;
+                oldManager.EmployeeRole.RoleId = 3;
             }
 
             var manager = await _context.Employees
-                .Include(e => e.EmployeeRoles)
+                .Include(e => e.EmployeeRole)
                 .SingleOrDefaultAsync(e => e.Id == department.ManagerId);
+
             if (manager == null)
             {
                 throw new InvalidOperationException("Manager not found in the database");
             }
-            var managerRole = manager.EmployeeRoles
-                .SingleOrDefault(er => er.RoleId == 3);
-            if (managerRole != null)
+
+            if (manager.EmployeeRole?.RoleId == 3) // Assuming RoleId 3 is a non-manager role
             {
-                managerRole.RoleId = 2;
+                // Change the role to manager
+                manager.EmployeeRole.RoleId = 2;
             }
+
+            // Update the department details
             target.Name = department.Name;
             target.ManagerId = department.ManagerId;
+
             await _context.SaveChangesAsync();
+
+            // Prepare the return object
             var returnDepartment = new DepartmentDTO
             {
                 Id = department.Id,
                 ManagerId = department.ManagerId,
                 Name = department.Name,
             };
+
             return returnDepartment;
         }
+
         public async Task<IEnumerable<DepartmentDTO>> GetAll()
         {
             var departments = await _context.Departments
+                .Include(d => d.Manager)
                 .Select(d => new DepartmentDTO
                 {
                     Id = d.Id,
+                    ManagerId = d.ManagerId,
+                    ManagerName = d.Manager.Name,
+                    ManagerSurname = d.Manager.Surname,
                     Name = d.Name,
-                    ManagerId = d.ManagerId
                 })
                 .ToListAsync();
 

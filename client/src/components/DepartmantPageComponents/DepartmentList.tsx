@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { fetchDepartments } from "../../apicalls/departmentApi";
 import { editDepartment } from "../../apicalls/departmentApi";
-import { IDepartment } from "../../interfaces/interfaces";
+import { ClientEmployee, IDepartment } from "../../interfaces/interfaces";
+import { fetchEmployees } from "../../apicalls/employeeApi";
 
 const DepartmentList = () => {
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const [departments, setDepartments] = useState<any>([]);
   const [editingDepartmentId, setEditingDepartmentId] = useState<number>();
   const [editedDepartment, setEditedDepartment] = useState<IDepartment>();
+  const [possibleManagers, setPossibleManagers] = useState<ClientEmployee[]>([]);
+
   const token = localStorage.getItem("token");
 
   const showError = (message: string) => {
@@ -22,13 +25,15 @@ const DepartmentList = () => {
     } catch (error) { }
   };
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
     field: string
   ) => {
     setEditedDepartment({ ...editedDepartment, [field]: e.target.value });
+    console.log(editedDepartment)
   };
 
   const handleEditClick = (employee: any) => {
+    fetchManagers();
     setEditingDepartmentId(employee.id);
     setEditedDepartment(employee);
   };
@@ -63,6 +68,13 @@ const DepartmentList = () => {
     setEditedDepartment({});
     setEditingDepartmentId(0);
   };
+  const fetchManagers = async () => {
+    const response = await fetchEmployees(1, 30, token!, showError);
+    if (response?.data) {
+      const newManagers = response.data.employees;
+      setPossibleManagers(prevManagers => [...prevManagers, ...newManagers]);
+    }
+  };
   useEffect(() => {
     getDepartments();
   }, []);
@@ -74,7 +86,7 @@ const DepartmentList = () => {
           <thead>
             <tr className="bg-primary text-slate-200">
               <th className="border-x border-border px-4 py-2">Name</th>
-              <th className="border-x border-border px-4 py-2">ManagerId</th>
+              <th className="border-x border-border px-4 py-2">Manager</th>
               <th className="border-x border-border px-4 py-2">Actions</th>
             </tr>
           </thead>
@@ -101,14 +113,24 @@ const DepartmentList = () => {
                   </td>
                   <td className="border px-4 py-2 w-32">
                     {editingDepartmentId === department.id ? (
-                      <input
-                        type="number"
-                        value={editedDepartment?.managerId}
-                        onChange={(e) => handleChange(e, "managerId")}
-                        className="border p-1 text-center w-full"
-                      />
+                      <div>
+                        <select
+                          value={editedDepartment?.managerId || ''}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleChange(e, 'managerId')}
+                          className="border text-center p-1 w-full"
+                        >
+                          <option value="">Select Manager</option>
+                          {possibleManagers.map((manager: ClientEmployee) => (
+                            <option value={manager.id}>
+                              {manager.name} {manager.surname}
+                            </option>
+                          ))
+                          }
+                        </select>
+                      </div>
+
                     ) : (
-                      department.managerId
+                      `${department.managerName} ${department.managerSurname}`
                     )}
                   </td>
 
@@ -118,13 +140,13 @@ const DepartmentList = () => {
                         <div className="">
                           <button
                             onClick={handleSaveClick}
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                            className="bg-approved text-white px-4 py-2 rounded hover:bg-hoverApprove"
                           >
                             Save
                           </button>
                           <button
                             onClick={handleCancelClick}
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                            className="bg-rejected text-white px-4 py-2 rounded hover:bg-hoverReject"
                           >
                             Cancel
                           </button>

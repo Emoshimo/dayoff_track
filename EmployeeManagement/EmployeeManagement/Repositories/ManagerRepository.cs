@@ -22,7 +22,7 @@ namespace EmployeeManagement.Repositories
         {
             // Check if the user is a manager by fetching their roles
             var manager = await _context.Employees
-                .Include(e => e.EmployeeRoles)
+                .Include(e => e.EmployeeRole)
                 .SingleOrDefaultAsync(e => e.Id == managerId);
 
             if (manager == null)
@@ -30,10 +30,7 @@ namespace EmployeeManagement.Repositories
                 throw new InvalidOperationException("Manager not found in the database");
             }
 
-            // Verify the user has the manager role (assuming RoleId 2 is the manager role)
-            var isManager = manager.EmployeeRoles.Any(er => er.RoleId == 2);
-
-            if (!isManager)
+            if (manager.EmployeeRole?.RoleId != 2)
             {
                 throw new UnauthorizedAccessException("The user is not authorized as a manager.");
             }

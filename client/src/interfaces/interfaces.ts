@@ -20,6 +20,8 @@ export interface IDepartment {
   id?: number;
   name?: string;
   managerId?: number;
+  managerName?: string;
+  managerSurname?: string;
 }
 
 export interface ILoginDTO {

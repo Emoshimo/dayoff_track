@@ -4,6 +4,7 @@ using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
 using EmployeeManagement.Repositories;
 using EmployeeManagement.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.Services
 {
@@ -126,5 +127,28 @@ namespace EmployeeManagement.Services
             return clientEmployees;
         }
 
+        public async Task<IEnumerable<ClientEmployee>> GetManagerEmployees()
+        {
+            var employees = await _employeeRepository.GetAll()
+                .Include(e => e.EmployeeRole)
+                .Where(e => e.EmployeeRole.RoleId == 2)
+                .ToListAsync();
+
+            var clientEmployees = new List<ClientEmployee>();
+            foreach (var e in employees)
+            {
+                var clientEmployee = new ClientEmployee
+                {
+                    Id = e.Id,
+                    ManagerId = e.ManagerId,
+                    Name = e.Name,
+                    Surname = e.Surname,
+                    StartDate = e.StartDate,
+                    CalculatedRemainingDayOff = await _employeeService.CalculateRemainingDayOffs(e.Id)
+                };
+                clientEmployees.Add(clientEmployee);
+            }
+            return clientEmployees;
+        }
     }
 }

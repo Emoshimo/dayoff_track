@@ -1,4 +1,5 @@
 ﻿using EmployeeManagement.Data;
+using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -70,6 +71,14 @@ namespace EmployeeManagement.Controllers
             {
                 return StatusCode(500, $"An error occured while fetching day offs: {ex.Message}");
             }
+        }
+
+        [HttpGet]
+        [Authorize(Roles="Admin")]
+        public async Task<ActionResult<IEnumerable<ClientEmployee>>> GetManagers()
+        {
+            var result = await _managerService.GetManagerEmployees();
+            return Ok(result);
         }
     }
 }
