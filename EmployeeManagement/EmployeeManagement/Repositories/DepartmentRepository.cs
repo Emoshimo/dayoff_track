@@ -98,6 +98,8 @@ namespace EmployeeManagement.Repositories
                 Id = department.Id,
                 ManagerId = department.ManagerId,
                 Name = department.Name,
+                ManagerName = manager.Name,
+                ManagerSurname = manager.Surname
             };
 
             return returnDepartment;

@@ -47,7 +47,6 @@ export const editDepartment = async (
       message: `Error Ocurred while editing Department, HTTP: ${response.status}`,
     };
   } catch (error) {
-    console.log(error);
     return handleApiError(error, showError);
   }
 };
@@ -90,7 +89,6 @@ export const fetchDepartments = async (
       },
     });
     if (response.status === 200) {
-      console.log(response.data)
       return {
         success: true,
         data: response.data,

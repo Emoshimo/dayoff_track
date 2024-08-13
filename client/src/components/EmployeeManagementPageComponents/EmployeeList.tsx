@@ -159,7 +159,7 @@ const EmployeeList = () => {
             <option value={100}>100</option>
           </select>
         </div>
-        <table className="table-auto min-w-full bg-white border-collapse border">
+        <table className="table-auto min-w-full bg-white border-collapse border shadow-custom-black">
           <thead>
             <tr>
               <th key={"Id"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>

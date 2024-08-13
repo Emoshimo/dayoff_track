@@ -3,6 +3,7 @@ import { fetchDepartments } from "../../apicalls/departmentApi";
 import { editDepartment } from "../../apicalls/departmentApi";
 import { ClientEmployee, IDepartment } from "../../interfaces/interfaces";
 import { fetchEmployees } from "../../apicalls/employeeApi";
+import PopUp from "../PopUp";
 
 const DepartmentList = () => {
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
@@ -15,6 +16,9 @@ const DepartmentList = () => {
 
   const showError = (message: string) => {
     setPopupMessage(message);
+  };
+  const handleClosePopup = () => {
+    setPopupMessage(null);
   };
   const getDepartments = async () => {
     try {
@@ -29,7 +33,6 @@ const DepartmentList = () => {
     field: string
   ) => {
     setEditedDepartment({ ...editedDepartment, [field]: e.target.value });
-    console.log(editedDepartment)
   };
 
   const handleEditClick = (employee: any) => {
@@ -46,17 +49,20 @@ const DepartmentList = () => {
         token!,
         showError
       );
-      if (response.success) {
+      if (response.success && response.data) {
         const index = departments.findIndex(
           (emp: any) => emp.id === editingDepartmentId
         );
         if (index !== -1) {
-          // Create a new array with the updated employee
-          const updatedEmployees = [...departments];
-          updatedEmployees[index] = { ...editedDepartment };
+          const updatedDepartments = [...departments];
+          const updatedDepartment = {
+            ...editedDepartment,
+            managerName: response.data.managerName, // Set the updated managerName
+            managerSurname: response.data.managerSurname, // Set the updated managerSurname
+          };
+          updatedDepartments[index] = { ...updatedDepartment };
 
-          // Update the state
-          setDepartments(updatedEmployees);
+          setDepartments(updatedDepartments);
         }
       }
       console.log(response);
@@ -165,6 +171,9 @@ const DepartmentList = () => {
               ))}
           </tbody>
         </table>
+        {popupMessage && (
+          <PopUp message={popupMessage} onClose={handleClosePopup} />
+        )}
       </div>
     </div>
   );
