@@ -118,7 +118,7 @@ namespace EmployeeManagement.Services
                 return initialList.Select(e => new ClientEmployee
                 {
                     Id = e.Id,
-                    ManagerId = e.ManagerId,
+                    SupervisorId = e.SupervisorId,
                     Name = e.Name,
                     Surname = e.Surname
                 });
@@ -129,7 +129,7 @@ namespace EmployeeManagement.Services
             return result.Select(e => new ClientEmployee
             {
                 Id = e.Id,
-                ManagerId = e.ManagerId,
+                SupervisorId = e.SupervisorId,
                 Name = e.Name,
                 Surname = e.Surname
             });
@@ -306,7 +306,7 @@ namespace EmployeeManagement.Services
             }
             if (managerIdSearchTerm.HasValue)
             {
-                query = query.Where(e => e.ManagerId == managerIdSearchTerm.Value);
+                query = query.Where(e => e.SupervisorId == managerIdSearchTerm.Value);
             }
 
 
@@ -373,10 +373,12 @@ namespace EmployeeManagement.Services
                 var clientEmployee = new ClientEmployee
                 {
                     Id = e.Id,
-                    ManagerId = e.ManagerId,
+                    SupervisorId = e.SupervisorId,
                     Name = e.Name,
                     Surname = e.Surname,
                     StartDate = e.StartDate,
+                    DepartmentId = e.DepartmentId,
+                    DepartmentName = e.Department?.Name,
                     CalculatedRemainingDayOff = await CalculateRemainingDayOffs(e.Id)
                 };
                 clientEmployees.Add(clientEmployee);

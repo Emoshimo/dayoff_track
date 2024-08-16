@@ -74,7 +74,7 @@ namespace EmployeeManagement.Services
             {
                 throw new InvalidCastException("This day off request has no manager.");
             }
-            if (evaluatingManager?.ManagerId != null)
+            if (evaluatingManager?.SupervisorId != null)
             {
                 if (!approved)
                 {
@@ -84,7 +84,7 @@ namespace EmployeeManagement.Services
                 }
                 else
                 {
-                    dayOffRequest.PendingManagerId = evaluatingManager.ManagerId;
+                    dayOffRequest.PendingManagerId = evaluatingManager.SupervisorId;
                 }
             }
             else
@@ -105,10 +105,13 @@ namespace EmployeeManagement.Services
             return newRDO;
         }
 
-        public async Task<IEnumerable<ClientEmployee>> GetDepartmentEmployees(int managerId, int pageSize, int pageNumber)
+        public async Task<PaginationResponse> GetDepartmentEmployees(int managerId, int pageSize, int pageNumber)
         {
             var clientEmployees = new List<ClientEmployee>();
             var employees = await _managerRepository.GetDepartmentEmployees(managerId, pageSize, pageNumber);
+            var totalEmployeeCount = await _managerRepository.GetTotalDepartmentEmployeeCount(managerId);
+            var totalPages = (int)Math.Ceiling((double)totalEmployeeCount / pageSize);
+
             foreach (var employee in employees)
             {
                 var remainingDayOffs = await _employeeService.CalculateRemainingDayOffs(employee.Id);
@@ -118,13 +121,22 @@ namespace EmployeeManagement.Services
                     Id = employee.Id,
                     Name = employee.Name,
                     Surname = employee.Surname,
-                    CalculatedRemainingDayOff = remainingDayOffs 
+                    CalculatedRemainingDayOff = remainingDayOffs,
+                    StartDate = employee.StartDate,
+                    SupervisorId = employee.SupervisorId,
+                    DepartmentId = employee.DepartmentId,
+                    DepartmentName = employee.Department.Name
                 };
 
                 clientEmployees.Add(clientEmployee);
             }
 
-            return clientEmployees;
+
+            return new PaginationResponse
+            {
+                employees = clientEmployees,
+                totalPageNumber = totalPages
+            };
         }
 
         public async Task<IEnumerable<ClientEmployee>> GetManagerEmployees()
@@ -140,7 +152,7 @@ namespace EmployeeManagement.Services
                 var clientEmployee = new ClientEmployee
                 {
                     Id = e.Id,
-                    ManagerId = e.ManagerId,
+                    SupervisorId = e.SupervisorId,
                     Name = e.Name,
                     Surname = e.Surname,
                     StartDate = e.StartDate,

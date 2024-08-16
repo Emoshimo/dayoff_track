@@ -10,10 +10,12 @@ export interface IEmployee {
 export interface ClientEmployee {
   id?: number;
   calculatedRemainingDayOff?:number,
+  departmentId?: number, 
   name?: string;
   surname?: string;
-  managerId?: number;
+  supervisorId?: number;
   startDate?: string;
+  departmentName?: string;
 }
 
 export interface IDepartment {
@@ -84,6 +86,19 @@ export interface ArrowProps {
   sortKey: string | null,
   sortOrder: string | null,
   handleSort: (key: string, order: string) => void
+}
+export interface ButtonProps {
+  a: () => void
+}
+export interface ItemButtonProps {
+  a: (item: any) => void,
+  item: any
+}
+export interface PaginationButtonProps {
+  onClick: () => void;
+  disabled: boolean;
+  label: string;
+  isActive: boolean;
 }
 
 export interface ApiResponse<T> {

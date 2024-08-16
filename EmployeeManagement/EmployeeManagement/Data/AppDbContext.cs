@@ -26,8 +26,23 @@ namespace EmployeeManagement.Data
             builder.Entity<Department>()
                 .HasIndex(d => d.ManagerId)
                 .IsUnique();
+            
+            builder.Entity<Employee>()
+                .HasOne(e => e.Department)
+                .WithMany(d => d.Employees)
+                .HasForeignKey(e => e.DepartmentId);
 
+            builder.Entity<Department>()
+                .HasOne(d => d.Manager)
+                .WithMany() // No navigation property on Employee for the inverse relationship
+                .HasForeignKey(d => d.ManagerId)
+                .OnDelete(DeleteBehavior.Restrict); // Specify behavior on delete
 
+            builder.Entity<Employee>()
+                            .HasOne(e => e.Department)
+                            .WithMany(d => d.Employees)
+                            .HasForeignKey(e => e.DepartmentId)
+                            .OnDelete(DeleteBehavior.Restrict); // Specify behavior on delete
         }
 
     }

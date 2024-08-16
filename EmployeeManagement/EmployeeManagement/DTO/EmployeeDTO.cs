@@ -12,6 +12,8 @@ namespace EmployeeManagement.DTO
         public string Surname { get; set; } = string.Empty;
         [Required]
         public int DayOffNumber { get; set; }
+        public int? ManagerId { get; set; }
+        public int? DepartmentId { get; set; }
 
         [Required]
         [EmailAddress]

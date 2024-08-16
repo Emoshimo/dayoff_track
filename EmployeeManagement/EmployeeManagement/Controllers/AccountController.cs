@@ -61,9 +61,9 @@ namespace EmployeeManagement.Controllers
                 var possibleManagers = await _employeeService.GetPossibleManagersForEmployee(employee.Id);
 
                 // Check if manIg is a possible manager
-                if (!possibleManagers.Any(m => m.Id == employee.ManagerId))
+                if (employee.SupervisorId != null && !possibleManagers.Any(m => m.Id == employee.SupervisorId))
                 {
-                    return NotFound($"Manager with ID {employee.ManagerId} is not a possible manager for employee as it creates cycle.");
+                    return NotFound($"Manager with ID {employee.SupervisorId} is not a possible manager for employee as it creates cycle.");
                 }
                 var response = await _accountRepository.EditEmployee(employee);
                 return Ok(response);

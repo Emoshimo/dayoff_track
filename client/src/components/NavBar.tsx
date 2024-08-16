@@ -165,6 +165,16 @@ const NavBar = () => {
                   <IoMdAnalytics style={{ width: "32px", height: "32px" }} />{" "}
                   {isExpanded && "Analytics"}
                 </NavLink>
+                <NavLink
+                  to="/dashboard/department"
+                  className={({ isActive }) =>
+                    `flex flex-row items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
+                    }`
+                  }
+                >
+                  <IoMdAnalytics style={{ width: "32px", height: "32px" }} />{" "}
+                  {isExpanded && "Department"}
+                </NavLink>
               </>
 
 

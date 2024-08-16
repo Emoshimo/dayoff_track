@@ -80,5 +80,11 @@ namespace EmployeeManagement.Controllers
             var result = await _managerService.GetManagerEmployees();
             return Ok(result);
         }
+        [HttpGet("subworkers")]
+        public async Task<ActionResult<IEnumerable<ClientEmployee>>> GetDepartmentEmployees(int managerId, int pagesize = 10, int pageNumber = 1)
+        {
+            var response = await _managerService.GetDepartmentEmployees(managerId, pagesize, pageNumber);
+            return Ok(response);
+        }
     }
 }

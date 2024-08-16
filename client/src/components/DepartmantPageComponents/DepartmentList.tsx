@@ -4,6 +4,9 @@ import { editDepartment } from "../../apicalls/departmentApi";
 import { ClientEmployee, IDepartment } from "../../interfaces/interfaces";
 import { fetchEmployees } from "../../apicalls/employeeApi";
 import PopUp from "../PopUp";
+import EditButton from "../buttons/EditButton";
+import CancelButton from "../buttons/CancelButton";
+import SaveButton from "../buttons/SaveButton";
 
 const DepartmentList = () => {
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
@@ -144,26 +147,13 @@ const DepartmentList = () => {
                     <div className="w-full overflow-hidden">
                       {editingDepartmentId === department.id ? (
                         <div className="">
-                          <button
-                            onClick={handleSaveClick}
-                            className="bg-approved text-white px-4 py-2 rounded hover:bg-hoverApprove"
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={handleCancelClick}
-                            className="bg-rejected text-white px-4 py-2 rounded hover:bg-hoverReject"
-                          >
-                            Cancel
-                          </button>
+                          <SaveButton a={handleSaveClick} />
+                          <CancelButton a={handleCancelClick} />
+
                         </div>
                       ) : (
-                        <button
-                          onClick={() => handleEditClick(department)}
-                          className="bg-primary text-white px-4 py-2 rounded hover:bg-gray-600"
-                        >
-                          Edit
-                        </button>
+                        <EditButton a={handleEditClick} item={department} />
+
                       )}
                     </div>
                   </td>

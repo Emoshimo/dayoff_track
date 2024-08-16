@@ -22,7 +22,7 @@ namespace EmployeeManagement.Repositories
             var clientEmployees = employees.Select(e => new ClientEmployee
             {
                 Id = e.Id,
-                ManagerId = e.ManagerId,
+                SupervisorId = e.SupervisorId,
                 Name = e.Name,
                 Surname = e.Surname,
                 StartDate = e.StartDate
@@ -41,7 +41,7 @@ namespace EmployeeManagement.Repositories
             var clientEmployees = employees.Select(e => new ClientEmployee
             {
                 Id = e.Id,
-                ManagerId = e.ManagerId,
+                SupervisorId = e.SupervisorId,
                 Name = e.Name,
                 Surname = e.Surname,
                 StartDate = e.StartDate
@@ -57,17 +57,17 @@ namespace EmployeeManagement.Repositories
         }
         public IQueryable<Employee> GetAll()
         {
-            var employees = _context.Employees;
+            var employees = _context.Employees.Include(e => e.Department);
             return employees;
         }
         public async Task<Employee> GetManagerAsync(int employeeId)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
-            if (employee == null || employee.ManagerId == null)
+            if (employee == null || employee.SupervisorId == null)
             {
                 return null;
             }
-            return await _context.Employees.FindAsync(employee.ManagerId);
+            return await _context.Employees.FindAsync(employee.SupervisorId);
         }
         public async Task<Employee> GetEmployee(int id)
         {
@@ -81,8 +81,8 @@ namespace EmployeeManagement.Repositories
         public async Task<IEnumerable<Employee>> GetManagers()
         {
             var managerIds= await _context.Employees
-                .Where(e => e.ManagerId.HasValue)
-                .Select(e => e.ManagerId)
+                .Where(e => e.SupervisorId.HasValue)
+                .Select(e => e.SupervisorId)
                 .Distinct()
                 .ToListAsync();
             var managers = await _context.Employees
@@ -98,7 +98,7 @@ namespace EmployeeManagement.Repositories
             var clientEmployee = new ClientEmployee
             {
                 Id = employee.Id,
-                ManagerId = employee.ManagerId,
+                SupervisorId = employee.SupervisorId,
                 Name = employee.Name,
                 Surname = employee.Surname,
                 StartDate = employee.StartDate
@@ -113,7 +113,7 @@ namespace EmployeeManagement.Repositories
                 // Update the properties of the target entity
                 target.Name = employee.Name;
                 target.Surname = employee.Surname;
-                target.ManagerId = employee.ManagerId;
+                target.SupervisorId = employee.SupervisorId;
                 target.StartDate = employee.StartDate;
 
                 // Mark the target entity as modified
@@ -132,7 +132,7 @@ namespace EmployeeManagement.Repositories
         public async Task<List<Employee>> GetDirectSubordinates(int managerId)
         {
             return await _context.Employees
-                .Where(e => e.ManagerId == managerId)
+                .Where(e => e.SupervisorId == managerId)
                 .ToListAsync();
         }
 

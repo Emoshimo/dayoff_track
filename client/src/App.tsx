@@ -11,6 +11,7 @@ import CreateDepartmentPage from "./pages/DepartmentPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import JobSchedulePage from "./pages/JobSchedulePage";
 import AnalyticsPage from "./pages/AnalyticsPage";
+import DepartmentManagerPage from "./pages/DepartmentManagerPage";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             </Route>
             <Route element={<ProtectedRoute requiredRole="Manager" />}>
               <Route path="analytics" element={<AnalyticsPage />}></Route>
+              <Route path="department" element={<DepartmentManagerPage />}></Route>
             </Route>
             <Route path="admin/*" element={<AdminPage />}></Route>
           </Route>

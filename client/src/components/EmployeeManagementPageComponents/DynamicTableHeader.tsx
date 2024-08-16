@@ -1,11 +1,11 @@
 import React from 'react'
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
-interface DynamicTableHeaderProsp {
+interface DynamicTableHeaderProps {
     fields: string[]
 }
 
-const DynamicTableHeader: React.FC<DynamicTableHeaderProsp> = ({ fields }) => {
+const DynamicTableHeader: React.FC<DynamicTableHeaderProps> = ({ fields }) => {
     return (
         <thead>
             <tr className='bg-primary text-slate-200'>

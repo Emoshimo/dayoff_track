@@ -1,4 +1,4 @@
-import { ApiResponse, ClientEmployee, IDepartment } from "../interfaces/interfaces";
+import { ApiResponse, ClientEmployee, IDepartment, PaginationResponse } from "../interfaces/interfaces";
 import { axiosInstance, handleApiError } from "./api";
 
 
@@ -81,7 +81,7 @@ export const editEmployee = async (
 export const fetchDepartments = async (
   token: string,
   showError: (message: string) => void
-): Promise<ApiResponse<IDepartment>> => {
+): Promise<ApiResponse<IDepartment[]>> => {
   try {
     const response = await axiosInstance.get("/Department", {
       headers: {
@@ -100,5 +100,35 @@ export const fetchDepartments = async (
     return handleApiError(error, showError);
   }
 };
+
+export const fetchDepartmentEmployees = async (
+  token: string,
+  managerId: number,
+  pagesize: number,
+  pageNumber: number,
+  showError: (message: string) => void
+): Promise<ApiResponse<PaginationResponse>> => {
+  try {
+    const response = await axiosInstance.get(`Manager/subworkers`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params: {
+        managerId: managerId,
+        pagesize: pagesize,
+        pageNumber: pageNumber
+      }
+    })
+    if (response.status === 200)
+    {
+      return {success: true, data: response.data}
+    }
+    else {
+      return {success: false, message: "Unexpected Error"}
+    }
+  } catch (error) {
+    return handleApiError(error, showError);
+  }
+}
 
 

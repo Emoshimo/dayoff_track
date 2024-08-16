@@ -135,17 +135,23 @@ namespace EmployeeManagement.Repositories
             {
                 throw new InvalidDataException("Employee not found");
             }
+            var newDepartment = await _context.Departments.FindAsync(employee.DepartmentId);
 
             targetEmployee.Name = employee.Name;
             targetEmployee.Surname = employee.Surname;
-            targetEmployee.ManagerId = employee.ManagerId;
+            targetEmployee.SupervisorId = employee.SupervisorId;
+            targetEmployee.DepartmentId = employee.DepartmentId;
+            targetEmployee.StartDate = employee.StartDate;
             await _context.SaveChangesAsync();
             var outputEmployee = new ClientEmployee
             {
                 Id = employee.Id,
                 Name = employee.Name,
                 Surname = employee.Surname,
-                ManagerId = employee.ManagerId,
+                SupervisorId = employee.SupervisorId,
+                DepartmentId = employee.DepartmentId,
+                DepartmentName = newDepartment?.Name,
+                StartDate = employee.StartDate,
             };
 
             return outputEmployee;
