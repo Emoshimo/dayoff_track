@@ -8,10 +8,10 @@ namespace EmployeeManagement.Interfaces.ServiceInterfaces
         Task<int> RequestDayOff(int employeeId, int dayOffType, int rdo, DateOnly startDate, DateOnly endDate);
         Task<bool> CancelDayOffRequest(IEnumerable<int> requestIds);
         Task<IEnumerable<ClientEmployee>> GetPossibleManagersForEmployee(int employeeId);
-        Task<IEnumerable<EmployeeDayOffsDTO>> GetTopEmployeesDayOffsAsync(string timePeriod, int topN);
+        Task<IEnumerable<EmployeeDayOffsDTO>> GetTopEmployeesDayOffsAsync(int managerId, string timePeriod, int topN);
         Task<PaginationResponse> SearchEmployees(int pageNumber, int pageSize,
                 string nameSearchTerm, string surnameSearchTerm, int? idSearchTerm,
-                int? managerIdSearchTerm, string? startDateSearchTerm, string? orderColumn, string? sortOrder);
+                int? managerIdSearchTerm, string? startDateSearchTerm, string? departmentSearchTerm, string? orderColumn, string? sortOrder);
         Task<int> GetPageNumber(int pageSize);
         Task<int> CalculateRemainingDayOffs(int employeeId);
         bool IsAnniversary(DateOnly startDate);

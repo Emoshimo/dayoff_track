@@ -97,11 +97,29 @@ namespace EmployeeManagement.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<DayOffRequest>> GetPendingAndApprovedByDates(DateOnly startDate, DateOnly endDate)
+        public async Task<IEnumerable<DayOffRequest>> GetPendingAndApprovedByDates(int managerId, DateOnly startDate, DateOnly endDate)
         {
-            return await _context.DayOffRequests
-            .Where(d => d.Status == "Approved" || d.Status == "Pending")
-            .Where(d => d.StartDate >= startDate && d.EndDate <= endDate).ToListAsync();
+            var withDeps = _context.Employees
+                .Include(e => e.Department);
+            var manager = await withDeps
+                .Where(e => e.Id == managerId)
+                .SingleOrDefaultAsync();
+
+            var departmentId = manager.Department.Id;
+            
+            var departmentEmployees = await withDeps
+                .Where(e => e.Department!.Id == departmentId)
+                .ToListAsync();
+            var departmentEmployeeIds = departmentEmployees.Select(e => e.Id).ToList();
+
+            // Filter DayOffRequests based on department employee IDs
+            var dayOffRequests = await _context.DayOffRequests
+                .Where(d => (d.Status == "Approved" || d.Status == "Pending") &&
+                            d.StartDate >= startDate && d.EndDate <= endDate &&
+                            departmentEmployeeIds.Contains(d.EmployeeId))
+                .ToListAsync();
+
+            return dayOffRequests;
         }
 
         public async Task<IEnumerable<DayOffRequest>> GetDayOffRequestsByIdAndDates(int employeeId, DateOnly startDate, DateOnly endDate)

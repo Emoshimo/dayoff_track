@@ -4,6 +4,7 @@ import { EmployeeDayOffs } from '../interfaces/interfaces';
 import TopBarChart from '../components/AnalyticsPageComponents/TopBarChart';
 import ChartSelector from '../components/AnalyticsPageComponents/ChartSelector';
 import TopPieChart from '../components/AnalyticsPageComponents/TopPieChart';
+import useEmployeeStore from '../stores/employeeStore';
 
 const AnalyticsPage = () => {
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
@@ -11,14 +12,14 @@ const AnalyticsPage = () => {
   const [topX, setTopX] = useState<number>(5);
   const [timePeriod, setTimePeriod] = useState<string>("month");
   const [chartType, setChartType] = useState<string>("BarChart");
-
+  const { clientEmployee } = useEmployeeStore();
   const showError = (message: string) => {
     setPopupMessage(message);
   };
   const token = localStorage.getItem("token");
 
   const getEmployeeDayOffs = async () => {
-    const employeeDayOffsList = await fetchTopDayOffEmployees(token!, timePeriod, topX, showError);
+    const employeeDayOffsList = await fetchTopDayOffEmployees(clientEmployee?.id!, token!, timePeriod, topX, showError);
     if (employeeDayOffsList.success === true && employeeDayOffsList.data) {
       // Combine name and surname
       const updatedData = employeeDayOffsList.data.map(employee => ({

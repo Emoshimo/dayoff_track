@@ -48,6 +48,7 @@ const DayOffList: React.FC<DayOffListProps> = ({ dayOffs }) => {
               <th className="border-x border-border px-4 py-2"></th>
               <th className="border-x border-border px-4 py-2">Id</th>
               <th className="border-x border-border px-4 py-2">Status</th>
+              <th className="border-x border-border px-4 py-2">Type</th>
               <th className="border-x border-border px-4 py-2">
                 Pending Manager
               </th>
@@ -73,11 +74,16 @@ const DayOffList: React.FC<DayOffListProps> = ({ dayOffs }) => {
 
                 <td className="border px-4 py-2">{item.id}</td>
                 <td
-                  className={`text-slate-200 border px-4 py-2 ${getTitleBackgroundColor(
+                  className={`text-slate-50 border px-4 py-2 ${getTitleBackgroundColor(
                     item.status
                   )}`}
                 >
                   {item.status}
+                </td>
+                <td
+                  className={`border px-4 py-2`}
+                >
+                  {item.dayOffTypeId === 1 ? "Unpaid" : "Paid"}
                 </td>
                 <td className="border px-4 py-2">{item.pendingManagerId}</td>
                 <td className="border px-4 py-2">
@@ -94,7 +100,7 @@ const DayOffList: React.FC<DayOffListProps> = ({ dayOffs }) => {
           dayOffList.length > 0 && (<div className="flex flex-row justify-end mx-8">
             <button
               onClick={cancelPendingRequests}
-              className="bg-rejected hover:bg-hoverReject px-4 py-2 mt-2 text-3xl"
+              className="bg-rejected hover:bg-hoverReject rounded-md px-4 py-2 mt-2 text-3xl"
             >
               Cancel
             </button>

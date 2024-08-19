@@ -41,7 +41,6 @@ function App() {
               <Route path="analytics" element={<AnalyticsPage />}></Route>
               <Route path="department" element={<DepartmentManagerPage />}></Route>
             </Route>
-            <Route path="admin/*" element={<AdminPage />}></Route>
           </Route>
           <Route path="*" element={<LoginPage />} />
         </Routes>

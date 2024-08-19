@@ -13,7 +13,7 @@ namespace EmployeeManagement.Interfaces
         Task<IEnumerable<DayOffRequest>> GetApprovedDayOffs(int employeeId);
         Task<IEnumerable<DayOffRequest>> GetRejectedDayOffs(int employeeId);
         IQueryable<DayOffRequest> GetPendingRequests(int managerId);
-        Task<IEnumerable<DayOffRequest>> GetPendingAndApprovedByDates(DateOnly startDate, DateOnly endDate);
+        Task<IEnumerable<DayOffRequest>> GetPendingAndApprovedByDates(int managerId, DateOnly startDate, DateOnly endDate);
         Task SaveChangesAsync();
     }
 }

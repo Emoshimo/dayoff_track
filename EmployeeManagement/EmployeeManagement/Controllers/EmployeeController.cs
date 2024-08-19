@@ -52,12 +52,13 @@ namespace EmployeeManagement.Controllers
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10,
             [FromQuery] string? startDateSearchTerm = null,
+            [FromQuery] string? departmentDateSearchTerm = null,
             [FromQuery] string? orderColumn = null,
             [FromQuery] string? sortOrder = null)
         {
             try
             {
-                var result = await _employeeService.SearchEmployees(pageNumber, pageSize, nameSearchTerm, surnameSearchTerm, idSearchTerm, managerIdSearchTerm, startDateSearchTerm, orderColumn, sortOrder);
+                var result = await _employeeService.SearchEmployees(pageNumber, pageSize, nameSearchTerm, surnameSearchTerm, idSearchTerm, managerIdSearchTerm, startDateSearchTerm, departmentDateSearchTerm, orderColumn, sortOrder);
                 
                 return Ok(result);
             }
@@ -105,18 +106,18 @@ namespace EmployeeManagement.Controllers
         }
         // Returns A list of top X employees that took the most day offs in given date period
         [HttpGet("top_employees")]
-        public async Task<ActionResult<IEnumerable<EmployeeDayOffsDTO>>> GetTopEmployees(string timePeriod, int topX)
+        [Authorize(Roles = "Manager")]
+        public async Task<ActionResult<IEnumerable<EmployeeDayOffsDTO>>> GetTopEmployees(int managerId, string timePeriod, int topX)
         {
             try
             {
-                var topEmployees = await _employeeService.GetTopEmployeesDayOffsAsync(timePeriod, topX);
+                var topEmployees = await _employeeService.GetTopEmployeesDayOffsAsync(managerId, timePeriod, topX);
                 return Ok(topEmployees);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            
         }
 
         // POST: api/Employee/dayoff/{id}

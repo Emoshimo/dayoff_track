@@ -136,6 +136,7 @@ export const searchEmployees = async(
   idSearchTerm: number | null,
   managerIdSearchTerm: number | null,
   startDateSearchTerm: string | null,
+  departmentDateSearchTerm: string | null,
   orderColumn: string | null,
   sortOrder: string | null,
   showError: (message: string) => void
@@ -151,6 +152,7 @@ export const searchEmployees = async(
         idSearchTerm,
         managerIdSearchTerm,
         startDateSearchTerm,
+        departmentDateSearchTerm,
         orderColumn,
         sortOrder
       }

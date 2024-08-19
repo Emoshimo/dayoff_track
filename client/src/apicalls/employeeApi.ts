@@ -43,6 +43,7 @@ export const fetchEmployeeDetails = async (
       },
     });
     if (response.status === 200) {
+      console.log(response)
       const returnData = response.data;
       return { success: true, data: returnData };
     }
@@ -205,12 +206,13 @@ export const fetchDayOffsForManager = async (
 };
 
 export const fetchTopDayOffEmployees = async (
+  id: number,
   token: string,
   timePeriod: string,
   topX: number,
   showError: (message: string) => void
 ): Promise<ApiResponse<EmployeeDayOffs[]>> => {
-  const response = await axiosInstance.get(`Employee/top_employees?timePeriod=${timePeriod}&topX=${topX}`, {
+  const response = await axiosInstance.get(`Employee/top_employees?managerId=${id}&timePeriod=${timePeriod}&topX=${topX}`, {
     headers: {
       Authorization: `Bearer ${token}`
     }

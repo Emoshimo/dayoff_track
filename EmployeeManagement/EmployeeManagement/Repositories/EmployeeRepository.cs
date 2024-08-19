@@ -94,14 +94,18 @@ namespace EmployeeManagement.Repositories
         }
         public async Task<ClientEmployee> GetEmployeeById(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _context.Employees
+                .Include(e => e.Department)
+                .FirstOrDefaultAsync(e => e.Id == id);
             var clientEmployee = new ClientEmployee
             {
                 Id = employee.Id,
                 SupervisorId = employee.SupervisorId,
                 Name = employee.Name,
                 Surname = employee.Surname,
-                StartDate = employee.StartDate
+                StartDate = employee.StartDate,
+                DepartmentName = employee.Department?.Name,
+                
             };
             return clientEmployee;
         }

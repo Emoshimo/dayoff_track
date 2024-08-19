@@ -229,7 +229,7 @@ namespace EmployeeManagement.Services
             return newRDO;
         }
 
-        public async Task<IEnumerable<EmployeeDayOffsDTO>> GetTopEmployeesDayOffsAsync(string timePeriod, int topN)
+        public async Task<IEnumerable<EmployeeDayOffsDTO>> GetTopEmployeesDayOffsAsync(int managerId, string timePeriod, int topN)
         {
             DateOnly endDate = DateOnly.FromDateTime(DateTime.Now);
             DateOnly startDate;
@@ -248,7 +248,7 @@ namespace EmployeeManagement.Services
                 default:
                     throw new ArgumentException("Invalid Time Period");
             }
-            var dayOffRequests = await _dayOffRequestRepository.GetPendingAndApprovedByDates(startDate, endDate);
+            var dayOffRequests = await _dayOffRequestRepository.GetPendingAndApprovedByDates(managerId, startDate, endDate);
             // Group requests by Employee 
             var groupedData = dayOffRequests
                 .GroupBy(d => d.EmployeeId)
@@ -283,7 +283,7 @@ namespace EmployeeManagement.Services
 
         public async Task<PaginationResponse> SearchEmployees(int pageNumber, int pageSize,
             string nameSearchTerm, string surnameSearchTerm, int? idSearchTerm,
-            int? managerIdSearchTerm, string? startDateSearchTerm, string? orderColumn, string? sortOrder)
+            int? managerIdSearchTerm, string? startDateSearchTerm, string? departmentSearchTerm, string? orderColumn, string? sortOrder)
         {
             var query = _employeeRepository.GetAll();
 
@@ -298,7 +298,7 @@ namespace EmployeeManagement.Services
                 surnameSearchTerm = surnameSearchTerm.ToLower();
                 query = query.Where(e => EF.Functions.Like(e.Surname.ToLower(), $"%{surnameSearchTerm}%"));
             }
-
+            
             // Handle integer searches
             if (idSearchTerm.HasValue)
             {
@@ -308,7 +308,18 @@ namespace EmployeeManagement.Services
             {
                 query = query.Where(e => e.SupervisorId == managerIdSearchTerm.Value);
             }
-
+            if (!string.IsNullOrEmpty(departmentSearchTerm))
+            {
+                if (int.TryParse(departmentSearchTerm, out int departmentId))
+                {
+                    query = query.Where(e => e.DepartmentId == departmentId);
+                }
+                else
+                {
+                    departmentSearchTerm = departmentSearchTerm.ToLower();
+                    query = query.Where(e => EF.Functions.Like(e.Department.Name.ToLower(), $"%{departmentSearchTerm}%"));
+                }
+            }
 
             // Handle date search
             if (!string.IsNullOrEmpty(startDateSearchTerm))

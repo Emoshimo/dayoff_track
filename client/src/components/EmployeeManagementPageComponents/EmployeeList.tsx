@@ -47,7 +47,9 @@ const EmployeeList = () => {
   }
 
   const searchChange = useCallback(async (value: string, column: string) => {
-
+    if (column === "Department") {
+      column = "departmentName"
+    }
     setSearchTerms(prevTerms => ({
       ...prevTerms,
       [column[0].toLowerCase() + column.slice(1)]: value,
@@ -59,9 +61,9 @@ const EmployeeList = () => {
   const handleSearchTermChange = async () => {
     const { employees, totalPageNumber } = await searchEmployees(pageNumber, pageSize, searchTerms?.name ||
       null, searchTerms?.surname || null, searchTerms?.id || null, searchTerms?.supervisorId ||
-    null, searchTerms?.startDate || null, sortKey, sortOrder, showError);
+    null, searchTerms?.startDate || null, searchTerms?.departmentName || null, sortKey, sortOrder, showError);
     console.log(employees)
-    if (searchTerms?.name || searchTerms?.surname || searchTerms?.id || searchTerms?.supervisorId || searchTerms?.startDate) {
+    if (searchTerms?.name || searchTerms?.surname || searchTerms?.id || searchTerms?.supervisorId || searchTerms?.startDate, searchTerms?.departmentName) {
       setPageNumber(1)
     }
     if (employees) {
@@ -149,7 +151,12 @@ const EmployeeList = () => {
       // If the same key is clicked, toggle the sort order
       setSortOrder(null);
       setSortKey(null)
-    } else {
+    }
+    else if (key === "Department") {
+      setSortOrder(order)
+      setSortKey("departmentId")
+    }
+    else {
       // Set new key and default to ascending order
       setSortKey(key);
       setSortOrder(order);
@@ -226,8 +233,8 @@ const EmployeeList = () => {
               </th>
               <th key={"Department"} className='border border-gray-300 px-4 py-2 bg-primary text-slate-200'>
                 {`Department `}
-                <UpArrowButton currentKey='DepartmentName' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
-                <DownArrowButton currentKey='DepartmentName' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <UpArrowButton currentKey='DepartmentId' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
+                <DownArrowButton currentKey='DepartmentId' handleSort={handleSort} sortKey={sortKey} sortOrder={sortOrder} />
                 <DynamicSearchInput
                   id="department"
                   name="Department"

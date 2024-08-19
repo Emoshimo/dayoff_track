@@ -6,6 +6,7 @@ interface Props {
   remainingDayOffs: number
 }
 const EmployeeDetails: React.FC<Props> = ({ employee, remainingDayOffs }) => {
+
   return (
     <div className="bg-white shadow-md rounded-md p-4">
       <h2 className="text-primary text-2xl">Details</h2>
@@ -15,6 +16,9 @@ const EmployeeDetails: React.FC<Props> = ({ employee, remainingDayOffs }) => {
       <p className="text-primary">
         Remaining Day Offs Number: {remainingDayOffs}
       </p>
+      <p className="text-primary">Start Date: {employee.startDate}</p>
+      <p className="text-primary">Department: {employee.departmentName ? employee.departmentName : "None"}</p>
+
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { FaCalendarDay, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { HiOfficeBuilding } from "react-icons/hi";
 import { FaCodePullRequest, FaUser } from "react-icons/fa6";
 import { IoMdAnalytics } from "react-icons/io";
+import { RiCommunityFill } from "react-icons/ri";
 
 import useEmployeeStore from "../stores/employeeStore";
 
@@ -89,18 +90,7 @@ const NavBar = () => {
 
             {userRole === "Admin" && (
               <>
-                <NavLink
-                  to="/dashboard/admin"
-                  className={({ isActive }) =>
-                    `flex items-center px-4 py-2 text-lg rounded hover:bg-hover ${isActive ? "bg-second" : ""
-                    }`
-                  }
-                >
-                  <MdAdminPanelSettings
-                    style={{ width: "32px", height: "32px" }}
-                  />
-                  {isExpanded && "Admin"}
-                </NavLink>{" "}
+
                 <NavLink
                   to="/dashboard/create-department"
                   className={({ isActive }) =>
@@ -172,7 +162,7 @@ const NavBar = () => {
                     }`
                   }
                 >
-                  <IoMdAnalytics style={{ width: "32px", height: "32px" }} />{" "}
+                  <RiCommunityFill style={{ width: "32px", height: "32px" }} />{" "}
                   {isExpanded && "Department"}
                 </NavLink>
               </>

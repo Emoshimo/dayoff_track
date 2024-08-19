@@ -29,6 +29,8 @@ const EmployeePage = () => {
           name: userDetailsResponse.data?.name,
           surname: userDetailsResponse.data?.surname,
           supervisorId: userDetailsResponse.data?.supervisorId,
+          startDate: userDetailsResponse.data?.startDate,
+          departmentName: userDetailsResponse.data?.departmentName
         };
         updateClientEmployee(clientEmployeeData);
       }
