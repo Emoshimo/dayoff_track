@@ -1,21 +1,11 @@
 import React from 'react'
 import { EmployeeDayOffs } from '../../interfaces/interfaces';
-import { Cell, TooltipProps, Pie, PieChart } from 'recharts';
-import { Tooltip } from '@material-tailwind/react';
+import { Cell, Pie, PieChart } from 'recharts';
+import { getRandomColor } from '../../utils/colorUtils';
 
 interface TopEmployeesChartProps {
     data: EmployeeDayOffs[];
 }
-
-const getRandomColor = () => {
-    const letters = '013456789ABCDF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 14)];
-    }
-    return color;
-};
-
 
 const TopPieChart: React.FC<TopEmployeesChartProps> = ({ data }) => {
     return (

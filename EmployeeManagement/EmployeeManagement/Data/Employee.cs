@@ -16,6 +16,7 @@
         public DateOnly LastUpdatedDate { get; set; }
         public EmployeeRole EmployeeRole { get; set; }
         public Department? Department { get; set; }
+        public ICollection<DayOffRequest> DayOffs { get; set; }
 
     }
 }

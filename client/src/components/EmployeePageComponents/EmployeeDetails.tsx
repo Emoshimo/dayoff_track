@@ -8,7 +8,7 @@ interface Props {
 const EmployeeDetails: React.FC<Props> = ({ employee, remainingDayOffs }) => {
 
   return (
-    <div className="bg-white shadow-md rounded-md p-4">
+    <div className="bg-white shadow-custom-black   rounded-md p-4">
       <h2 className="text-primary text-2xl">Details</h2>
       <p className="text-primary">ID: {employee.id}</p>
       <p className="text-primary">Name: {employee.name}</p>

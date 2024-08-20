@@ -78,7 +78,7 @@ const DepartmentManagerPage = () => {
                         }
                     </tbody>
                 </table>
-                <Pagination pageNumber={pageNumber} totalPages={totalPages} setPageNumber={setPageNumber} />
+                {pageNumber > 1 && <Pagination pageNumber={pageNumber} totalPages={totalPages} setPageNumber={setPageNumber} />}
 
             </div>
             <div>

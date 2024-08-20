@@ -1,4 +1,5 @@
 ﻿using EmployeeManagement.Data;
+using EmployeeManagement.DTO;
 
 namespace EmployeeManagement.Interfaces
 {
@@ -14,6 +15,8 @@ namespace EmployeeManagement.Interfaces
         Task<IEnumerable<DayOffRequest>> GetRejectedDayOffs(int employeeId);
         IQueryable<DayOffRequest> GetPendingRequests(int managerId);
         Task<IEnumerable<DayOffRequest>> GetPendingAndApprovedByDates(int managerId, DateOnly startDate, DateOnly endDate);
+        Task<EmployeeStatisticsDTO> GetDayOffStatistics(int employeeId);
         Task SaveChangesAsync();
+
     }
 }

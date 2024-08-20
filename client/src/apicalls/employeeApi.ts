@@ -1,4 +1,4 @@
-import { ApiResponse, ClientEmployee, DayOffRequest, DayOffRequestForManager, EmployeeDayOffs } from "../interfaces/interfaces";
+import { ApiResponse, ClientEmployee, DayOffRequest, DayOffRequestForManager, EmployeeDayOffs, EmployeeDayOffStatistics } from "../interfaces/interfaces";
 import { axiosInstance, handleApiError } from "./api";
 
 
@@ -43,7 +43,6 @@ export const fetchEmployeeDetails = async (
       },
     });
     if (response.status === 200) {
-      console.log(response)
       const returnData = response.data;
       return { success: true, data: returnData };
     }
@@ -167,6 +166,25 @@ export const fetchRejectedEmployeeDayOffs = async (
     return handleApiError(error, showError);
   }
 };
+
+export const fetchEmployeeDayOffStatistics = async(
+  id: number,
+  showError: (message: string) => void 
+): Promise<ApiResponse<EmployeeDayOffStatistics>> => {
+  try {
+    const response = await axiosInstance.get(`/DayOffRequest?id=${id}`);
+    if (response.status === 200 )
+    {
+      console.log(response)
+      return {success: true, data: response.data}
+    }
+    return {success: false, message: "Whoopsie"}
+  } catch (error) {
+    return handleApiError(error, showError);
+  }
+}
+
+
 export const fetchDayOffsForManager = async (
   managerId: number,
   token: string,

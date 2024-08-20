@@ -3,6 +3,7 @@ import useEmployeeStore from "../stores/employeeStore";
 import EmployeeDetails from "../components/EmployeePageComponents/EmployeeDetails";
 import { fetchRemainingDayOffs } from "../apicalls/employeeApi";
 import { fetchEmployeeDetails } from "../apicalls/employeeApi";
+import EmployeeDayOffStatistics from "../components/EmployeePageComponents/EmployeeDayOffStatistics";
 
 const EmployeePage = () => {
   const [, setPopupMessage] = useState<string | null>(null);
@@ -48,8 +49,9 @@ const EmployeePage = () => {
   return (
     <div>
       {clientEmployee?.id ? (
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-6">
           <EmployeeDetails employee={clientEmployee} remainingDayOffs={remainingDayOff} />
+          <EmployeeDayOffStatistics />
         </div>
       ) : (
         <p>Loading employee details...</p>

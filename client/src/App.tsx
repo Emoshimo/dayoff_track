@@ -2,7 +2,6 @@ import React from "react";
 import LoginPage from "./pages/LoginPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import EmployeePage from "./pages/EmployeePage";
-import AdminPage from "./pages/AdminPage";
 import DashboardLayout from "./components/DashboardLayout";
 import DayOffPage from "./pages/DayOffPage";
 import ManagerPage from "./pages/ManagerPage";

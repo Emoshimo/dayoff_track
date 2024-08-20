@@ -1,4 +1,5 @@
 ﻿using EmployeeManagement.Data;
+using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -130,6 +131,31 @@ namespace EmployeeManagement.Repositories
                 .Where(d => d.StartDate <= endDate && d.EndDate >= startDate)
                 .ToListAsync();
             return targets;
+        }
+        
+        public async Task<EmployeeStatisticsDTO> GetDayOffStatistics(int employeeId)
+        {
+            var employee = await _context.Employees
+                .Include(e => e.DayOffs)
+                .Where(e => e.Id == employeeId)
+                .FirstOrDefaultAsync();
+
+            if (employee == null)
+            {
+                throw new InvalidDataException("Employee not found.");
+            }
+            var approvedDayOffsCount = employee.DayOffs.Count(d => d.Status == "Approved");
+            var rejectedDayOffsCount = employee.DayOffs.Count(d => d.Status == "Rejected");
+            var pendingDayOffsCount = employee.DayOffs.Count(d => d.Status == "Pending");
+            var cancelledDayOffsCount = employee.DayOffs.Count(d => d.Status == "Cancelled");
+
+            return new EmployeeStatisticsDTO { 
+                ApprovedCount = approvedDayOffsCount, 
+                RejectedCount = rejectedDayOffsCount, 
+                PendingCount =  pendingDayOffsCount, 
+                CanceledCount = cancelledDayOffsCount 
+            };
+
         }
     }
 }

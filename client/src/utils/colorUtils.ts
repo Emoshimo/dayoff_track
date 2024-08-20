@@ -10,4 +10,12 @@ export const getTitleBackgroundColor = (title: string) => {
       return "bg-second";
   }
 };
+export const getRandomColor = () => {
+    const letters = '013456789ABCDF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 14)];
+    }
+    return color;
+};
 

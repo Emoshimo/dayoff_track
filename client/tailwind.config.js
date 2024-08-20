@@ -16,7 +16,7 @@ module.exports = {
       },
       boxShadow: {
         "custom-black":
-          "4px 4px 16px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.2)",
+          "4px 4px 8px 1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.05)",
       },
     },
   },

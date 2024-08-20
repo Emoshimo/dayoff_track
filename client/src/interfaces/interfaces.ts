@@ -101,6 +101,13 @@ export interface PaginationButtonProps {
   isActive: boolean;
 }
 
+export interface EmployeeDayOffStatistics {
+  approvedCount: number,
+  rejectedCount: number,
+  pendingCount: number,
+  canceledCount: number
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;

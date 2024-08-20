@@ -154,7 +154,7 @@ namespace EmployeeManagement.Controllers
         }
 
         [HttpPatch("dayoff/cancel")]
-        [Authorize(Roles ="User")]
+        [Authorize(Roles ="User, Manager")]
         public async Task<IActionResult> CancelDayOff(IEnumerable<int> ids)
         {
             var response = await _employeeService.CancelDayOffRequest(ids);

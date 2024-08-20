@@ -1,4 +1,5 @@
 ﻿using EmployeeManagement.Data;
+using EmployeeManagement.DTO;
 using EmployeeManagement.Interfaces;
 using EmployeeManagement.Interfaces.ServiceInterfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -49,6 +50,12 @@ namespace EmployeeManagement.Controllers
         public async Task<ActionResult<IEnumerable<DayOffRequest>>> GetRejectedDayOffs(int id)
         {
             var response = await _cacheService.GetOrCreate($"Rejected_Day_Offs_Employee{id}", () => _dayOffRequestRepository.GetRejectedDayOffs(id));
+            return Ok(response);
+        }
+        [HttpGet]
+        public async Task<ActionResult<EmployeeStatisticsDTO>> GetStatistics(int id)
+        {
+            var response = await _dayOffRequestRepository.GetDayOffStatistics(id);
             return Ok(response);
         }
     }
