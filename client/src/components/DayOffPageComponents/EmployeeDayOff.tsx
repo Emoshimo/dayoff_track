@@ -33,20 +33,19 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
     setPopupMessage(null);
   };
 
-  const onDateChange = (date: Date | null) => {
-    if (!date) return;
-    setEndDate(date);
+  const calculateNewRemainingDays = (start: Date, end: Date) => {
+    if (!start || !end) return;
 
-    const startOfDay = new Date(startDate);
-    const endOfDay = new Date(date);
+    const startOfDay = new Date(start);
+    const endOfDay = new Date(end);
 
     // Helper function to count the number of weekends between two dates
-    const countWeekends = (start: Date, end: Date) => {
+    const countWeekends = (startDate: Date, endDate: Date) => {
       let count = 0;
-      let currentDate = new Date(start);
+      let currentDate = new Date(startDate);
       currentDate.setHours(0, 0, 0, 0);
 
-      while (currentDate <= end) {
+      while (currentDate <= endDate) {
         const day = currentDate.getDay();
         if (day === 0 || day === 6) {
           count++;
@@ -63,12 +62,15 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
     const differenceInDays = totalDays - weekends;
 
     // Use Math.floor to round down to the nearest integer
-    const roundedDifferenceInDays = differenceInDays;
+    const roundedDifferenceInDays = Math.floor(differenceInDays);
 
-    console.log(roundedDifferenceInDays);
-    setNewRemainingDays(
-      Math.floor(remainingDayOff - roundedDifferenceInDays)
-    );
+    setNewRemainingDays(Math.floor(remainingDayOff - roundedDifferenceInDays));
+  };
+
+  const onDateChange = (date: Date | null) => {
+    if (!date) return;
+    setEndDate(date);
+    calculateNewRemainingDays(startDate, date); // Update newRemainingDays when either date changes
   };
 
   const handleTakeDayOff = async () => {
@@ -111,13 +113,13 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
     if (result.success) {
       console.log(result.data);
       setDayOffTypes(result.data!);
-    } 
+    }
   };
   const getRemainingDayOff = async () => {
     const result = await fetchRemainingDayOffs(employee.id!);
     setRemainingDayOff(result);
     console.log(result)
-  } 
+  }
   const handleDayOffTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSelectedDayOffTypeId(value ? Number(value) : null);
@@ -126,9 +128,18 @@ const EmployeeDayOff: React.FC<EmployeeDayOffProps> = ({
   useEffect(() => {
     getRemainingDayOff();
     fetchTypes();
+    calculateNewRemainingDays(startDate, endDate);
   }, [])
-  
 
+  // Update newRemainingDays when startDate changes
+  useEffect(() => {
+    calculateNewRemainingDays(startDate, endDate);
+  }, [startDate]);
+
+  // Update newRemainingDays when remainingDayOff changes
+  useEffect(() => {
+    calculateNewRemainingDays(startDate, endDate);
+  }, [remainingDayOff]);
   return (
     <div className="max-w-md p-6 bg-white rounded-lg shadow-lg text-center">
       <div className="flex flex-row gap-4">

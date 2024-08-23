@@ -48,19 +48,19 @@ const EmployeeDayOffItem: React.FC<EmployeeDayOffItemProps> = ({
         <p>
           Status: <span className="text-pending font-bold">Pending</span>
         </p>
-        <p>Day Off Date: {new Date(startDate).toLocaleDateString()}</p>
-        <p>Day Off Date: {new Date(endDate).toLocaleDateString()}</p>
+        <p>Day Off Start Date: {new Date(startDate).toLocaleDateString()}</p>
+        <p>Day Off End Date: {new Date(endDate).toLocaleDateString()}</p>
       </div>
-      <div className="flex flex-row gap-4 justify-center md:justify-end">
+      <div className="flex flex-row gap-4 md:justify-end">
         <button
           onClick={onClickApprove}
-          className="bg-approved p-2 rounded-md w-full md:w-24 hover:bg-hoverApprove"
+          className="bg-approved p-2 rounded-md md:w-24 hover:bg-hoverApprove text-slate-50"
         >
           Approve
         </button>
         <button
           onClick={onClickReject}
-          className="bg-rejected p-2 rounded-md w-full md:w-24 hover:bg-hoverReject"
+          className="bg-rejected p-2 rounded-md  md:w-24 hover:bg-hoverReject text-slate-50"
         >
           Reject
         </button>

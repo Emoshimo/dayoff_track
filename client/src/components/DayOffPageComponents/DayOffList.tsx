@@ -63,7 +63,7 @@ const DayOffList: React.FC<DayOffListProps> = ({ dayOffs }) => {
                   <td className="border  py-2">
                     <input
                       type="checkbox"
-                      className="form-checkbox w-4 h-4 accent-primary"
+                      className="form-checkbox w-4 h-4 accent-primary cursor-pointer"
                       onChange={() => toggleRowSelection(item.id)}
                       checked={selectedRows.includes(item.id)}
                     />
@@ -97,14 +97,19 @@ const DayOffList: React.FC<DayOffListProps> = ({ dayOffs }) => {
           </tbody>
         </table>
         {
-          dayOffList.length > 0 && (<div className="flex flex-row justify-end mx-8">
-            <button
-              onClick={cancelPendingRequests}
-              className="bg-rejected hover:bg-hoverReject rounded-md px-4 py-2 mt-2 text-3xl"
-            >
-              Cancel
-            </button>
-          </div>)
+          selectedRows.length > 0 && (
+            <div className="fixed bottom-8 left-1/2">
+              <div className="bg-primary p-2 rounded-lg shadow-lg flex flex-row items-center gap-4">
+                <p className="text-slate-200" >{selectedRows.length} Selected</p>
+                <button
+                  onClick={cancelPendingRequests}
+                  className="bg-rejected hover:bg-hoverReject rounded-md p-2 text-lg text-white"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )
         }
 
       </div>

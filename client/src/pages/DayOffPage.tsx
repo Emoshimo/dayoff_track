@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import EmployeeDayOff from "../components/DayOffPageComponents/EmployeeDayOff";
 import useEmployeeStore from "../stores/employeeStore";
 import { fetchRejectedEmployeeDayOffs } from "../apicalls/employeeApi";
 import { fetchApprovedEmployeeDayOffs } from "../apicalls/employeeApi";
